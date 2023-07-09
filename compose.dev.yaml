@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  code-annotation-ui:
+    container_name: code-annotation-ui
+    build:
+      context: ./ui
+    ports:
+      - "3000:3000"
+    volumes:
+       - ./ui:/app
+       - /app/node_modules
+
+  code-annotation-server:
+    container_name: code-annotation-server
+    build:
+      context: ./server
+      target: development
+    ports:
+      - "8080:8080"
+    environment:
+      - ENV=local
+      - DB_URI=jdbc:postgresql://code-annotation-db:5432/postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=123456aA@
+    depends_on:
+      - code-annotation-db
+
+  code-annotation-db:
+    container_name: code-annotation-db
+    image: postgres:15.3
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456aA@
+    volumes:
+      - ./volumes/postgresql/:/var/lib/postgresql/data/
+
+networks:
+  default:
+    name: code-annotation
