@@ -1,0 +1,84 @@
+package com.ntd.unipassau.codeannotation.service;
+
+import com.ntd.unipassau.codeannotation.client.RemoteFileReader;
+import com.ntd.unipassau.codeannotation.client.impl.HttpFileReader;
+import com.ntd.unipassau.codeannotation.domain.Snippet;
+import com.ntd.unipassau.codeannotation.domain.SnippetRate;
+import com.ntd.unipassau.codeannotation.mapper.SnippetMapper;
+import com.ntd.unipassau.codeannotation.repository.SnippetRateRepository;
+import com.ntd.unipassau.codeannotation.repository.SnippetRepository;
+import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetRateVM;
+import lombok.SneakyThrows;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Optional;
+
+@Service
+public class SnippetService {
+    final static String RAW_GITHUB_HOST = "raw.githubusercontent.com";
+    private final SnippetRepository snippetRepository;
+    private final SnippetRateRepository snippetRateRepository;
+    private final SnippetMapper snippetMapper;
+
+    @Autowired
+    public SnippetService(
+            SnippetRepository snippetRepository,
+            SnippetRateRepository snippetRateRepository,
+            SnippetMapper snippetMapper) {
+        this.snippetRepository = snippetRepository;
+        this.snippetRateRepository = snippetRateRepository;
+        this.snippetMapper = snippetMapper;
+    }
+
+    public Collection<Snippet> getDatasetSnippets(Long datasetId) {
+        return snippetRepository.findAllByDatasetId(datasetId);
+    }
+
+    public Optional<Snippet> getById(Long snippetId) {
+        return snippetRepository.findById(snippetId);
+    }
+
+    @SneakyThrows
+    @Transactional
+    public Snippet createSnippet(Snippet snippet) {
+        String code = extractSnippetCode(snippet);
+        snippet.setCode(code);
+        return snippetRepository.save(snippet);
+    }
+
+    @Transactional
+    public void deleteById(Long snippetId) {
+        snippetRepository.deleteById(snippetId);
+    }
+
+    @Transactional
+    public void rateSnippet(SnippetRateVM rateVM, Snippet snippet) {
+        SnippetRate rate = snippet.getRate();
+        if (rate == null) {
+            rate = snippetMapper.toSnippetRate(rateVM);
+            rate.setSnippet(snippet);
+
+        } else {
+            BeanUtils.copyProperties(rateVM, rate);
+        }
+        snippetRateRepository.save(rate);
+    }
+
+    private String extractSnippetCode(Snippet snippet) throws IOException {
+        // Replace "github.com" by "raw.githubusercontent.com" and remove "/blob" in path
+        URI fileUri = UriComponentsBuilder.fromHttpUrl(snippet.getPath().replace("/blob", ""))
+                .host(RAW_GITHUB_HOST)
+                .build()
+                .toUri();
+        RemoteFileReader remoteFileReader = new HttpFileReader();
+        Collection<String> lines = remoteFileReader.readFileLines(fileUri, snippet.getFromLine(), snippet.getToLine());
+        return String.join("\n", lines);
+    }
+}

@@ -1,0 +1,31 @@
+server:
+  servlet:
+    context-path: /api
+spring:
+  application:
+    name: 'Code Annotation Server'
+  profiles:
+    active:
+      - ${ENV:local}
+      - openapi
+      - management
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  mvc:
+    resources:
+      add-mappings: false
+    throw-exception-if-no-handler-found: true
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/migrations.yaml
+
+app:
+  auth:
+    public-endpoints:
+      - /v1/auth/token
+      - /v1/auth/refresh-token

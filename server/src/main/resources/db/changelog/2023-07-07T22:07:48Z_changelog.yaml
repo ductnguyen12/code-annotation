@@ -1,0 +1,248 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1688767719516-1
+      author: ducnt (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: snippet_rate_pkey
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created_by
+                  type: VARCHAR(50)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: last_modified_by
+                  type: VARCHAR(50)
+              - column:
+                  name: last_modified_date
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: comment
+                  type: VARCHAR(255)
+              - column:
+                  name: value
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: snippet_id
+                  type: BIGINT
+            tableName: snippet_rate
+  - changeSet:
+      id: 1688767719516-2
+      author: ducnt (generated)
+      changes:
+        - addUniqueConstraint:
+            columnNames: snippet_id
+            constraintName: uk_o108c7l66qr6ldjcx9qag7jkq
+            tableName: snippet_rate
+  - changeSet:
+      id: 1688767719516-3
+      author: ducnt (generated)
+      changes:
+        - createSequence:
+            cacheSize: 1
+            cycle: false
+            dataType: bigint
+            incrementBy: 1
+            maxValue: 9223372036854775807
+            minValue: 1
+            sequenceName: dataset_seq
+            startValue: 1
+  - changeSet:
+      id: 1688767719516-4
+      author: ducnt (generated)
+      changes:
+        - createSequence:
+            cacheSize: 1
+            cycle: false
+            dataType: bigint
+            incrementBy: 1
+            maxValue: 9223372036854775807
+            minValue: 1
+            sequenceName: snippet_rate_seq
+            startValue: 1
+  - changeSet:
+      id: 1688767719516-5
+      author: ducnt (generated)
+      changes:
+        - createSequence:
+            cacheSize: 1
+            cycle: false
+            dataType: bigint
+            incrementBy: 1
+            maxValue: 9223372036854775807
+            minValue: 1
+            sequenceName: snippet_seq
+            startValue: 1
+  - changeSet:
+      id: 1688767719516-6
+      author: ducnt (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: dataset_pkey
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created_by
+                  type: VARCHAR(50)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: last_modified_by
+                  type: VARCHAR(50)
+              - column:
+                  name: last_modified_date
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+            tableName: dataset
+  - changeSet:
+      id: 1688767719516-7
+      author: ducnt (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: snippet_pkey
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created_by
+                  type: VARCHAR(50)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: last_modified_by
+                  type: VARCHAR(50)
+              - column:
+                  name: last_modified_date
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: code
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: from_line
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: path
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: to_line
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: dataset_id
+                  type: BIGINT
+            tableName: snippet
+  - changeSet:
+      id: 1688767719516-8
+      author: ducnt (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: users_pkey
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created_by
+                  type: VARCHAR(50)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: last_modified_by
+                  type: VARCHAR(50)
+              - column:
+                  name: last_modified_date
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: enabled
+                  type: BOOLEAN
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+              - column:
+                  name: super_admin
+                  type: BOOLEAN
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+            tableName: users
+  - changeSet:
+      id: 1688767719516-9
+      author: ducnt (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: snippet_id
+            baseTableName: snippet_rate
+            constraintName: fk905qcqn34oc60dljkb0vpaylp
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: snippet
+            validate: true
+  - changeSet:
+      id: 1688767719516-10
+      author: ducnt (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: dataset_id
+            baseTableName: snippet
+            constraintName: fkfumpfip79p246yxv4287sbglk
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: dataset
+            validate: true
+

@@ -1,0 +1,37 @@
+spring:
+  sql:
+    init:
+      mode: always
+  datasource:
+    url: ${DB_URI:jdbc:postgresql://localhost:5432/postgres}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:123456aA@}
+  jpa:
+    show-sql: true
+
+
+  devtools:
+    restart:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      cors:
+        allow-credentials: false
+        allowed-origin-patterns: '*'
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+app:
+  auth:
+    root-user:
+      username: 'ca_root'
+      password: '123456aA@'
+    token-secret: 'bG9jYWwtdnRjbm93LWNtcy1hZG1pbkB2dGNub3cudm4='
+    token-expiration: 1800
+    refresh-expiration: 86400

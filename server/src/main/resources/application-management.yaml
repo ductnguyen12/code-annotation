@@ -1,0 +1,7 @@
+management:
+  endpoints:
+    web:
+      cors:
+        max-age: 3600s
+        allowed-methods: 'GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD'
+        allowed-headers: '*'
