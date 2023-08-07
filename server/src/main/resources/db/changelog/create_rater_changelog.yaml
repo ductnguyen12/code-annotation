@@ -1,0 +1,56 @@
+databaseChangeLog:
+- changeSet:
+    id: 1691356682915-34
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: raterPK
+            name: id
+            type: UUID
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: created_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: last_modified_by
+            type: VARCHAR(50)
+        - column:
+            name: last_modified_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: year_of_exp
+            type: INTEGER
+        - column:
+            name: user_id
+            type: UUID
+        tableName: rater
+- changeSet:
+    id: 1691356682915-35
+    author: ducnt (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: user_id
+        constraintName: uc_rater_user_id
+        tableName: rater
+- changeSet:
+    id: 1691356682915-36
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: rater
+        constraintName: rater_user_fk
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true

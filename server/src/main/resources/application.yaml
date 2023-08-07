@@ -29,3 +29,4 @@ app:
     public-endpoints:
       - /v1/auth/token
       - /v1/auth/refresh-token
+      - /v1/raters/registration
