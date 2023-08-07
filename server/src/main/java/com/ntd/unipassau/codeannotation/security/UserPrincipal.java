@@ -3,11 +3,13 @@ package com.ntd.unipassau.codeannotation.security;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.LinkedHashSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -18,10 +20,15 @@ public class UserPrincipal implements UserDetails {
     private String name;
     private boolean enabled;
     private Boolean superAdmin;
+    private Collection<String> authorities = new LinkedHashSet<>();
+
+    public void addAuthorities(Collection<String> authorities) {
+        this.authorities.addAll(authorities);
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Set.of();
+        return authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
     }
 
     @Override

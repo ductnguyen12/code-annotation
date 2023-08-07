@@ -3,6 +3,7 @@ package com.ntd.unipassau.codeannotation.web.rest;
 import com.ntd.unipassau.codeannotation.domain.Dataset;
 import com.ntd.unipassau.codeannotation.domain.Snippet;
 import com.ntd.unipassau.codeannotation.mapper.SnippetMapper;
+import com.ntd.unipassau.codeannotation.security.AuthoritiesConstants;
 import com.ntd.unipassau.codeannotation.service.DatasetService;
 import com.ntd.unipassau.codeannotation.service.SnippetService;
 import com.ntd.unipassau.codeannotation.web.rest.errors.BadRequestException;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -37,6 +39,7 @@ public class SnippetResource {
 
     @Operation(summary = "Get dataset snippets")
     @GetMapping("/v1/datasets/{datasetId}/snippets")
+    @Secured({AuthoritiesConstants.ANONYMOUS, AuthoritiesConstants.USER})
     public Collection<SnippetVM> getDatasetSnippets(@PathVariable Long datasetId) {
         return snippetMapper.toSnippetVMs(snippetService.getDatasetSnippets(datasetId));
     }
@@ -66,6 +69,7 @@ public class SnippetResource {
     @Operation(summary = "Rate a snippet")
     @PostMapping("/v1/snippets/{snippetId}/rates")
     @ResponseStatus(HttpStatus.CREATED)
+    @Secured({AuthoritiesConstants.ANONYMOUS, AuthoritiesConstants.USER})
     public void createSnippetRate(@PathVariable Long snippetId, @RequestBody @Valid SnippetRateVM rate) {
         Snippet snippet = snippetService.getById(snippetId)
                 .orElseThrow(() -> new NotFoundException(

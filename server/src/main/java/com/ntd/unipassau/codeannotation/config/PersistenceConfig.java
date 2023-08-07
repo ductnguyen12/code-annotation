@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -32,7 +33,13 @@ public class PersistenceConfig {
             return SecurityUtils.getCurrentUser()
                     .map(UserPrincipal.class::cast)
                     .map(UserPrincipal::getUsername)
-                    .or(() -> Optional.of("system"));
+                    .or(() -> {
+                        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                        if (authentication instanceof AnonymousAuthenticationToken) {
+                            return Optional.of(authentication.getPrincipal().toString());
+                        }
+                        return Optional.of("system");
+                    });
         }
     }
 }

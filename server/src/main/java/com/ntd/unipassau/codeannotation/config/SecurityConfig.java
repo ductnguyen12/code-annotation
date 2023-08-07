@@ -2,6 +2,7 @@ package com.ntd.unipassau.codeannotation.config;
 
 import com.ntd.unipassau.codeannotation.security.RestAuthenticationEntryPoint;
 import com.ntd.unipassau.codeannotation.security.jwt.JwtTokenFilter;
+import com.ntd.unipassau.codeannotation.security.opaque.OpaqueTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,15 +30,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtTokenFilter jwtTokenFilter;
+    private final OpaqueTokenFilter opaqueTokenFilter;
     private final AppProperties.Auth authProperties;
 
     @Autowired
     public SecurityConfig(
             UserDetailsService userDetailsService,
             JwtTokenFilter jwtTokenFilter,
+            OpaqueTokenFilter opaqueTokenFilter,
             AppProperties appProperties) {
         this.userDetailsService = userDetailsService;
         this.jwtTokenFilter = jwtTokenFilter;
+        this.opaqueTokenFilter = opaqueTokenFilter;
         this.authProperties = appProperties.getAuth();
     }
 
@@ -72,6 +76,7 @@ public class SecurityConfig {
                 });
 
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(opaqueTokenFilter, JwtTokenFilter.class);
 
         return http.build();
     }

@@ -7,6 +7,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
@@ -22,6 +24,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
                 .map(userDetailsMapper::toUserPrincipal)
+                .map(principal -> {
+                    principal.addAuthorities(List.of(AuthoritiesConstants.USER));
+                    return principal;
+                })
                 .orElseThrow(() -> new UsernameNotFoundException("Could not find user by username: " + username));
     }
 }

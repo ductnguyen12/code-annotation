@@ -28,6 +28,7 @@ public final class SecurityUtils {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(securityContext.getAuthentication())
                 .map(Authentication::getPrincipal)
+                .filter(principal -> principal instanceof UsernamePasswordAuthenticationToken)
                 .map(UsernamePasswordAuthenticationToken.class::cast)
                 .map(UsernamePasswordAuthenticationToken::getPrincipal)
                 .filter(principal -> principal instanceof UserDetails)
