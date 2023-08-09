@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.Collection;
+
 @Data
 public class SnippetVM {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -18,6 +20,7 @@ public class SnippetVM {
     private Integer toLine;
     @NotNull
     private Long datasetId;
+    private Collection<@NotNull QuestionVM> questions;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String code;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

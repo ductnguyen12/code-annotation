@@ -48,6 +48,12 @@ public class SnippetService {
     @SneakyThrows
     @Transactional
     public Snippet createSnippet(Snippet snippet) {
+        // Make sure bi-directional relation
+        snippet.getQuestions()
+                .forEach(question -> {
+                    question.setSnippet(snippet);
+                    question.getAnswers().forEach(answer -> answer.setQuestion(question));
+                });
         String code = extractSnippetCode(snippet);
         snippet.setCode(code);
         return snippetRepository.save(snippet);

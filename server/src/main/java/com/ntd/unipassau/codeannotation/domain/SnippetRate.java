@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "snippet_rate")
 @Setter
@@ -19,5 +21,10 @@ public class SnippetRate extends AbstractAuditingEntity<Long> {
     private Integer value;
     @OneToOne(optional = false)
     @JoinColumn(name = "snippet_id", unique = true, nullable = false, updatable = false)
+    @ToString.Exclude
     private Snippet snippet;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "rate")
+    @ToString.Exclude
+    private Set<RateAnswer> answers;
 }
