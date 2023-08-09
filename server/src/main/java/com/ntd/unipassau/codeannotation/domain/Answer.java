@@ -22,4 +22,12 @@ public class Answer extends AbstractAuditingEntity<Long> {
     @JoinColumn(name = "question_id", nullable = false)
     @ToString.Exclude
     private Question question;
+
+    @OneToOne(cascade = CascadeType.REMOVE, mappedBy = "answer")
+    @ToString.Exclude
+    private RateAnswer rateAnswer;
+
+    public boolean isSelected() {
+        return rateAnswer != null;
+    }
 }

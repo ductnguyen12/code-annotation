@@ -1,6 +1,7 @@
 package com.ntd.unipassau.codeannotation.web.rest;
 
 import com.ntd.unipassau.codeannotation.mapper.DatasetMapper;
+import com.ntd.unipassau.codeannotation.service.BackupService;
 import com.ntd.unipassau.codeannotation.service.DatasetService;
 import com.ntd.unipassau.codeannotation.web.rest.errors.NotFoundException;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DatasetVM;
@@ -8,21 +9,29 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Collection;
 
 @Tag(name = "Dataset Resource")
 @RestController
 public class DatasetResource {
+    private final BackupService backupService;
     private final DatasetService datasetService;
     private final DatasetMapper datasetMapper;
 
     @Autowired
     public DatasetResource(
+            BackupService backupService,
             DatasetService datasetService,
             DatasetMapper datasetMapper) {
+        this.backupService = backupService;
         this.datasetService = datasetService;
         this.datasetMapper = datasetMapper;
     }
@@ -48,5 +57,18 @@ public class DatasetResource {
                 .orElseThrow(() -> new NotFoundException(
                         "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
         datasetService.deleteDataset(datasetId);
+    }
+
+    @Operation(summary = "Export dataset's snippets and annotation")
+    @GetMapping(value = "/v1/datasets/{datasetId}/export-snippets", produces = "application/zip")
+    public ResponseEntity<Resource> exportSnippets(@PathVariable Long datasetId) throws IOException {
+        datasetService.getById(datasetId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
+        Resource resource = backupService.exportSnippets(datasetId);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/zip"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 }
