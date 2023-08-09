@@ -20,9 +20,12 @@ public class UserPrincipal implements UserDetails {
     private String name;
     private boolean enabled;
     private Boolean superAdmin;
-    private Collection<String> authorities = new LinkedHashSet<>();
+    private Collection<String> authorities;
 
     public void addAuthorities(Collection<String> authorities) {
+        if (this.authorities == null) {
+            this.authorities = new LinkedHashSet<>();
+        }
         this.authorities.addAll(authorities);
     }
 
