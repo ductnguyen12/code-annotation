@@ -2,9 +2,12 @@ package com.ntd.unipassau.codeannotation.service;
 
 import com.ntd.unipassau.codeannotation.client.RemoteFileReader;
 import com.ntd.unipassau.codeannotation.client.impl.HttpFileReader;
+import com.ntd.unipassau.codeannotation.domain.RateAnswer;
 import com.ntd.unipassau.codeannotation.domain.Snippet;
 import com.ntd.unipassau.codeannotation.domain.SnippetRate;
 import com.ntd.unipassau.codeannotation.mapper.SnippetMapper;
+import com.ntd.unipassau.codeannotation.repository.AnswerRepository;
+import com.ntd.unipassau.codeannotation.repository.RateAnswerRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRateRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRepository;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetRateVM;
@@ -18,20 +21,27 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 
 @Service
 public class SnippetService {
     final static String RAW_GITHUB_HOST = "raw.githubusercontent.com";
+    private final AnswerRepository answerRepository;
+    private final RateAnswerRepository rateAnswerRepository;
     private final SnippetRepository snippetRepository;
     private final SnippetRateRepository snippetRateRepository;
     private final SnippetMapper snippetMapper;
 
     @Autowired
     public SnippetService(
+            AnswerRepository answerRepository,
+            RateAnswerRepository rateAnswerRepository,
             SnippetRepository snippetRepository,
             SnippetRateRepository snippetRateRepository,
             SnippetMapper snippetMapper) {
+        this.answerRepository = answerRepository;
+        this.rateAnswerRepository = rateAnswerRepository;
         this.snippetRepository = snippetRepository;
         this.snippetRateRepository = snippetRateRepository;
         this.snippetMapper = snippetMapper;
@@ -70,11 +80,26 @@ public class SnippetService {
         if (rate == null) {
             rate = snippetMapper.toSnippetRate(rateVM);
             rate.setSnippet(snippet);
-
         } else {
             BeanUtils.copyProperties(rateVM, rate);
         }
-        snippetRateRepository.save(rate);
+
+        // Delete old answers
+        rateAnswerRepository.deleteAllBySnippet(snippet.getId());
+        rate.setAnswers(new LinkedHashSet<>());
+
+        // Add all of new rate answers
+        final SnippetRate finalRate = rate;
+        answerRepository.findAllById(rateVM.getSelectedAnswers())
+                .forEach(answer -> {
+                    RateAnswer rateAnswer = new RateAnswer();
+                    rateAnswer.setId(answer.getId());
+                    rateAnswer.setAnswer(answer);
+                    rateAnswer.setRate(finalRate);
+                    finalRate.getAnswers().add(rateAnswer);
+                });
+
+        snippetRateRepository.save(finalRate);
     }
 
     private String extractSnippetCode(Snippet snippet) throws IOException {

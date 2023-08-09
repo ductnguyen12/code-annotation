@@ -4,6 +4,7 @@ import com.ntd.unipassau.codeannotation.domain.Dataset;
 import com.ntd.unipassau.codeannotation.domain.Snippet;
 import com.ntd.unipassau.codeannotation.mapper.SnippetMapper;
 import com.ntd.unipassau.codeannotation.security.AuthoritiesConstants;
+import com.ntd.unipassau.codeannotation.service.AnswerService;
 import com.ntd.unipassau.codeannotation.service.DatasetService;
 import com.ntd.unipassau.codeannotation.service.SnippetService;
 import com.ntd.unipassau.codeannotation.web.rest.errors.BadRequestException;
@@ -16,23 +17,28 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 @Tag(name = "Snippet Resource")
 @RestController
 public class SnippetResource {
     private final DatasetService datasetService;
+    private final AnswerService answerService;
     private final SnippetService snippetService;
     private final SnippetMapper snippetMapper;
 
     @Autowired
     public SnippetResource(
             DatasetService datasetService,
+            AnswerService answerService,
             SnippetService snippetService,
             SnippetMapper snippetMapper) {
         this.datasetService = datasetService;
+        this.answerService = answerService;
         this.snippetService = snippetService;
         this.snippetMapper = snippetMapper;
     }
@@ -74,6 +80,13 @@ public class SnippetResource {
         Snippet snippet = snippetService.getById(snippetId)
                 .orElseThrow(() -> new NotFoundException(
                         "Could not find snippet by id: " + snippetId, "pathVars", "snippetId"));
+        if (!CollectionUtils.isEmpty(rate.getSelectedAnswers())) {
+            Collection<Long> nonExistedIds = answerService.getNonExistedIds(rate.getSelectedAnswers());
+            if (nonExistedIds.size() > 0)
+                throw new BadRequestException(
+                        "Answer IDs are not existed: " + Arrays.toString(nonExistedIds.toArray()),
+                        "rate", "selectedAnswers");
+        }
         snippetService.rateSnippet(rate, snippet);
     }
 }

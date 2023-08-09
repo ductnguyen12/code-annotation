@@ -14,7 +14,7 @@ public class RateAnswer {
     @Id
     private Long id;
 
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.MERGE, optional = false, fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn(name = "id")
     @ToString.Exclude
     private Answer answer;

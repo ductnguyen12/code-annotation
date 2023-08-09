@@ -31,3 +31,4 @@ app:
       - /v1/auth/refresh-token
       - /v1/raters/registration
       - /v1/datasets/{datasetId}/snippets
+      - /v1/snippets/{snippetId}/rates
