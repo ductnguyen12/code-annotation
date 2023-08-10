@@ -1,14 +1,8 @@
-package com.ntd.unipassau.codeannotation.export.json;
+package com.ntd.unipassau.codeannotation.export;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ntd.unipassau.codeannotation.domain.Dataset;
 import com.ntd.unipassau.codeannotation.domain.Snippet;
-import com.ntd.unipassau.codeannotation.export.DatasetExporter;
-import com.ntd.unipassau.codeannotation.export.ExportFileUtil;
-import com.ntd.unipassau.codeannotation.export.ExportModelMapper;
-import com.ntd.unipassau.codeannotation.export.ZipUtil;
 import com.ntd.unipassau.codeannotation.export.model.SnippetDoc;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -22,17 +16,20 @@ import java.text.MessageFormat;
 import java.util.Collection;
 
 @Component
-@Slf4j
-public class JsonDatasetExporter implements DatasetExporter {
+public class DefaultDatasetExporter implements DatasetExporter {
     private final static String DIR_DATASET_SNIPPETS = "dataset-{0}-snippets";
+    private final static String SOURCE_CODE_FILENAME = "{0}_{1}";
     private final static String METADATA_FILENAME = "{0}.json";
-    private final ObjectMapper objectMapper;
+
     private final ExportModelMapper exportModelMapper;
+    private final MetadataExporter metadataExporter;
 
     @Autowired
-    public JsonDatasetExporter(ObjectMapper objectMapper, ExportModelMapper exportModelMapper) {
-        this.objectMapper = objectMapper;
+    public DefaultDatasetExporter(
+            ExportModelMapper exportModelMapper,
+            MetadataExporter metadataExporter) {
         this.exportModelMapper = exportModelMapper;
+        this.metadataExporter = metadataExporter;
     }
 
     @Override
@@ -40,7 +37,7 @@ public class JsonDatasetExporter implements DatasetExporter {
         Path tmpDir = Files.createTempDirectory(MessageFormat.format(DIR_DATASET_SNIPPETS, dataset.getId()));
         tmpDir.toFile().deleteOnExit();
 
-        saveSnippets(tmpDir, dataset.getSnippets());
+        exportSnippets(tmpDir, dataset.getSnippets());
 
         Path outPath = Files.createTempFile(MessageFormat.format(DIR_DATASET_SNIPPETS, dataset.getId()), ".zip");
         ZipUtil.zipDirectory(tmpDir, outPath);
@@ -48,12 +45,13 @@ public class JsonDatasetExporter implements DatasetExporter {
         return new UrlResource(outPath.toUri());
     }
 
-    private void saveSnippets(Path dir, Collection<Snippet> snippets) throws IOException {
+    @Override
+    public void exportSnippets(Path dir, Collection<Snippet> snippets) throws IOException {
         for (Snippet snippet : snippets) {
             // Add prefix id to make filename unique.
             // Also remove domain part and replace slashes by dot to get source code filename
-            String sourceCodeFilename =
-                    snippet.getId() + "_" + ExportFileUtil.getFilenameFromHttpPath(snippet.getPath());
+            String sourceCodeFilename = MessageFormat.format(
+                    SOURCE_CODE_FILENAME, snippet.getId(), ExportFileUtil.getFilenameFromHttpPath(snippet.getPath()));
             Path sourceCodePath = dir.resolve(sourceCodeFilename);
             Files.writeString(sourceCodePath, snippet.getCode(), StandardCharsets.UTF_8);
 
@@ -61,7 +59,7 @@ public class JsonDatasetExporter implements DatasetExporter {
             String metadataFilename = MessageFormat.format(METADATA_FILENAME, sourceCodeFilename);
             Path metadataPath = dir.resolve(metadataFilename);
             SnippetDoc snippetDoc = exportModelMapper.toSnippetDoc(snippet);
-            objectMapper.writeValue(metadataPath.toFile(), snippetDoc);
+            metadataExporter.exportSnippetMetadata(metadataPath, snippetDoc);
         }
     }
 }
