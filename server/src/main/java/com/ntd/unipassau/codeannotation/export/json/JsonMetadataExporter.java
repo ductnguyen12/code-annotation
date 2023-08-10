@@ -18,8 +18,27 @@ public class JsonMetadataExporter implements MetadataExporter {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void exportSnippetMetadata(Path path, SnippetDoc snippet) throws IOException {
         objectMapper.writeValue(path.toFile(), snippet);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SnippetDoc readSnippetMetadata(Path path) throws IOException {
+        return objectMapper.readValue(path.toFile(), SnippetDoc.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getFilenameExtension() {
+        return ".json";
     }
 }

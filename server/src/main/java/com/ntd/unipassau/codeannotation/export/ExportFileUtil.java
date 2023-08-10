@@ -14,5 +14,15 @@ public final class ExportFileUtil {
         return String.join(".", Arrays.copyOfRange(subs, 3, subs.length));
     }
 
+    /**
+     * Get base filename from filename (remove extension part such as .json, .xml, ...)
+     * @param filename full name with extension (e.g. metadata.json)
+     * @return a base filename without extension (e.g. metadata.json -> metadata).
+     */
+    public static String getBaseFilename(String filename) {
+        String[] subs = filename.split("\\.");
+        return String.join(".", Arrays.copyOfRange(subs, 0, subs.length - 1));
+    }
+
     private ExportFileUtil() {}
 }

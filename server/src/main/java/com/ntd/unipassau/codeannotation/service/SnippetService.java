@@ -2,6 +2,7 @@ package com.ntd.unipassau.codeannotation.service;
 
 import com.ntd.unipassau.codeannotation.client.RemoteFileReader;
 import com.ntd.unipassau.codeannotation.client.impl.HttpFileReader;
+import com.ntd.unipassau.codeannotation.domain.Question;
 import com.ntd.unipassau.codeannotation.domain.RateAnswer;
 import com.ntd.unipassau.codeannotation.domain.Snippet;
 import com.ntd.unipassau.codeannotation.domain.SnippetRate;
@@ -20,9 +21,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SnippetService {
@@ -32,6 +32,7 @@ public class SnippetService {
     private final SnippetRepository snippetRepository;
     private final SnippetRateRepository snippetRateRepository;
     private final SnippetMapper snippetMapper;
+    private final QuestionService questionService;
 
     @Autowired
     public SnippetService(
@@ -39,12 +40,14 @@ public class SnippetService {
             RateAnswerRepository rateAnswerRepository,
             SnippetRepository snippetRepository,
             SnippetRateRepository snippetRateRepository,
-            SnippetMapper snippetMapper) {
+            SnippetMapper snippetMapper,
+            QuestionService questionService) {
         this.answerRepository = answerRepository;
         this.rateAnswerRepository = rateAnswerRepository;
         this.snippetRepository = snippetRepository;
         this.snippetRateRepository = snippetRateRepository;
         this.snippetMapper = snippetMapper;
+        this.questionService = questionService;
     }
 
     public Collection<Snippet> getDatasetSnippets(Long datasetId) {
@@ -70,8 +73,65 @@ public class SnippetService {
     }
 
     @Transactional
+    public Collection<Snippet> createSnippetsInBatch(Collection<Snippet> snippets) {
+        Collection<Question> questions = new LinkedHashSet<>();
+        Collection<SnippetRate> rates = new LinkedHashSet<>();
+        snippets.forEach(s -> {
+            questions.addAll(s.getQuestions());
+            if (s.getRate() != null) {
+                rates.add(s.getRate());
+            }
+            s.setQuestions(null);
+            s.setRate(null);
+        });
+
+        snippetRepository.saveAll(snippets);
+        questionService.createAllInBatch(questions);
+        createRatesInBatch(rates);
+
+        return snippets;
+    }
+
+    @Transactional
+    public Collection<SnippetRate> createRatesInBatch(Collection<SnippetRate> rates) {
+        Collection<RateAnswer> rateAnswers = new LinkedHashSet<>();
+        rates.forEach(r -> {
+            r.getAnswers().forEach(ra -> ra.setId(ra.getAnswer().getId()));
+            rateAnswers.addAll(r.getAnswers());
+            r.setAnswers(null);
+        });
+
+        snippetRateRepository.saveAll(rates);
+        rateAnswerRepository.saveAll(rateAnswers);
+
+        return rates;
+    }
+
+    @Transactional
     public void deleteById(Long snippetId) {
         snippetRepository.deleteById(snippetId);
+    }
+
+    @Transactional
+    public void deleteAllInBatch(Collection<Snippet> snippets) {
+        Set<Question> questions = snippets.stream()
+                .flatMap(s -> s.getQuestions().stream())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        questionService.deleteAllInBatch(questions);
+
+        Set<SnippetRate> rates = snippets.stream()
+                .map(Snippet::getRate)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        Set<RateAnswer> rateAnswers = rates.stream()
+                .flatMap(r -> r.getAnswers().stream())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        rateAnswerRepository.deleteAllInBatch(rateAnswers);
+        snippetRateRepository.deleteAllInBatch(rates);
+
+        snippetRepository.deleteAllInBatch(snippets);
     }
 
     @Transactional

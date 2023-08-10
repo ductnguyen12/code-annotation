@@ -26,4 +26,13 @@ public interface DatasetExporter {
      * @throws IOException when there is any error occurs during metadata serialization or source code file saving.
      */
     void exportSnippets(Path dir, Collection<Snippet> snippets) throws IOException;
+
+    /**
+     * Parse the content of file to extract snippets and annotation
+     * @param dataset Dataset that snippets will be imported to
+     * @param resource Reference to file
+     * @return Dataset with imported snippets
+     * @throws IOException when there is any error occurs during metadata de-serialization or source code file reading.
+     */
+    Dataset importSnippets(Dataset dataset, Resource resource) throws IOException;
 }

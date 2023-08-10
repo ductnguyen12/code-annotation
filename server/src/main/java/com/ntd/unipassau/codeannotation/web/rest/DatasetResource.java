@@ -3,6 +3,7 @@ package com.ntd.unipassau.codeannotation.web.rest;
 import com.ntd.unipassau.codeannotation.mapper.DatasetMapper;
 import com.ntd.unipassau.codeannotation.service.BackupService;
 import com.ntd.unipassau.codeannotation.service.DatasetService;
+import com.ntd.unipassau.codeannotation.web.rest.errors.BadRequestException;
 import com.ntd.unipassau.codeannotation.web.rest.errors.NotFoundException;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DatasetVM;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -70,5 +72,21 @@ public class DatasetResource {
                 .contentType(MediaType.parseMediaType("application/zip"))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+
+    @Operation(summary = "Import dataset's snippets and annotation")
+    @PostMapping(value = "/v1/datasets/{datasetId}/import-snippets")
+    public void importSnippets(
+            @PathVariable Long datasetId,
+            @RequestParam("file") MultipartFile file) throws IOException {
+        datasetService.getById(datasetId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
+        if (!"application/zip".equals(file.getContentType())) {
+            throw new BadRequestException(
+                    "File content type must be \"application/zip\" instead of " + file.getContentType(), null, null);
+        }
+
+        backupService.importSnippets(datasetId, file.getResource());
     }
 }

@@ -16,6 +16,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        order_inserts: true
+        jdbc:
+          batch_size: 50
   mvc:
     resources:
       add-mappings: false

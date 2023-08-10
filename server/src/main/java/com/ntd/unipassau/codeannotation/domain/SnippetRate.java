@@ -27,4 +27,14 @@ public class SnippetRate extends AbstractAuditingEntity<Long> {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "rate")
     @ToString.Exclude
     private Set<RateAnswer> answers;
+
+    @Transient
+    private String rater;       // To overwrite the system generated lastModifiedBy value
+
+    @PrePersist
+    private void setLastModifiedByAsRater() {
+        if (rater != null) {
+            setLastModifiedBy(rater);
+        }
+    }
 }
