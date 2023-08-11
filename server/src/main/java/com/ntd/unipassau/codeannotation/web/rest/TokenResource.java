@@ -6,6 +6,7 @@ import com.ntd.unipassau.codeannotation.web.rest.errors.BadRequestException;
 import com.ntd.unipassau.codeannotation.web.rest.errors.NotFoundException;
 import com.ntd.unipassau.codeannotation.web.rest.vm.AuthToken;
 import com.ntd.unipassau.codeannotation.web.rest.vm.Login;
+import com.ntd.unipassau.codeannotation.web.rest.vm.UserVM;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,7 +42,7 @@ public class TokenResource {
 
     @Operation(summary = "Get current user's details", security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/v1/auth/me")
-    public User getCurrentUser() {
+    public UserVM getCurrentUser() {
         return tokenService.getCurrentUser()
                 .orElseThrow(() -> new NotFoundException("Could not find user by id", "User", "id"));
     }

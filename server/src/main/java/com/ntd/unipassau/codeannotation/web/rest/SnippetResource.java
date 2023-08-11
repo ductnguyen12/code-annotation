@@ -65,6 +65,7 @@ public class SnippetResource {
     @Operation(summary = "Delete a snippet")
     @DeleteMapping("/v1/snippets/{snippetId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Secured({AuthoritiesConstants.USER})
     public void deleteSnippet(@PathVariable Long snippetId) {
         snippetService.getById(snippetId)
                 .orElseThrow(() -> new NotFoundException(

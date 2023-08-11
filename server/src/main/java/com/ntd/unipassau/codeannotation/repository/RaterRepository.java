@@ -10,4 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface RaterRepository extends JpaRepository<Rater, UUID> {
+    Optional<Rater> findByUserId(UUID userId);
 }

@@ -31,12 +31,7 @@ public class RaterResource {
 
     @Operation(summary = "Register as a rater")
     @PostMapping("/v1/raters/registration")
-    @ResponseStatus(HttpStatus.CREATED)
     public RaterVM registerRater(@RequestBody @Valid RaterVM raterVM) {
-        raterService.getCurrentRater()
-                .ifPresent(r -> {
-                    throw new BadRequestException("Current user was already a rater: " + r.getId(), null, null);
-                });
         Rater rater = raterService.registerRater(raterVM);
         return raterMapper.toRaterVM(rater);
     }

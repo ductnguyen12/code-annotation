@@ -3,19 +3,23 @@ import { IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
+import React, { useEffect } from 'react';
+import { useCookies } from 'react-cookie';
 import { useParams } from "react-router-dom";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import api from '../../api';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import CodeRating from "../../components/CodeRating";
+import ProtectedElement from '../../components/ProtectedElement';
 import Spinner from "../../components/Spinner";
 import { useDatasetSnippets } from "../../hooks/snippet";
+import { Rater } from '../../interfaces/rater.interface';
 import { Snippet, SnippetRate } from "../../interfaces/snippet.interface";
-import { selectDatasetsState } from "../../slices/datasetsSlice";
+import { loadDatasetAsync, selectDatasetsState } from "../../slices/datasetsSlice";
 import { chooseSnippet, loadDatasetSnippetsAsync, rateSnippetAsync } from "../../slices/snippetsSlice";
-import React from 'react';
-import api from '../../api';
 import CreateSnippetDialog from './CreateSnippetDialog';
+import RaterRegistrationDialog from './RaterRegistrationDialog';
 
 type RouteParams = {
   id: string,
@@ -32,6 +36,21 @@ const SnippetsPage = () => {
   const { dataset } = useAppSelector(selectDatasetsState);
   const dispatch = useAppDispatch();
   const [open, setOpen] = React.useState(false);
+
+  const [cookies, setCookie] = useCookies(['token']);
+  const [openRegistration, setOpenRegistration] = React.useState(false);
+
+  useEffect(() => {
+    if (!dataset && id) {
+      dispatch(loadDatasetAsync(parseInt(id)));
+    }
+  }, [dataset, id, dispatch])
+
+  useEffect(() => {
+    if (!cookies.token && !openRegistration) {
+      setOpenRegistration(true);
+    }
+  }, [cookies.token, openRegistration]);
 
   const onCreateSnippet = async (snippet: Snippet) => {
     if (id) {
@@ -60,7 +79,25 @@ const SnippetsPage = () => {
     }));
   }
 
-  return (
+  const onRegisterRater = async (rater: Rater) => {
+    if (id) {
+      return api.registerAsRater(rater)
+        .then((newRater: Rater) => {
+          setCookie('token', newRater.id, { path: '/', maxAge: 2<<24, secure: true });   // maxAge ~ 388 days
+          dispatch(loadDatasetSnippetsAsync(parseInt(id)));
+          return newRater;
+        })
+    }
+    return new Promise<Rater>(() => rater);
+  }
+
+  return !cookies.token ? (
+    <RaterRegistrationDialog
+      open={openRegistration}
+      setOpen={setOpenRegistration}
+      onCreate={onRegisterRater}
+    />
+  ) : (
     <Box>
       {'loading' === status
         ? <Spinner />
@@ -73,19 +110,23 @@ const SnippetsPage = () => {
             >
               {dataset.description}
             </Typography>
-            <Typography sx={{ mb: 2 }} variant="h5">
-              Snippets
-              <span>
-                <IconButton aria-label="Add snippet" onClick={() => setOpen(true)}>
-                  <AddIcon />
-                </IconButton>
-              </span>
-            </Typography>
-            <CreateSnippetDialog
-              open={open}
-              setOpen={setOpen}
-              onCreateSnippet={onCreateSnippet}
-            />
+            <ProtectedElement hidden={true}>
+              <>
+                <Typography sx={{ mb: 2 }} variant="h5">
+                  Snippets
+                  <span>
+                    <IconButton aria-label="Add snippet" onClick={() => setOpen(true)}>
+                      <AddIcon />
+                    </IconButton>
+                  </span>
+                </Typography>
+                <CreateSnippetDialog
+                  open={open}
+                  setOpen={setOpen}
+                  onCreateSnippet={onCreateSnippet}
+                />
+              </>
+            </ProtectedElement>
             {snippets.length > 0
               ? (
                 <Box

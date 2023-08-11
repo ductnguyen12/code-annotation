@@ -1,6 +1,7 @@
 package com.ntd.unipassau.codeannotation.web.rest;
 
 import com.ntd.unipassau.codeannotation.mapper.DatasetMapper;
+import com.ntd.unipassau.codeannotation.security.AuthoritiesConstants;
 import com.ntd.unipassau.codeannotation.service.BackupService;
 import com.ntd.unipassau.codeannotation.service.DatasetService;
 import com.ntd.unipassau.codeannotation.web.rest.errors.BadRequestException;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,6 +55,7 @@ public class DatasetResource {
 
     @Operation(summary = "Get dataset by id")
     @GetMapping("/v1/datasets/{datasetId}")
+    @Secured({AuthoritiesConstants.ANONYMOUS, AuthoritiesConstants.USER})
     public DatasetVM getDataset(@PathVariable Long datasetId) {
         return datasetMapper.toDatasetVM(
                 datasetService.getById(datasetId)
@@ -64,6 +67,7 @@ public class DatasetResource {
     @Operation(summary = "Delete a dataset")
     @DeleteMapping("/v1/datasets/{datasetId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Secured({AuthoritiesConstants.USER})
     public void deleteDataset(@PathVariable Long datasetId) {
         datasetService.getById(datasetId)
                 .orElseThrow(() -> new NotFoundException(
@@ -73,6 +77,7 @@ public class DatasetResource {
 
     @Operation(summary = "Export dataset's snippets and annotation")
     @GetMapping(value = "/v1/datasets/{datasetId}/export-snippets", produces = "application/zip")
+    @Secured({AuthoritiesConstants.USER})
     public ResponseEntity<Resource> exportSnippets(@PathVariable Long datasetId) throws IOException {
         datasetService.getById(datasetId)
                 .orElseThrow(() -> new NotFoundException(
@@ -86,6 +91,7 @@ public class DatasetResource {
 
     @Operation(summary = "Import dataset's snippets and annotation")
     @PostMapping(value = "/v1/datasets/{datasetId}/import-snippets")
+    @Secured({AuthoritiesConstants.USER})
     public void importSnippets(
             @PathVariable Long datasetId,
             @RequestParam("file") MultipartFile file) throws IOException {

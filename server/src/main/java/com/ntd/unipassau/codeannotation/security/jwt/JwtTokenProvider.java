@@ -1,6 +1,7 @@
 package com.ntd.unipassau.codeannotation.security.jwt;
 
 import com.ntd.unipassau.codeannotation.config.AppProperties;
+import com.ntd.unipassau.codeannotation.security.AuthoritiesConstants;
 import com.ntd.unipassau.codeannotation.security.UserPrincipal;
 import com.ntd.unipassau.codeannotation.web.rest.vm.AuthToken;
 import io.jsonwebtoken.*;
@@ -156,9 +157,10 @@ public class JwtTokenProvider {
                             .name((String) decodedToken.getOrDefault(CLAIMS_NAME, null))
                             .superAdmin((Boolean) decodedToken.getOrDefault(CLAIMS_SUPER_ADMIN, false))
                             .enabled((boolean) decodedToken.getOrDefault(CLAIMS_ENABLED, false))
+                            .authorities(Set.of(AuthoritiesConstants.USER))
                             .build();
 
-                    return new UsernamePasswordAuthenticationToken(principal, token, Set.of());
+                    return new UsernamePasswordAuthenticationToken(principal, token, principal.getAuthorities());
                 });
     }
 }

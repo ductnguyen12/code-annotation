@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { AccessToken, Login } from "../interfaces/auth.interface";
 import { User } from "../interfaces/user.interface";
+import { clearRater, setRater } from "./raterAPI";
 
 export const signIn = async (login: Login): Promise<AccessToken> => {
   const response: AxiosResponse<AccessToken> = await axios.post<AccessToken>('/api/v1/auth/token', login);
@@ -13,6 +14,7 @@ export const signIn = async (login: Login): Promise<AccessToken> => {
 
 export const signOut = () => {
   clearToken();
+  clearRater();
 }
 
 export const refreshToken = async (refreshToken: string): Promise<AccessToken> => {
@@ -29,7 +31,8 @@ export const refreshToken = async (refreshToken: string): Promise<AccessToken> =
 }
 
 export const getCurrentUser = async (): Promise<User> => {
-  const response: AxiosResponse<User> = await axios.get<User>('/api/v1/auth/me');
+  const response: AxiosResponse<User> = await axios.get<User>('/api/v1/auth/me', { withCredentials: true });
+  setRater(response.data.raterId);
   return response.data;
 }
 
@@ -50,7 +53,7 @@ const setupTokenForAxios = () => {
           refreshToken(token.refreshToken);
         } else {
           console.log("Session expired");
-          clearToken();
+          signOut();
         }
       } else {
         config.headers.Authorization = `${token.tokenType} ${token.accessToken}`;

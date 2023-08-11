@@ -2,19 +2,16 @@ package com.ntd.unipassau.codeannotation.service;
 
 import com.ntd.unipassau.codeannotation.client.RemoteFileReader;
 import com.ntd.unipassau.codeannotation.client.impl.HttpFileReader;
-import com.ntd.unipassau.codeannotation.domain.Question;
-import com.ntd.unipassau.codeannotation.domain.RateAnswer;
-import com.ntd.unipassau.codeannotation.domain.Snippet;
-import com.ntd.unipassau.codeannotation.domain.SnippetRate;
+import com.ntd.unipassau.codeannotation.domain.*;
 import com.ntd.unipassau.codeannotation.mapper.SnippetMapper;
-import com.ntd.unipassau.codeannotation.repository.AnswerRepository;
-import com.ntd.unipassau.codeannotation.repository.RateAnswerRepository;
-import com.ntd.unipassau.codeannotation.repository.SnippetRateRepository;
-import com.ntd.unipassau.codeannotation.repository.SnippetRepository;
+import com.ntd.unipassau.codeannotation.repository.*;
+import com.ntd.unipassau.codeannotation.security.UserPrincipal;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetRateVM;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -27,27 +24,33 @@ import java.util.stream.Collectors;
 @Service
 public class SnippetService {
     final static String RAW_GITHUB_HOST = "raw.githubusercontent.com";
+    private final RaterRepository raterRepository;
     private final AnswerRepository answerRepository;
     private final RateAnswerRepository rateAnswerRepository;
     private final SnippetRepository snippetRepository;
     private final SnippetRateRepository snippetRateRepository;
     private final SnippetMapper snippetMapper;
     private final QuestionService questionService;
+    private final UserRepository userRepository;
 
     @Autowired
     public SnippetService(
             AnswerRepository answerRepository,
+            RaterRepository raterRepository,
             RateAnswerRepository rateAnswerRepository,
             SnippetRepository snippetRepository,
             SnippetRateRepository snippetRateRepository,
             SnippetMapper snippetMapper,
-            QuestionService questionService) {
+            QuestionService questionService,
+            UserRepository userRepository) {
         this.answerRepository = answerRepository;
         this.rateAnswerRepository = rateAnswerRepository;
         this.snippetRepository = snippetRepository;
         this.snippetRateRepository = snippetRateRepository;
         this.snippetMapper = snippetMapper;
         this.questionService = questionService;
+        this.raterRepository = raterRepository;
+        this.userRepository = userRepository;
     }
 
     public Collection<Snippet> getDatasetSnippets(Long datasetId) {
@@ -161,6 +164,10 @@ public class SnippetService {
                     });
         }
 
+        // To overwrite default lastModifiedBy
+        extractRaterId()
+                .ifPresent(finalRate::setRater);
+
         snippetRateRepository.save(finalRate);
     }
 
@@ -173,5 +180,30 @@ public class SnippetService {
         RemoteFileReader remoteFileReader = new HttpFileReader();
         Collection<String> lines = remoteFileReader.readFileLines(fileUri, snippet.getFromLine(), snippet.getToLine());
         return String.join("\n", lines);
+    }
+
+    private Optional<String> extractRaterId() {
+        return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .map(Authentication::getPrincipal)
+                .map(principal -> {
+                    if (principal instanceof UserPrincipal userPrincipal
+                            && userPrincipal.getRaterId() != null) {
+                        // Prefer user-linked rater to in-request rater information
+                        return raterRepository.findByUserId(userPrincipal.getId())
+                                .or(() -> raterRepository.findById(userPrincipal.getRaterId())
+                                        .map(r -> {
+                                            // Link user and rater
+                                            userRepository.findById(userPrincipal.getId())
+                                                    .ifPresent(r::setUser);
+                                            return raterRepository.save(r);
+                                        }))
+                                .map(Rater::getId)
+                                .orElse(userPrincipal.getRaterId())
+                                .toString();
+                    } else if (principal instanceof String) {
+                        return (String) principal;
+                    }
+                    return null;
+                });
     }
 }

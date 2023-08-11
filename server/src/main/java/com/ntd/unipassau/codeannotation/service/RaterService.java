@@ -7,6 +7,7 @@ import com.ntd.unipassau.codeannotation.repository.UserRepository;
 import com.ntd.unipassau.codeannotation.security.SecurityUtils;
 import com.ntd.unipassau.codeannotation.security.UserPrincipal;
 import com.ntd.unipassau.codeannotation.web.rest.vm.RaterVM;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,25 +33,35 @@ public class RaterService {
 
     @Transactional
     public Rater registerRater(RaterVM raterVM) {
-        Rater rater = raterMapper.toRater(raterVM);
-        rater.setId(UUID.randomUUID());
-        SecurityUtils.getCurrentUser()
-                .flatMap(userDetails -> userRepository.findByUsername(userDetails.getUsername()))
-                .ifPresent(user -> {
-                    rater.setId(UUID.randomUUID());
-                    rater.setUser(user);
-                });
-        return raterRepository.save(rater);
+        return raterRepository.save(
+                SecurityUtils.getCurrentUser()
+                        .flatMap(userDetails -> userRepository.findByUsername(userDetails.getUsername()))
+                        .map(user -> {
+                            Rater rater = raterRepository.findByUserId(user.getId())
+                                    .orElse(raterMapper.toRater(raterVM));
+                            if (rater.getId() == null)
+                                rater.setId(user.getId());
+                            BeanUtils.copyProperties(raterVM, rater, "id");
+                            rater.setUser(user);
+                            return rater;
+                        })
+                        .orElseGet(() -> {
+                            Rater rater = raterMapper.toRater(raterVM);
+                            rater.setId(UUID.randomUUID());
+                            return rater;
+                        })
+        );
     }
 
     /**
      * Get rater's information of current user
+     *
      * @return {@link Optional<Rater>} information of current user
      */
     public Optional<Rater> getCurrentRater() {
         return SecurityUtils.getCurrentUser()
                 .filter(UserPrincipal.class::isInstance)
                 .map(UserPrincipal.class::cast)
-                .flatMap(user -> raterRepository.findById(user.getId()));
+                .flatMap(user -> raterRepository.findByUserId(user.getId()));
     }
 }

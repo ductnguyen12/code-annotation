@@ -22,6 +22,13 @@ export const loadDatasetsAsync = createAsyncThunk(
   }
 );
 
+export const loadDatasetAsync = createAsyncThunk(
+  'datasets/loadDataset',
+  async (datasetId: number) => {
+    return await api.getDataset(datasetId);
+  }
+);
+
 export const datasetsSlice = createSlice({
   name: 'datasets',
   initialState,
@@ -43,6 +50,17 @@ export const datasetsSlice = createSlice({
         state.datasets = action.payload;
       })
       .addCase(loadDatasetsAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(loadDatasetAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(loadDatasetAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.dataset = action.payload;
+      })
+      .addCase(loadDatasetAsync.rejected, (state) => {
         state.status = 'failed';
       });
   },

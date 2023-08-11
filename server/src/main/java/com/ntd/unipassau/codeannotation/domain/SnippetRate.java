@@ -29,11 +29,12 @@ public class SnippetRate extends AbstractAuditingEntity<Long> {
     private Set<RateAnswer> answers;
 
     @Transient
-    private String rater;       // To overwrite the system generated lastModifiedBy value
+    private String rater;       // To overwrite the system generated createdBy and lastModifiedBy values
 
     @PrePersist
     private void setLastModifiedByAsRater() {
         if (rater != null) {
+            setCreatedBy(rater);
             setLastModifiedBy(rater);
         }
     }

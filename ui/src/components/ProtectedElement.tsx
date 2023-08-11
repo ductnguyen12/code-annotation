@@ -4,14 +4,18 @@ import { useAuthentication } from "../hooks/auth";
 
 type ProtectedRouteProps = {
   children: ReactElement,
+  hidden?: boolean,
 }
 
 const ProtectedElement: FC<ProtectedRouteProps> = ({
   children,
+  hidden = false,
 }): ReactElement => {
   const { authenticated } = useAuthentication();
   if (!authenticated) {
-    return (<Navigate to="/sign-in" replace />);
+    if (!hidden)
+      return (<Navigate to="/sign-in" replace />);
+    return (<></>);
   }
   return children;
 }

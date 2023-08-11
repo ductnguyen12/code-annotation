@@ -15,7 +15,7 @@ export const getSnippets = async (datasetId: number): Promise<Snippet[]> => {
 
 export const getDatasetSnippets = async (datasetId: number): Promise<Snippet[]> => {
   const response: AxiosResponse<Snippet[]> =
-    await axios.get<Snippet[]>(`/api/v1/datasets/${datasetId}/snippets`);
+    await axios.get<Snippet[]>(`/api/v1/datasets/${datasetId}/snippets`, { withCredentials: true });
   return response.data;
 }
 
@@ -25,5 +25,5 @@ export const createSnippet = async (snippet: Snippet): Promise<Snippet> => {
 }
 
 export const rateSnippet = async (snippetId: number, rate: SnippetRate): Promise<void> => {
-  await axios.post(`/api/v1/snippets/${snippetId}/rates`, rate);
+  await axios.post(`/api/v1/snippets/${snippetId}/rates`, rate, { withCredentials: true });
 }

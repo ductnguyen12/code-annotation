@@ -18,7 +18,7 @@ public class Rater extends AbstractAuditingEntity<UUID> {
     private Integer yearOfExp;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id", unique=true, updatable=false)
+    @JoinColumn(name="user_id", unique=true)
     @ToString.Exclude
     private User user;
 }

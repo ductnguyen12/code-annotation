@@ -30,11 +30,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(jwt)) {
             jwtTokenProvider
                     .getAuthentication(jwt)
-                    .ifPresentOrElse(userDetails -> {
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    }, SecurityContextHolder::clearContext);
+                    .ifPresentOrElse(authentication -> SecurityContextHolder.getContext()
+                                    .setAuthentication(authentication),
+                            SecurityContextHolder::clearContext);
         } else {
             SecurityContextHolder.clearContext();
         }

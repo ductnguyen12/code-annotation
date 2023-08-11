@@ -20,6 +20,7 @@ public class UserPrincipal implements UserDetails {
     private String name;
     private boolean enabled;
     private Boolean superAdmin;
+    private UUID raterId;
     private Collection<String> authorities;
 
     public void addAuthorities(Collection<String> authorities) {

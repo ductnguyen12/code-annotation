@@ -23,7 +23,7 @@ const routes = [
     element: (<SnippetsPage />),
     inDrawer: false,
     drawerPathPrefix: '/datasets',
-    protected: true,
+    protected: false,
   },
   {
     key: 'signIn',

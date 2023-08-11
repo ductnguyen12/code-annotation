@@ -1,6 +1,5 @@
 package com.ntd.unipassau.codeannotation.security;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -28,9 +27,6 @@ public final class SecurityUtils {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(securityContext.getAuthentication())
                 .map(Authentication::getPrincipal)
-                .filter(principal -> principal instanceof UsernamePasswordAuthenticationToken)
-                .map(UsernamePasswordAuthenticationToken.class::cast)
-                .map(UsernamePasswordAuthenticationToken::getPrincipal)
                 .filter(principal -> principal instanceof UserDetails)
                 .map(UserDetails.class::cast);
     }

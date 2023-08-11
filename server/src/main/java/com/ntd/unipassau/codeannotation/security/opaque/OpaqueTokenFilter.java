@@ -1,11 +1,11 @@
 package com.ntd.unipassau.codeannotation.security.opaque;
 
-import com.ntd.unipassau.codeannotation.domain.User;
 import com.ntd.unipassau.codeannotation.repository.RaterRepository;
-import com.ntd.unipassau.codeannotation.repository.UserRepository;
 import com.ntd.unipassau.codeannotation.security.AuthoritiesConstants;
+import com.ntd.unipassau.codeannotation.security.UserPrincipal;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -39,16 +40,21 @@ public class OpaqueTokenFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null && request.getCookies() != null) {
-            authentication = Arrays.stream(request.getCookies())
+        if (request.getCookies() != null) {
+            Optional<String> tokenOpt = Arrays.stream(request.getCookies())
                     .filter(cookie -> COOKIE_TOKEN.equals(cookie.getName()))
                     .filter(cookie -> raterRepository.findById(UUID.fromString(cookie.getValue())).isPresent())
-                    .map(cookie -> new AnonymousAuthenticationToken(
-                            cookie.getValue(), cookie.getValue(),
-                            Collections.singletonList(new SimpleGrantedAuthority(AuthoritiesConstants.ANONYMOUS))
-                    ))
                     .findFirst()
-                    .orElse(null);
+                    .map(Cookie::getValue);
+            if (authentication == null) {
+                authentication = tokenOpt.map(token -> new AnonymousAuthenticationToken(
+                        token, token,
+                        Collections.singletonList(new SimpleGrantedAuthority(AuthoritiesConstants.ANONYMOUS))
+                )).orElse(null);
+            } else if (authentication.getPrincipal() instanceof UserPrincipal principal) {
+                tokenOpt.ifPresent(token -> principal.setRaterId(UUID.fromString(token)));
+            }
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 

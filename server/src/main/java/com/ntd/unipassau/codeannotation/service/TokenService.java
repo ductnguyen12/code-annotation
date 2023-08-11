@@ -1,12 +1,15 @@
 package com.ntd.unipassau.codeannotation.service;
 
 import com.ntd.unipassau.codeannotation.domain.User;
+import com.ntd.unipassau.codeannotation.repository.RaterRepository;
 import com.ntd.unipassau.codeannotation.repository.UserRepository;
 import com.ntd.unipassau.codeannotation.security.SecurityUtils;
 import com.ntd.unipassau.codeannotation.security.UserPrincipal;
 import com.ntd.unipassau.codeannotation.security.jwt.JwtTokenProvider;
 import com.ntd.unipassau.codeannotation.web.rest.vm.AuthToken;
 import com.ntd.unipassau.codeannotation.web.rest.vm.Login;
+import com.ntd.unipassau.codeannotation.web.rest.vm.UserVM;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TokenService {
@@ -24,17 +28,20 @@ public class TokenService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final UserDetailsService userDetailsService;
+    private final RaterRepository raterRepository;
 
     @Autowired
     public TokenService(
             JwtTokenProvider tokenProvider,
             AuthenticationManager authenticationManager,
             UserRepository userRepository,
-            UserDetailsService userDetailsService) {
+            UserDetailsService userDetailsService,
+            RaterRepository raterRepository) {
         this.tokenProvider = tokenProvider;
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.userDetailsService = userDetailsService;
+        this.raterRepository = raterRepository;
     }
 
     public AuthToken login(Login login) {
@@ -58,9 +65,18 @@ public class TokenService {
                 .map(userDetails -> tokenProvider.generateToken((UserPrincipal) userDetails));
     }
 
-    public Optional<User> getCurrentUser() {
+    public Optional<UserVM> getCurrentUser() {
         return SecurityUtils.getCurrentUser()
                 .map(UserPrincipal.class::cast)
-                .flatMap(principal -> userRepository.findById(principal.getId()));
+                .flatMap(principal -> userRepository.findById(principal.getId())
+                        .map(user -> {
+                            UUID raterId = raterRepository.findByUserId(user.getId())
+                                    .map(rater -> rater.getId())
+                                    .orElse(principal.getRaterId());
+                            UserVM userVM = new UserVM();
+                            BeanUtils.copyProperties(user, userVM);
+                            userVM.setRaterId(raterId);
+                            return userVM;
+                        }));
     }
 }

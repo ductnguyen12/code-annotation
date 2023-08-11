@@ -30,16 +30,8 @@ public class PersistenceConfig {
         @NonNull
         @Override
         public Optional<String> getCurrentAuditor() {
-            return SecurityUtils.getCurrentUser()
-                    .map(UserPrincipal.class::cast)
-                    .map(UserPrincipal::getUsername)
-                    .or(() -> {
-                        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                        if (authentication instanceof AnonymousAuthenticationToken) {
-                            return Optional.of(authentication.getPrincipal().toString());
-                        }
-                        return Optional.of("system");
-                    });
+            return SecurityUtils.getCurrentUserLogin()
+                    .or(() -> Optional.of("system"));
         }
     }
 }

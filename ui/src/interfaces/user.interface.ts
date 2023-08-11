@@ -3,4 +3,5 @@ export interface User {
   username: string;
   enabled: boolean;
   superAdmin: boolean;
+  raterId: string | undefined;
 }

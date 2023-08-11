@@ -6,8 +6,8 @@ export const getDatasets = async (): Promise<Dataset[]> => {
   return response.data;
 }
 
-export const getDataset = async (datasetId: number): Promise<Dataset[]> => {
-  const response: AxiosResponse<Dataset[]> = await axios.get<Dataset[]>(`/api/v1/datasets/${datasetId}`);
+export const getDataset = async (datasetId: number): Promise<Dataset> => {
+  const response: AxiosResponse<Dataset> = await axios.get<Dataset>(`/api/v1/datasets/${datasetId}`, { withCredentials: true });
   return response.data;
 }
 
