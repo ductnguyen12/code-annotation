@@ -18,8 +18,8 @@ management:
   endpoints:
     web:
       cors:
-        allow-credentials: false
-        allowed-origin-patterns: '*'
+        allow-credentials: true
+        allowed-origin-patterns: http://localhost:*
 
 springdoc:
   api-docs:

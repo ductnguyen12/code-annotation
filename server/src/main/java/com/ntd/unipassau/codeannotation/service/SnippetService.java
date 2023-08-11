@@ -150,14 +150,16 @@ public class SnippetService {
 
         // Add all of new rate answers
         final SnippetRate finalRate = rate;
-        answerRepository.findAllById(rateVM.getSelectedAnswers())
-                .forEach(answer -> {
-                    RateAnswer rateAnswer = new RateAnswer();
-                    rateAnswer.setId(answer.getId());
-                    rateAnswer.setAnswer(answer);
-                    rateAnswer.setRate(finalRate);
-                    finalRate.getAnswers().add(rateAnswer);
-                });
+        if (rateVM.getSelectedAnswers() != null) {
+            answerRepository.findAllById(rateVM.getSelectedAnswers())
+                    .forEach(answer -> {
+                        RateAnswer rateAnswer = new RateAnswer();
+                        rateAnswer.setId(answer.getId());
+                        rateAnswer.setAnswer(answer);
+                        rateAnswer.setRate(finalRate);
+                        finalRate.getAnswers().add(rateAnswer);
+                    });
+        }
 
         snippetRateRepository.save(finalRate);
     }

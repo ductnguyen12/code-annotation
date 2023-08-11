@@ -51,6 +51,16 @@ public class DatasetResource {
         return datasetMapper.toDatasetVM(datasetService.createDataset(datasetMapper.toDataset(dataset)));
     }
 
+    @Operation(summary = "Get dataset by id")
+    @GetMapping("/v1/datasets/{datasetId}")
+    public DatasetVM getDataset(@PathVariable Long datasetId) {
+        return datasetMapper.toDatasetVM(
+                datasetService.getById(datasetId)
+                        .orElseThrow(() -> new NotFoundException(
+                                "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"))
+        );
+    }
+
     @Operation(summary = "Delete a dataset")
     @DeleteMapping("/v1/datasets/{datasetId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
