@@ -106,9 +106,10 @@ const CodeRating: React.FC<CodeRatingProps> = ({
           <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : rate]}</Box>
         )}
       </FormControl>
-      <Grid container spacing={2}>
+      <Grid container sx={{ m: 1 }} spacing={2}>
         {questions?.map((q, index) => (
           <CodeRatingQuestion
+            key={q.id}
             index={index + 1}
             question={q}
             onAnswerChange={onAnswerChange}
