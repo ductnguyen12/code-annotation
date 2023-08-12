@@ -1,9 +1,11 @@
 import AddIcon from '@mui/icons-material/Add';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
-import React, { useEffect } from 'react';
+import React, { useEffect, ChangeEvent } from 'react';
 import { useCookies } from 'react-cookie';
 import { useParams } from "react-router-dom";
 import SyntaxHighlighter from "react-syntax-highlighter";
@@ -69,8 +71,8 @@ const SnippetsPage = () => {
   }
 
   const onRateChange = (
-    rate: number | undefined, 
-    comment: string | undefined, 
+    rate: number | undefined,
+    comment: string | undefined,
     selectedAnswers: Set<number>,
   ): void => {
     const snippetRate: SnippetRate = {
@@ -88,12 +90,31 @@ const SnippetsPage = () => {
     if (id) {
       return api.registerAsRater(rater)
         .then((newRater: Rater) => {
-          setCookie('token', newRater.id, { path: '/', maxAge: 2<<24, secure: true });   // maxAge ~ 388 days
+          setCookie('token', newRater.id, { path: '/', maxAge: 2 << 24, secure: true });   // maxAge ~ 388 days
           dispatch(loadDatasetSnippetsAsync(parseInt(id)));
           return newRater;
         })
     }
     return new Promise<Rater>(() => rater);
+  }
+
+  const onImportSnippets = (event: ChangeEvent<HTMLInputElement>) => {
+    event.persist();    // This is needed so you can actually get the currentTarget
+    if (id && event.target.files && event.target.files.length > 0) {
+      api.importDatasetSnippets(parseInt(id), event.target.files.item(0) as File)
+        .then(() => {
+          console.log("Import successfully");
+          dispatch(loadDatasetSnippetsAsync(parseInt(id)));
+        })
+      }
+  }
+
+  const onExportSnippets = () => {
+    if (id)
+      api.exportDatasetSnippets(parseInt(id))
+        .then(() => {
+          console.log("Export successfully");
+        });
   }
 
   return !cookies.token ? (
@@ -122,6 +143,21 @@ const SnippetsPage = () => {
                   <span>
                     <IconButton aria-label="Add snippet" onClick={() => setOpen(true)}>
                       <AddIcon />
+                    </IconButton>
+                    <input
+                      id="import-dataset-snippets"
+                      type="file"
+                      accept=".zip"
+                      onChange={onImportSnippets}
+                      hidden={true}
+                    />
+                    <label htmlFor="import-dataset-snippets">
+                      <IconButton aria-label="Import" component="span">
+                        <FileUploadIcon />
+                      </IconButton>
+                    </label>
+                    <IconButton aria-label="Export" onClick={onExportSnippets}>
+                      <FileDownloadIcon />
                     </IconButton>
                   </span>
                 </Typography>
