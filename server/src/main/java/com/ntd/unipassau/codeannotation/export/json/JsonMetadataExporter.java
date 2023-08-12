@@ -39,6 +39,6 @@ public class JsonMetadataExporter implements MetadataExporter {
      */
     @Override
     public String getFilenameExtension() {
-        return ".json";
+        return "json";
     }
 }

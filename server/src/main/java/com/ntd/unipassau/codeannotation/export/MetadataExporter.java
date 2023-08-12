@@ -26,7 +26,7 @@ public interface MetadataExporter {
 
     /**
      * Get filename extension.
-     * @return String might be (.xml, .json, ...)
+     * @return String might be (xml, json, ...)
      */
     String getFilenameExtension();
 }
