@@ -1,8 +1,10 @@
 package com.ntd.unipassau.codeannotation.mapper;
 
+import com.ntd.unipassau.codeannotation.domain.Answer;
 import com.ntd.unipassau.codeannotation.domain.RateAnswer;
 import com.ntd.unipassau.codeannotation.domain.Snippet;
 import com.ntd.unipassau.codeannotation.domain.SnippetRate;
+import com.ntd.unipassau.codeannotation.web.rest.vm.AnswerVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetRateVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetVM;
 import org.mapstruct.Mapper;
@@ -40,6 +42,8 @@ public interface SnippetMapper {
 
     @Mapping(target = "selectedAnswers", source = "answers", qualifiedByName = "toSelectedAnswers")
     SnippetRateVM toSnippetRateVM(SnippetRate rate);
+
+    AnswerVM toAnswerVM(Answer answer);
 
     @Named("toSelectedAnswers")
     static Collection<Long> toSelectedAnswers(Set<RateAnswer> answers) {

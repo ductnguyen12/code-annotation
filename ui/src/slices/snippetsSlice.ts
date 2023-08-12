@@ -59,6 +59,11 @@ export const snippetsSlice = createSlice({
         state.status = 'idle';
         const rate = action.payload as SnippetRate;
         state.snippets[state.selected].rate = rate;
+        state.snippets[state.selected].questions?.forEach(q => {
+          q.answers?.forEach(a => {
+            a.selected = rate.selectedAnswers?.includes(Number(a.id));
+          })
+        });
       })
       .addCase(rateSnippetAsync.rejected, (state) => {
         state.status = 'failed';

@@ -68,10 +68,15 @@ const SnippetsPage = () => {
     dispatch(chooseSnippet(index));
   }
 
-  const onRateChange = (rate: number | undefined, comment: string | undefined): void => {
+  const onRateChange = (
+    rate: number | undefined, 
+    comment: string | undefined, 
+    selectedAnswers: Set<number>,
+  ): void => {
     const snippetRate: SnippetRate = {
       value: rate && rate > 0 ? rate : undefined,
       comment: comment ? comment : undefined,
+      selectedAnswers: Array.from(selectedAnswers),
     }
     dispatch(rateSnippetAsync({
       snippetId: snippets[selected].id,
@@ -161,6 +166,7 @@ const SnippetsPage = () => {
                   <CodeRating
                     rate={snippets[selected].rate?.value}
                     comment={snippets[selected].rate?.comment}
+                    questions={snippets[selected].questions}
                     onRateChange={onRateChange}
                   />
                 </Box>

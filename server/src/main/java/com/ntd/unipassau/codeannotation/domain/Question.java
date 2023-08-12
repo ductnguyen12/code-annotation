@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Collection;
+import java.util.Set;
 
 @Entity
 @Table(name = "question")
@@ -21,7 +21,7 @@ public class Question extends AbstractAuditingEntity<Long> {
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     @ToString.Exclude
-    private Collection<Answer> answers;
+    private Set<Answer> answers;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "snippet_id", nullable = false)

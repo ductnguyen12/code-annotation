@@ -10,4 +10,5 @@ public class AnswerVM {
     private String content;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Boolean rightAnswer = false;
+    private boolean selected;
 }
