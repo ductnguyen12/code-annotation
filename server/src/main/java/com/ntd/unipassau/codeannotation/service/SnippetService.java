@@ -64,12 +64,14 @@ public class SnippetService {
     @SneakyThrows
     @Transactional
     public Snippet createSnippet(Snippet snippet) {
-        // Make sure bi-directional relation
-        snippet.getQuestions()
-                .forEach(question -> {
-                    question.setSnippet(snippet);
-                    question.getAnswers().forEach(answer -> answer.setQuestion(question));
-                });
+        if (snippet.getQuestions() != null) {
+            // Make sure bi-directional relation
+            snippet.getQuestions()
+                    .forEach(question -> {
+                        question.setSnippet(snippet);
+                        question.getAnswers().forEach(answer -> answer.setQuestion(question));
+                    });
+        }
         String code = extractSnippetCode(snippet);
         snippet.setCode(code);
         return snippetRepository.save(snippet);
@@ -172,7 +174,8 @@ public class SnippetService {
     }
 
     private String extractSnippetCode(Snippet snippet) throws IOException {
-        // Replace "github.com" by "raw.githubusercontent.com" and remove "/blob" in path
+        // Replace "github.com" by "raw.githubusercontent.com" and remove "/blob" in
+        // path
         URI fileUri = UriComponentsBuilder.fromHttpUrl(snippet.getPath().replace("/blob", ""))
                 .host(RAW_GITHUB_HOST)
                 .build()
