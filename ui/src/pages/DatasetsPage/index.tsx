@@ -7,21 +7,19 @@ import Typography from '@mui/material/Typography';
 
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
+import { useAppDispatch } from "../../app/hooks";
 import Spinner from "../../components/Spinner";
 import { useDatasets } from "../../hooks/dataset";
-import CreateDatasetDialog from "./CreateDatasetDialog";
 import { Dataset } from "../../interfaces/dataset.interface";
-import api from "../../api";
-import { useAppDispatch } from "../../app/hooks";
 import { loadDatasetsAsync } from "../../slices/datasetsSlice";
+import CreateDatasetDialog from "./CreateDatasetDialog";
 
 const DatasetsPage = () => {
   const { status, datasets } = useDatasets();
   const dispatch = useAppDispatch();
   const [open, setOpen] = React.useState(false);
 
-  const onCreateDataset = async (dataset: Dataset) => {
-    await api.createDataset(dataset);
+  const onCreatedDataset = (dataset: Dataset) => {
     dispatch(loadDatasetsAsync());
   }
 
@@ -47,7 +45,7 @@ const DatasetsPage = () => {
               <CreateDatasetDialog
                 open={open}
                 setOpen={setOpen}
-                onCreateDataset={onCreateDataset}
+                onCreated={onCreatedDataset}
               />
             </Grid>
             {datasets.map(d => (

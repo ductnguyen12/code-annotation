@@ -5,7 +5,7 @@ import { IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
-import React, { useEffect, ChangeEvent } from 'react';
+import React, { ChangeEvent, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { useParams } from "react-router-dom";
 import SyntaxHighlighter from "react-syntax-highlighter";
@@ -54,17 +54,11 @@ const SnippetsPage = () => {
     }
   }, [cookies.token, openRegistration]);
 
-  const onCreateSnippet = async (snippet: Snippet) => {
+  const onCreatedSnippet = (snippet: Snippet) => {
     if (id) {
-      snippet.datasetId = parseInt(id);
-      return api.createSnippet(snippet)
-        .then((createSnippet: Snippet) => {
-          dispatch(loadDatasetSnippetsAsync(parseInt(id)));
-          return createSnippet;
-        });
+      dispatch(loadDatasetSnippetsAsync(parseInt(id)));
     }
-    return new Promise<Snippet>(() => snippet);
-  }
+  };
 
   const onSelectSnippet = (index: number) => {
     dispatch(chooseSnippet(index));
@@ -86,16 +80,11 @@ const SnippetsPage = () => {
     }));
   }
 
-  const onRegisterRater = async (rater: Rater) => {
+  const onRegisteredRater = (rater: Rater) => {
     if (id) {
-      return api.registerAsRater(rater)
-        .then((newRater: Rater) => {
-          setCookie('token', newRater.id, { path: '/', maxAge: 2 << 24, secure: true });   // maxAge ~ 388 days
-          dispatch(loadDatasetSnippetsAsync(parseInt(id)));
-          return newRater;
-        })
+      setCookie('token', rater.id, { path: '/', maxAge: 2 << 24, secure: true });   // maxAge ~ 388 days
+      dispatch(loadDatasetSnippetsAsync(parseInt(id)));
     }
-    return new Promise<Rater>(() => rater);
   }
 
   const onImportSnippets = (event: ChangeEvent<HTMLInputElement>) => {
@@ -106,7 +95,7 @@ const SnippetsPage = () => {
           console.log("Import successfully");
           dispatch(loadDatasetSnippetsAsync(parseInt(id)));
         })
-      }
+    }
   }
 
   const onExportSnippets = () => {
@@ -121,7 +110,7 @@ const SnippetsPage = () => {
     <RaterRegistrationDialog
       open={openRegistration}
       setOpen={setOpenRegistration}
-      onCreate={onRegisterRater}
+      onRegistered={onRegisteredRater}
     />
   ) : (
     <Box>
@@ -164,7 +153,7 @@ const SnippetsPage = () => {
                 <CreateSnippetDialog
                   open={open}
                   setOpen={setOpen}
-                  onCreateSnippet={onCreateSnippet}
+                  onCreated={onCreatedSnippet}
                 />
               </>
             </ProtectedElement>
