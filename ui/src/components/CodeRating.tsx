@@ -102,8 +102,8 @@ const CodeRating: React.FC<CodeRatingProps> = ({
           emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
           value={localRate ? localRate : 0}
         />
-        {rate !== undefined && (
-          <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : rate]}</Box>
+        {localRate > 0 && (
+          <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : localRate]}</Box>
         )}
       </FormControl>
       <Grid container sx={{ m: 1 }} spacing={2}>
