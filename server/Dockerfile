@@ -8,7 +8,7 @@ RUN ./mvnw dependency:resolve
 COPY src ./src
 
 FROM base as development
-CMD ["./mvnw", "spring-boot:run"]
+CMD ["./mvnw", "compile", "spring-boot:run"]
 
 FROM base as build
 RUN ./mvnw -DskipTests package
