@@ -9,7 +9,7 @@ import FormControl from '@mui/material/FormControl';
 import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
 import { useEffect } from 'react';
-import { Question } from '../../interfaces/snippet.interface';
+import { Question } from '../../../interfaces/snippet.interface';
 import CodeRatingQuestion from './CodeRatingQuestion';
 
 interface CodeRatingProps {

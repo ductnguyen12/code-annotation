@@ -5,7 +5,7 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import FormLabel from '@mui/material/FormLabel';
-import { Answer, Question } from '../../interfaces/snippet.interface';
+import { Answer, Question } from '../../../interfaces/snippet.interface';
 import { Grid } from '@mui/material';
 
 interface CodeRatingQuestionProps {

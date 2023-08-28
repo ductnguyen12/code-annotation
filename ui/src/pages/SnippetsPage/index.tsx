@@ -12,7 +12,7 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import api from '../../api';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import CodeRating from "../../components/CodeRating";
+import CodeRating from "./CodeRating";
 import ProtectedElement from '../../components/ProtectedElement';
 import Spinner from "../../components/Spinner";
 import { useDatasetSnippets } from "../../hooks/snippet";
