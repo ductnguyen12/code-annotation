@@ -1,4 +1,4 @@
-import { Box, Grid } from "@mui/material";
+import { Box, CircularProgress, Grid } from "@mui/material";
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography';
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
-import Spinner from "../../components/Spinner";
 import { useDatasets } from "../../hooks/dataset";
 import { Dataset } from "../../interfaces/dataset.interface";
 import { loadDatasetsAsync } from "../../slices/datasetsSlice";
@@ -32,7 +31,7 @@ const DatasetsPage = () => {
     >
 
       {'loading' === status
-        ? <Spinner />
+        ? <CircularProgress />
         : (
           <Grid marginLeft={0} container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
             <Grid key="actions" item xs={12}>

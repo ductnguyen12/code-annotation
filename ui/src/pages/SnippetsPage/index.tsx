@@ -1,7 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import { IconButton } from "@mui/material";
+import { CircularProgress, IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
@@ -12,14 +12,13 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import api from '../../api';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import CodeRating from "./CodeRating";
 import ProtectedElement from '../../components/ProtectedElement';
-import Spinner from "../../components/Spinner";
 import { useDatasetSnippets } from "../../hooks/snippet";
 import { Rater } from '../../interfaces/rater.interface';
 import { Snippet, SnippetRate } from "../../interfaces/snippet.interface";
 import { loadDatasetAsync, selectDatasetsState } from "../../slices/datasetsSlice";
 import { chooseSnippet, loadDatasetSnippetsAsync, rateSnippetAsync } from "../../slices/snippetsSlice";
+import CodeRating from "./CodeRating";
 import CreateSnippetDialog from './CreateSnippetDialog';
 import RaterRegistrationDialog from './RaterRegistrationDialog';
 
@@ -115,7 +114,7 @@ const SnippetsPage = () => {
   ) : (
     <Box>
       {'loading' === status
-        ? <Spinner />
+        ? <CircularProgress />
         : dataset && (
           <Box>
             <Typography sx={{ mb: 1 }} variant="h5">{dataset.name}</Typography>
