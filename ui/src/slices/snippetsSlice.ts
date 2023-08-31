@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import api from '../api';
 import { RootState } from '../app/store';
 import { Snippet, SnippetRate } from '../interfaces/snippet.interface';
+import { defaultAPIErrorHandle, defaultAPISuccessHandle } from '../util/error-util';
 
 export interface SnippetsState {
   status: 'idle' | 'loading' | 'failed';
@@ -17,15 +18,26 @@ const initialState: SnippetsState = {
 
 export const loadDatasetSnippetsAsync = createAsyncThunk(
   'snippets/loadDatasetSnippets',
-  async (datasetId: number) => {
-    return await api.getDatasetSnippets(datasetId);
+  async (datasetId: number, { dispatch }) => {
+    try {
+      return await api.getDatasetSnippets(datasetId);
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
   }
 );
 
 export const rateSnippetAsync = createAsyncThunk(
   'snippets/rateSnippetAsync',
-  async ({ snippetId, rate }: { snippetId: number, rate: SnippetRate }) => {
-    await api.rateSnippet(snippetId, rate);
+  async ({ snippetId, rate }: { snippetId: number, rate: SnippetRate }, { dispatch }) => {
+    try {
+      await api.rateSnippet(snippetId, rate);
+      defaultAPISuccessHandle(`Rated snippet '${snippetId}': ${rate.value} stars`, dispatch);
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
     return rate;
   }
 );

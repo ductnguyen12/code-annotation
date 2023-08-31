@@ -3,6 +3,7 @@ import api from '../api';
 import { RootState } from '../app/store';
 import { AccessToken, Login } from '../interfaces/auth.interface';
 import { User } from '../interfaces/user.interface';
+import { defaultAPIErrorHandle } from '../util/error-util';
 
 export interface AuthState {
   status: 'idle' | 'loading' | 'failed';
@@ -20,8 +21,18 @@ const initialState: AuthState = {
 
 export const signInAsync = createAsyncThunk(
   'auth/signIn',
-  async (login: Login) => {
-    return [await api.signIn(login), await api.getCurrentUser()];
+  async (login: Login, { dispatch }) => {
+    try {
+      const token = await api.signIn(login);
+      return [token, await api.getCurrentUser()];
+    } catch (error: any) {
+      if (error.response && error.response.status === 401) {
+        defaultAPIErrorHandle(error, dispatch, 'Username or password is not correct');
+      } else {
+        defaultAPIErrorHandle(error, dispatch);
+      }
+      throw error;
+    }
   }
 );
 

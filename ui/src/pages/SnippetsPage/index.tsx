@@ -17,7 +17,9 @@ import { useDatasetSnippets } from "../../hooks/snippet";
 import { Rater } from '../../interfaces/rater.interface';
 import { Snippet, SnippetRate } from "../../interfaces/snippet.interface";
 import { loadDatasetAsync, selectDatasetsState } from "../../slices/datasetsSlice";
+import { pushNotification } from '../../slices/notificationSlice';
 import { chooseSnippet, loadDatasetSnippetsAsync, rateSnippetAsync } from "../../slices/snippetsSlice";
+import { defaultAPIErrorHandle } from '../../util/error-util';
 import CodeRating from "./CodeRating";
 import CreateSnippetDialog from './CreateSnippetDialog';
 import RaterRegistrationDialog from './RaterRegistrationDialog';
@@ -93,7 +95,12 @@ const SnippetsPage = () => {
         .then(() => {
           console.log("Import successfully");
           dispatch(loadDatasetSnippetsAsync(parseInt(id)));
+          dispatch(pushNotification({ message: `Imported snippets to dataset '${id}' successfully`, variant: 'success' }));
         })
+        .catch((error: any) => {
+          defaultAPIErrorHandle(error, dispatch);
+          throw error;
+        });
     }
   }
 
@@ -102,6 +109,11 @@ const SnippetsPage = () => {
       api.exportDatasetSnippets(parseInt(id))
         .then(() => {
           console.log("Export successfully");
+          dispatch(pushNotification({ message: `Exported snippets of dataset '${id}' successfully`, variant: 'success' }));
+        })
+        .catch((error: any) => {
+          defaultAPIErrorHandle(error, dispatch);
+          throw error;
         });
   }
 

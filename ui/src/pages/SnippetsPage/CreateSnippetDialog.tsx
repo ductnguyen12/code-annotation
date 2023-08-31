@@ -3,8 +3,11 @@ import { FC, ReactElement } from "react"
 import { useForm } from "react-hook-form"
 import { useParams } from "react-router-dom"
 import api from "../../api"
+import { useAppDispatch } from "../../app/hooks"
 import FormDialog from "../../components/FormDialog"
 import { Snippet } from "../../interfaces/snippet.interface"
+import { pushNotification } from "../../slices/notificationSlice"
+import { defaultAPIErrorHandle } from "../../util/error-util"
 
 type CreateSnippetDialogProps = {
   open: boolean,
@@ -19,11 +22,19 @@ const CreateSnippetDialog: FC<CreateSnippetDialogProps> = ({
 }): ReactElement => {
   const { register, handleSubmit } = useForm<Snippet>();
   const { id } = useParams<{ id: string }>();
+  const dispatch = useAppDispatch();
 
   const onCreateSnippet = async (snippet: Snippet) => {
     if (id) {
       snippet.datasetId = parseInt(id);
-      return await api.createSnippet(snippet);
+      try {
+        const newSnippet = await api.createSnippet(snippet);
+        dispatch(pushNotification({ message: `Snippet '${newSnippet.id}' was created successfully`, variant: 'success' }));
+        return newSnippet;
+      } catch (error: any) {
+        defaultAPIErrorHandle(error, dispatch);
+        throw error;
+      }
     }
     return snippet;
   };

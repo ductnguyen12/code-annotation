@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import { useAppSelector } from '../../app/hooks';
+import { useNotifier } from '../../hooks/notifier';
 import Pages from '../../pages';
 import AppDrawer from '../AppDrawer';
 import AppHeader from '../AppHeader';
@@ -12,6 +13,7 @@ import { selectTitle } from './appSlice';
 const drawerWidth = 240;
 
 const App: FC = (): ReactElement => {
+  useNotifier();
   const [open, setOpen] = React.useState(false);
   const title = useAppSelector(selectTitle);
 

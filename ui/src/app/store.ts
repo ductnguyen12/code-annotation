@@ -1,13 +1,15 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import { Action, ThunkAction, configureStore } from '@reduxjs/toolkit';
 import appReducer from '../components/App/appSlice';
-import datasetsReducer from '../slices/datasetsSlice';
-import snippetsReducer from '../slices/snippetsSlice';
-import snippetReducer from '../slices/snippetSlice';
 import authReducer from '../slices/authSlice';
+import datasetsReducer from '../slices/datasetsSlice';
+import notificationReducer from '../slices/notificationSlice';
+import snippetReducer from '../slices/snippetSlice';
+import snippetsReducer from '../slices/snippetsSlice';
 
 export const store = configureStore({
   reducer: {
     app: appReducer,
+    notification: notificationReducer,
     datasets: datasetsReducer,
     snippets: snippetsReducer,
     snippet: snippetReducer,

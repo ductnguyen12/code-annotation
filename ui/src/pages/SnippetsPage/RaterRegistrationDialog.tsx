@@ -2,8 +2,11 @@ import { TextField } from "@mui/material"
 import { FC, ReactElement } from "react"
 import { useForm } from "react-hook-form"
 import api from "../../api"
+import { useAppDispatch } from "../../app/hooks"
 import FormDialog from "../../components/FormDialog"
 import { Rater } from "../../interfaces/rater.interface"
+import { pushNotification } from "../../slices/notificationSlice"
+import { defaultAPIErrorHandle } from "../../util/error-util"
 
 type RaterRegistrationDialogProps = {
   open: boolean,
@@ -17,9 +20,17 @@ const RaterRegistrationDialog: FC<RaterRegistrationDialogProps> = ({
   onRegistered,
 }): ReactElement => {
   const { register, handleSubmit } = useForm<Rater>();
+  const dispatch = useAppDispatch();
 
   const onRaterRegistration = async (rater: Rater) => {
-    return await api.registerAsRater(rater);
+    try {
+      const newRater = await api.registerAsRater(rater);
+      dispatch(pushNotification({ message: 'Register as rater successfully', variant: 'success' }));
+      return newRater;
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
   };
 
   return (

@@ -1,3 +1,4 @@
+import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import { CookiesProvider } from 'react-cookie';
 import { createRoot } from 'react-dom/client';
@@ -16,7 +17,15 @@ root.render(
     <Provider store={store}>
       <BrowserRouter>
         <CookiesProvider>
-          <App />
+          <SnackbarProvider
+            maxSnack={2}
+            hideIconVariant={true}
+            autoHideDuration={3000}
+            anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+            classes={{ containerRoot: 'mt-16', root: 'max-w-md' }}
+          >
+            <App />
+          </SnackbarProvider>
         </CookiesProvider>
       </BrowserRouter>
     </Provider>

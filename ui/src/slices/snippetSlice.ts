@@ -6,17 +6,7 @@ export interface SnippetPageState {
 }
 
 const initialState: SnippetPageState = {
-  // TODO: Update later
-  code: `
-  void message_queue::submit_item(std::unique_ptr<message_queue::work_item> item) {
-    if (!_pending.push(item.get())) {
-        throw std::bad_alloc();
-    }
-    item.release();
-    _pending.maybe_wakeup();
-    ++_sent.value;
-  }
-  `,
+  code: '',
 };
 
 export const snippetPageSlice = createSlice({

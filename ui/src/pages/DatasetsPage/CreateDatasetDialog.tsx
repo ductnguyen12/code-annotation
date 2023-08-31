@@ -2,8 +2,11 @@ import { TextField } from "@mui/material"
 import { FC, ReactElement } from "react"
 import { useForm } from "react-hook-form"
 import api from "../../api"
+import { useAppDispatch } from "../../app/hooks"
 import FormDialog from "../../components/FormDialog"
 import { Dataset } from "../../interfaces/dataset.interface"
+import { pushNotification } from "../../slices/notificationSlice"
+import { defaultAPIErrorHandle } from "../../util/error-util"
 
 type CreateDatasetDialogProps = {
   open: boolean,
@@ -17,9 +20,17 @@ const CreateDatasetDialog: FC<CreateDatasetDialogProps> = ({
   onCreated,
 }): ReactElement => {
   const { register, handleSubmit } = useForm<Dataset>();
+  const dispatch = useAppDispatch();
 
   const onCreateDataset = async (dataset: Dataset) => {
-    return await api.createDataset(dataset);
+    try {
+      const newDataset = await api.createDataset(dataset);
+      dispatch(pushNotification({ message: `Dataset '${newDataset.id}' was created successfully`, variant: 'success' }));
+      return newDataset;
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
   }
 
   return (
