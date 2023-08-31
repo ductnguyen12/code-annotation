@@ -6,12 +6,12 @@ import lombok.Data;
 
 @Data
 public class Login {
-    @NotBlank
+    @NotBlank(message = "Username is required")
     private String username;
 
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)\\S{8,}$",
             message = "Password must have 8 characters minimum " +
                     "including at least one uppercase, one lowercase letter and one number")
-    @NotBlank
+    @NotBlank(message = "Password is required")
     private String password;
 }

@@ -9,5 +9,5 @@ import java.util.Collection;
 public class SnippetRateVM {
     private Integer value;
     private String comment;
-    private Collection<@NotNull Long> selectedAnswers;
+    private Collection<@NotNull(message = "A selected answer can not be null") Long> selectedAnswers;
 }

@@ -11,7 +11,7 @@ import java.util.Collection;
 public class QuestionVM {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
-    @NotBlank
+    @NotBlank(message = "Question content is required")
     private String content;
-    private Collection<@NotNull AnswerVM> answers;
+    private Collection<@NotNull(message = "Answer can not be null") AnswerVM> answers;
 }

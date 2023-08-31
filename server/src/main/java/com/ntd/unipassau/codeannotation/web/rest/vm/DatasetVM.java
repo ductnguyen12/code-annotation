@@ -8,7 +8,7 @@ import lombok.Data;
 public class DatasetVM {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
-    @NotBlank
+    @NotBlank(message = "Name is required")
     private String name;
     private String description;
 }

@@ -12,15 +12,15 @@ import java.util.Collection;
 public class SnippetVM {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
-    @NotBlank
+    @NotBlank(message = "Path is required")
     private String path;
     @Min(1)
     private Integer fromLine;
     @Min(1)
     private Integer toLine;
-    @NotNull
+    @NotNull(message = "Dataset ID is required")
     private Long datasetId;
-    private Collection<@NotNull QuestionVM> questions;
+    private Collection<@NotNull(message = "A question can not be null") QuestionVM> questions;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String code;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
