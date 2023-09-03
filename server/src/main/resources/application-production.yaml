@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: ${DB_URI:}
+    username: ${DB_USER:}
+    password: ${DB_PASSWORD:}
+
+management:
+  endpoints:
+    web:
+      cors:
+        allow-credentials: true
+        allowed-origin-patterns: ${CORS_ORIGIN_PATTERNS:http://localhost:*}
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+app:
+  auth:
+    root-user:
+      username: ${ROOT_USER:ca_root}
+      password: ${ROOT_PASSWORD:123456aA@}
+    token-secret: ${TOKEN_SECRET:bG9jYWwtdnRjbm93LWNtcy1hZG1pbkB2dGNub3cudm4=}
+    token-expiration: ${TOKEN_EXPIRATION:1800}
+    refresh-expiration: ${REFRESH_TOKEN_EXPIRATION:86400}

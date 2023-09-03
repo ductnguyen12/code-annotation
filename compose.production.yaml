@@ -1,0 +1,81 @@
+version: '3.8'
+services:
+  code-annotation-ui:
+    image: ducnt12/code-annotation-ui:dev
+    container_name: code-annotation-ui
+    restart: always
+    build:
+      context: ./ui
+      target: production
+    environment:
+      - REACT_APP_BACKEND=http://localhost:3000
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.code-annotation-ui.loadbalancer.server.port=80
+      - traefik.http.routers.code-annotation-ui.rule=Host(`${CA_HOST:-localhost}`)
+      - traefik.http.routers.code-annotation-ui.entrypoints=web
+
+  code-annotation-server:
+    image: ducnt12/code-annotation-server:dev
+    container_name: code-annotation-server
+    restart: always
+    build:
+      context: ./server
+      target: production
+    environment:
+      - ENV=production
+      - DB_URI=jdbc:postgresql://code-annotation-db:5432/postgres   # Should be defined in CI pipeline
+      - DB_USER=postgres                                            # Should be defined in CI pipeline
+      - DB_PASSWORD=123456aA@                                       # Should be defined in CI pipeline
+      - ROOT_USER=ca_root                                           # Should be defined in CI pipeline
+      - ROOT_PASSWORD=123456aA@                                     # Should be defined in CI pipeline
+      - CORS_ORIGIN_PATTERNS=http://localhost:*
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.code-annotation.loadbalancer.server.port=8080
+      - traefik.http.routers.code-annotation.rule=Host(`${CA_HOST:-localhost}`) &&
+        PathPrefix(`/api/`)
+      - traefik.http.routers.code-annotation.entrypoints=web
+    depends_on:
+      - code-annotation-db
+
+  code-annotation-db:
+    container_name: code-annotation-db
+    image: postgres:15.3
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456aA@
+    volumes:
+      - ./volumes/postgresql/:/var/lib/postgresql/data/
+
+  traefik:
+    image: traefik:v2.9
+    container_name: traefik
+    restart: always
+    command:
+      - '--providers.docker.exposedByDefault=false'
+      - '--providers.docker.network=code-annotation'
+      - '--entryPoints.web.address=:3000'
+      - '--providers.file.directory=/etc/traefik/rules'
+    # Uncomment to get Traefik dashboard
+    #   - "--entryPoints.dashboard.address=:8090"
+    #   - "--api.dashboard=true"
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.dashboard.entrypoints=dashboard
+    #   - traefik.http.routers.dashboard.service=api@internal
+    #   - traefik.http.routers.dashboard.rule=Host(`${CA_HOST:-localhost}`)
+    ports:
+      - 3000:3000
+    #  - 8090:8090
+    environment:
+      - CA_HOST=localhost
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+networks:
+  default:
+    name: code-annotation
