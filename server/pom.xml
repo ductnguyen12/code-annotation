@@ -22,6 +22,7 @@
 		<liquibase-hibernate6.version>4.20.0</liquibase-hibernate6.version>
 		<javassist.version>3.24.0-GA</javassist.version>
 		<validation-api.version>3.0.2</validation-api.version>
+        <hypersistence-utils.version>3.5.3</hypersistence-utils.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -110,7 +111,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!--	JJWT	-->
 		<dependency>
 			<groupId>org.zalando</groupId>
 			<artifactId>problem-spring-web-starter</artifactId>
@@ -154,6 +154,17 @@
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>${springdoc-openapi.version}</version>
+		</dependency>
+
+		<!--Hypersistence Utils-->
+		<dependency>
+			<groupId>io.hypersistence</groupId>
+			<artifactId>hypersistence-utils-hibernate-62</artifactId>
+			<version>${hypersistence-utils.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -229,6 +240,11 @@
 						<groupId>org.javassist</groupId>
 						<artifactId>javassist</artifactId>
 						<version>${javassist.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.zalando</groupId>
+						<artifactId>problem-spring-web-starter</artifactId>
+						<version>${problem-spring-web.version}</version>
 					</dependency>
 				</dependencies>
 			</plugin>

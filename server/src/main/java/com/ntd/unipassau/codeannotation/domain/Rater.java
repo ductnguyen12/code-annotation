@@ -1,10 +1,12 @@
 package com.ntd.unipassau.codeannotation.domain;
 
+import com.ntd.unipassau.codeannotation.domain.rquestion.RSolution;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -15,10 +17,13 @@ import java.util.UUID;
 public class Rater extends AbstractAuditingEntity<UUID> {
     @Id
     private UUID id;
-    private Integer yearOfExp;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id", unique=true)
+    @JoinColumn(name = "user_id", unique = true)
     @ToString.Exclude
     private User user;
+
+    @OneToMany(mappedBy = "rater", cascade = {CascadeType.REMOVE})
+    @ToString.Exclude
+    private Set<RSolution> solutions;
 }
