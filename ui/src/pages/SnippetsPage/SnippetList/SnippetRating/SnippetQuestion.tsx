@@ -1,40 +1,34 @@
 import * as React from 'react';
 
+import { Grid } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import FormLabel from '@mui/material/FormLabel';
-import { Answer, Question } from '../../../../interfaces/snippet.interface';
-import { Grid } from '@mui/material';
+import { useAppDispatch } from '../../../../app/hooks';
+import { Question } from '../../../../interfaces/snippet.interface';
+import { updateCurrentRateByKey } from '../../../../slices/snippetsSlice';
 
 interface SnippetQuestionProps {
   index: number;
   question?: Question;
-  onAnswerChange: (answerId: number, checked: boolean) => void;
+  selectedAnswers?: Array<number>;
 }
 
 const SnippetQuestion: React.FC<SnippetQuestionProps> = ({
   index,
   question,
-  onAnswerChange,
+  selectedAnswers,
 }) => {
-  const [localAnswers, setLocalAnswers] = React.useState<Array<Answer>>([]);
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    setLocalAnswers([
-      ...localAnswers.slice(0, index),
-      {
-        ...localAnswers[index],
-        selected: event.target.checked,
-      },
-      ...localAnswers.slice(index + 1, localAnswers.length),
-    ]);
-    onAnswerChange(Number(localAnswers[index].id), event.target.checked);
-  };
+  const dispatch = useAppDispatch();
 
-  React.useEffect(() => {
-    setLocalAnswers(question && question.answers ? question.answers : []);
-  }, [question])
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>, answerId: number) => {
+    const newSelected = event.target.checked
+      ? [...(selectedAnswers || []), answerId]
+      : selectedAnswers?.filter(aid => aid !== answerId) || [];
+    dispatch(updateCurrentRateByKey({ key: 'choices', value: newSelected }))
+  };
 
   return (
     <Grid key={question?.id} item xs={6}>
@@ -44,11 +38,15 @@ const SnippetQuestion: React.FC<SnippetQuestionProps> = ({
         variant="standard">
         <FormLabel component="legend">{`${index}. ${question?.content}`}</FormLabel>
         <FormGroup>
-          {localAnswers.map((answer, index) => (
+          {question?.answers?.map((answer, index) => (
             <FormControlLabel
               key={index}
               control={
-                <Checkbox checked={answer.selected} onChange={e => handleChange(e, index)} name={answer.id + ""} />
+                <Checkbox
+                  checked={selectedAnswers?.includes(answer.id as number)}
+                  onChange={e => handleChange(e, answer.id as number)}
+                  name={answer.id + ""}
+                />
               }
               label={answer.content}
             />

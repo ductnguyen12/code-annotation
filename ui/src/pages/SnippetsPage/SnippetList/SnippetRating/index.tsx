@@ -6,15 +6,14 @@ import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
-import { useEffect } from 'react';
-import { Question } from '../../../../interfaces/snippet.interface';
+import { useAppDispatch } from '../../../../app/hooks';
+import { Question, SnippetRate } from '../../../../interfaces/snippet.interface';
+import { updateCurrentRateByKey } from '../../../../slices/snippetsSlice';
 import SnippetQuestion from './SnippetQuestion';
 
 interface SnippetRatingProps {
-  rate: number | undefined;
-  comment: string | undefined;
+  rate?: SnippetRate;
   questions?: Array<Question>;
-  onRateChange: (rate: number | undefined, comment: string | undefined, selectedAnswers: Set<number>) => void;
 }
 
 interface Labels {
@@ -35,35 +34,18 @@ function getLabelText(value: number) {
 
 const SnippetRating: React.FC<SnippetRatingProps> = ({
   rate,
-  comment,
   questions,
-  onRateChange,
 }) => {
+  const dispatch = useAppDispatch();
   const [hover, setHover] = React.useState(-1);
-  const [localRate, setLocalRate] = React.useState(0);
-  const [localComment, setLocalComment] = React.useState("");
-  const [selectedAnswers, setSelectedAnswers] = React.useState<Set<number>>(new Set());
-
-  useEffect(() => {
-    setLocalRate(rate ? rate : 0);
-    setLocalComment(comment ? comment : "");
-  }, [rate, comment])
-
-  useEffect(() => {
-    setSelectedAnswers(new Set(
-      questions?.flatMap(q => q.answers || [])
-        .filter(a => a.id && !!a.selected)
-        .map(a => Number(a.id))
-      || []
-    ));
-  }, [questions])
-
-  const onAnswerChange = (answerId: number, checked: boolean) => {
-    if (checked)
-      selectedAnswers.add(answerId);
-    else
-      selectedAnswers.delete(answerId);
-    setSelectedAnswers(selectedAnswers);
+  const {
+    value: rateValue,
+    comment,
+    selectedAnswers,
+  } = rate || {
+    value: 0,
+    comment: "",
+    selectedAnswers: [],
   }
 
   return (
@@ -86,22 +68,22 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
           multiline
           fullWidth
           rows={3}
-          value={localComment ? localComment : ""}
-          onChange={(event) => setLocalComment(event.target.value)}
+          value={comment}
+          onChange={(event) => dispatch(updateCurrentRateByKey({ key: 'comment', value: event.target.value }))}
         />
       </FormControl>
       <FormControl>
         <Rating
           getLabelText={getLabelText}
-          onChange={(event, newValue) => setLocalRate(newValue ? newValue : 0)}
+          onChange={(event, newValue) => dispatch(updateCurrentRateByKey({ key: 'rate', value: newValue ? newValue : 0 }))}
           onChangeActive={(event, newHover) => {
             setHover(newHover);
           }}
           emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
-          value={localRate ? localRate : 0}
+          value={rateValue}
         />
-        {localRate > 0 && (
-          <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : localRate]}</Box>
+        {rateValue && rateValue > 0 && (
+          <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : rateValue]}</Box>
         )}
       </FormControl>
       <Grid container sx={{ m: 1 }} spacing={2}>
@@ -110,7 +92,7 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
             key={q.id}
             index={index + 1}
             question={q}
-            onAnswerChange={onAnswerChange}
+            selectedAnswers={selectedAnswers}
           />
         ))}
       </Grid>

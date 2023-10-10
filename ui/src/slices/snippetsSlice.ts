@@ -38,7 +38,7 @@ export const rateSnippetAsync = createAsyncThunk(
       defaultAPIErrorHandle(error, dispatch);
       throw error;
     }
-    return rate;
+    return { snippetId, rate };
   }
 );
 
@@ -48,6 +48,30 @@ export const snippetsSlice = createSlice({
   reducers: {
     chooseSnippet: (state, action: PayloadAction<number>) => {
       state.selected = action.payload;
+    },
+    updateCurrentRateByKey: (state, action) => {
+      if (state.selected < state.snippets.length) {
+        const rate: SnippetRate = state.snippets[state.selected].rate || {
+          value: undefined,
+          comment: undefined,
+          selectedAnswers: [],
+        };
+        switch (action.payload.key) {
+          case 'comment':
+            rate.comment = action.payload.value;
+            break;
+          case 'rate':
+            rate.value = action.payload.value;
+            break;
+          case 'choices':
+            rate.selectedAnswers = action.payload.value;
+            break;
+          default:
+            break;
+        }
+
+        state.snippets[state.selected].rate = rate;
+      }
     },
   },
 
@@ -69,13 +93,11 @@ export const snippetsSlice = createSlice({
       })
       .addCase(rateSnippetAsync.fulfilled, (state, action) => {
         state.status = 'idle';
-        const rate = action.payload as SnippetRate;
-        state.snippets[state.selected].rate = rate;
-        state.snippets[state.selected].questions?.forEach(q => {
-          q.answers?.forEach(a => {
-            a.selected = rate.selectedAnswers?.includes(Number(a.id));
-          })
-        });
+        const { snippetId, rate } = action.payload;
+        state.snippets.forEach(snippet => {
+          if (snippet.id === snippetId)
+            snippet.rate = rate;
+        })
       })
       .addCase(rateSnippetAsync.rejected, (state) => {
         state.status = 'failed';
@@ -83,7 +105,10 @@ export const snippetsSlice = createSlice({
   },
 });
 
-export const { chooseSnippet } = snippetsSlice.actions;
+export const {
+  chooseSnippet,
+  updateCurrentRateByKey,
+} = snippetsSlice.actions;
 
 export const selectSnippetsState = (state: RootState) => state.snippets;
 

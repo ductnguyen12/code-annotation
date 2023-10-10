@@ -3,7 +3,6 @@ import appReducer from '../components/App/appSlice';
 import authReducer from '../slices/authSlice';
 import datasetsReducer from '../slices/datasetsSlice';
 import notificationReducer from '../slices/notificationSlice';
-import snippetReducer from '../slices/snippetSlice';
 import snippetsReducer from '../slices/snippetsSlice';
 
 export const store = configureStore({
@@ -12,7 +11,6 @@ export const store = configureStore({
     notification: notificationReducer,
     datasets: datasetsReducer,
     snippets: snippetsReducer,
-    snippet: snippetReducer,
     auth: authReducer,
   },
 });

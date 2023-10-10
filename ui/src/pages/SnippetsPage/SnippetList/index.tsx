@@ -30,22 +30,16 @@ const SnippetList = () => {
   const dispatch = useAppDispatch();
 
   const onSelectSnippet = (index: number) => {
+    onRateChange();
     dispatch(chooseSnippet(index));
   }
 
-  const onRateChange = (
-    rate: number | undefined,
-    comment: string | undefined,
-    selectedAnswers: Set<number>,
-  ): void => {
-    const snippetRate: SnippetRate = {
-      value: rate && rate > 0 ? rate : undefined,
-      comment: comment ? comment : undefined,
-      selectedAnswers: Array.from(selectedAnswers),
-    }
+  const onRateChange = (): void => {
+    if (!snippets[selected].rate)
+      return;
     dispatch(rateSnippetAsync({
       snippetId: snippets[selected].id,
-      rate: snippetRate,
+      rate: snippets[selected].rate as SnippetRate,
     }));
   }
 
@@ -77,10 +71,8 @@ const SnippetList = () => {
               />
               <SnippetCode />
               <SnippetRating
-                rate={snippets[selected].rate?.value}
-                comment={snippets[selected].rate?.comment}
+                rate={snippets[selected].rate}
                 questions={snippets[selected].questions}
-                onRateChange={onRateChange}
               />
               <Box
                 sx={{
@@ -105,7 +97,7 @@ const SnippetList = () => {
                     endIcon={<SendIcon />}
                     loadingPosition="end"
                     variant="contained"
-                    onClick={() => { }}
+                    onClick={onRateChange}
                   >
                     <span>Submit</span>
                   </LoadingButton>
