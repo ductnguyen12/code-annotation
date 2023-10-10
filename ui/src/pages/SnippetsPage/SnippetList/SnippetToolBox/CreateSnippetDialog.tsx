@@ -2,12 +2,12 @@ import { TextField } from "@mui/material"
 import { FC, ReactElement } from "react"
 import { useForm } from "react-hook-form"
 import { useParams } from "react-router-dom"
-import api from "../../api"
-import { useAppDispatch } from "../../app/hooks"
-import FormDialog from "../../components/FormDialog"
-import { Snippet } from "../../interfaces/snippet.interface"
-import { pushNotification } from "../../slices/notificationSlice"
-import { defaultAPIErrorHandle } from "../../util/error-util"
+import api from "../../../../api"
+import { useAppDispatch } from "../../../../app/hooks"
+import FormDialog from "../../../../components/FormDialog"
+import { Snippet } from "../../../../interfaces/snippet.interface"
+import { pushNotification } from "../../../../slices/notificationSlice"
+import { defaultAPIErrorHandle } from "../../../../util/error-util"
 
 type CreateSnippetDialogProps = {
   open: boolean,

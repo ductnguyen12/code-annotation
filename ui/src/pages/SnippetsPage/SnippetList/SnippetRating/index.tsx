@@ -1,18 +1,16 @@
 import * as React from 'react';
 
-import SendIcon from '@mui/icons-material/Send';
 import StarIcon from '@mui/icons-material/Star';
-import { LoadingButton } from '@mui/lab';
 import { Grid } from '@mui/material';
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
 import { useEffect } from 'react';
-import { Question } from '../../../interfaces/snippet.interface';
-import CodeRatingQuestion from './CodeRatingQuestion';
+import { Question } from '../../../../interfaces/snippet.interface';
+import SnippetQuestion from './SnippetQuestion';
 
-interface CodeRatingProps {
+interface SnippetRatingProps {
   rate: number | undefined;
   comment: string | undefined;
   questions?: Array<Question>;
@@ -35,7 +33,7 @@ function getLabelText(value: number) {
   return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
 }
 
-const CodeRating: React.FC<CodeRatingProps> = ({
+const SnippetRating: React.FC<SnippetRatingProps> = ({
   rate,
   comment,
   questions,
@@ -108,7 +106,7 @@ const CodeRating: React.FC<CodeRatingProps> = ({
       </FormControl>
       <Grid container sx={{ m: 1 }} spacing={2}>
         {questions?.map((q, index) => (
-          <CodeRatingQuestion
+          <SnippetQuestion
             key={q.id}
             index={index + 1}
             question={q}
@@ -116,17 +114,8 @@ const CodeRating: React.FC<CodeRatingProps> = ({
           />
         ))}
       </Grid>
-      <LoadingButton
-        loading={false}
-        endIcon={<SendIcon />}
-        loadingPosition="end"
-        variant="contained"
-        onClick={() => onRateChange(localRate, localComment, selectedAnswers)}
-      >
-        <span>Submit</span>
-      </LoadingButton>
     </Box>
   );
 }
 
-export default CodeRating;
+export default SnippetRating;

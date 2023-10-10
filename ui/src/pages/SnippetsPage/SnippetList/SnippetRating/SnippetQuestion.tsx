@@ -5,16 +5,16 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import FormLabel from '@mui/material/FormLabel';
-import { Answer, Question } from '../../../interfaces/snippet.interface';
+import { Answer, Question } from '../../../../interfaces/snippet.interface';
 import { Grid } from '@mui/material';
 
-interface CodeRatingQuestionProps {
+interface SnippetQuestionProps {
   index: number;
   question?: Question;
   onAnswerChange: (answerId: number, checked: boolean) => void;
 }
 
-const CodeRatingQuestion: React.FC<CodeRatingQuestionProps> = ({
+const SnippetQuestion: React.FC<SnippetQuestionProps> = ({
   index,
   question,
   onAnswerChange,
@@ -59,4 +59,4 @@ const CodeRatingQuestion: React.FC<CodeRatingQuestionProps> = ({
   );
 }
 
-export default CodeRatingQuestion;
+export default SnippetQuestion;
