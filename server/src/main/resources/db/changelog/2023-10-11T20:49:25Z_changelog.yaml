@@ -1,0 +1,553 @@
+databaseChangeLog:
+- changeSet:
+    id: 1697057373563-1
+    author: ducnt (generated)
+    changes:
+    - createSequence:
+        incrementBy: 1
+        sequenceName: dataset_seq
+        startValue: 1
+- changeSet:
+    id: 1697057373563-2
+    author: ducnt (generated)
+    changes:
+    - createSequence:
+        incrementBy: 1
+        sequenceName: question_seq
+        startValue: 1
+- changeSet:
+    id: 1697057373563-3
+    author: ducnt (generated)
+    changes:
+    - createSequence:
+        incrementBy: 1
+        sequenceName: question_set_seq
+        startValue: 1
+- changeSet:
+    id: 1697057373563-4
+    author: ducnt (generated)
+    changes:
+    - createSequence:
+        incrementBy: 1
+        sequenceName: snippet_rate_seq
+        startValue: 1
+- changeSet:
+    id: 1697057373563-5
+    author: ducnt (generated)
+    changes:
+    - createSequence:
+        incrementBy: 1
+        sequenceName: snippet_seq
+        startValue: 1
+- changeSet:
+    id: 1697057373563-6
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: datasetPK
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: created_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: last_modified_by
+            type: VARCHAR(50)
+        - column:
+            name: last_modified_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: description
+            type: VARCHAR(255)
+        - column:
+            name: name
+            type: VARCHAR(255)
+        tableName: dataset
+- changeSet:
+    id: 1697057373563-7
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: questionPK
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: created_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: last_modified_by
+            type: VARCHAR(50)
+        - column:
+            name: last_modified_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: answer
+            type: JSONB
+        - column:
+            name: answer_constraint
+            type: JSONB
+        - column:
+            name: content
+            type: VARCHAR(255)
+        - column:
+            name: type
+            type: VARCHAR(255)
+        - column:
+            name: question_set_id
+            type: BIGINT
+        tableName: question
+- changeSet:
+    id: 1697057373563-8
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: question_setPK
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: created_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: last_modified_by
+            type: VARCHAR(50)
+        - column:
+            name: last_modified_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: description
+            type: VARCHAR(4096)
+        - column:
+            name: priority
+            type: INTEGER
+        - column:
+            name: title
+            type: VARCHAR(255)
+        tableName: question_set
+- changeSet:
+    id: 1697057373563-9
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: raterPK
+            name: id
+            type: UUID
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: created_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: last_modified_by
+            type: VARCHAR(50)
+        - column:
+            name: last_modified_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: user_id
+            type: UUID
+        tableName: rater
+- changeSet:
+    id: 1697057373563-10
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: rater_questionPK
+            name: id
+            type: BIGINT
+        tableName: rater_question
+- changeSet:
+    id: 1697057373563-11
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: snippetPK
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: created_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: last_modified_by
+            type: VARCHAR(50)
+        - column:
+            name: last_modified_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: code
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: from_line
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: path
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: to_line
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: dataset_id
+            type: BIGINT
+        tableName: snippet
+- changeSet:
+    id: 1697057373563-12
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: snippet_questionPK
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: snippet_id
+            type: BIGINT
+        tableName: snippet_question
+- changeSet:
+    id: 1697057373563-13
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: snippet_ratePK
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: created_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: last_modified_by
+            type: VARCHAR(50)
+        - column:
+            name: last_modified_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: comment
+            type: VARCHAR(255)
+        - column:
+            name: value
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: rater_id
+            type: UUID
+        - column:
+            constraints:
+              nullable: false
+            name: snippet_id
+            type: BIGINT
+        tableName: snippet_rate
+- changeSet:
+    id: 1697057373563-14
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: created_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: last_modified_by
+            type: VARCHAR(50)
+        - column:
+            name: last_modified_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: solution
+            type: JSONB
+        - column:
+            constraints:
+              nullable: false
+            name: rater_id
+            type: UUID
+        - column:
+            constraints:
+              nullable: false
+            name: question_id
+            type: BIGINT
+        tableName: solution
+- changeSet:
+    id: 1697057373563-15
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: usersPK
+            name: id
+            type: UUID
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: created_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: last_modified_by
+            type: VARCHAR(50)
+        - column:
+            name: last_modified_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: enabled
+            type: BOOLEAN
+        - column:
+            name: name
+            type: VARCHAR(255)
+        - column:
+            name: password
+            type: VARCHAR(255)
+        - column:
+            name: super_admin
+            type: BOOLEAN
+        - column:
+            name: username
+            type: VARCHAR(255)
+        tableName: users
+- changeSet:
+    id: 1697057373563-16
+    author: ducnt (generated)
+    changes:
+    - addPrimaryKey:
+        columnNames: question_id, rater_id
+        constraintName: solutionPK
+        tableName: solution
+- changeSet:
+    id: 1697057373563-17
+    author: ducnt (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: user_id
+        constraintName: UC_RATERUSER_ID_COL
+        tableName: rater
+- changeSet:
+    id: 1697057373563-18
+    author: ducnt (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: snippet_id
+        constraintName: UC_SNIPPET_RATESNIPPET_ID_COL
+        tableName: snippet_rate
+- changeSet:
+    id: 1697057373563-19
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: rater_id
+        baseTableName: solution
+        constraintName: FKafqqpd70hdu6dcfkpwuhku074
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: rater
+        validate: true
+- changeSet:
+    id: 1697057373563-20
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: question_id
+        baseTableName: solution
+        constraintName: FKesc2r22721240hlruj1q9n57w
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: question
+        validate: true
+- changeSet:
+    id: 1697057373563-21
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: id
+        baseTableName: snippet_question
+        constraintName: FKkkca7xqr1s7lkuwxwdscdri1a
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: question
+        validate: true
+- changeSet:
+    id: 1697057373563-22
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: id
+        baseTableName: rater_question
+        constraintName: FKljy2ln7wp9ccnvnigfr3f49kg
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: question
+        validate: true
+- changeSet:
+    id: 1697057373563-23
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: question_set_id
+        baseTableName: question
+        constraintName: fk_question_questionset
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: question_set
+        validate: true
+- changeSet:
+    id: 1697057373563-24
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: rater_id
+        baseTableName: snippet_rate
+        constraintName: fk_rate_rater
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: rater
+        validate: true
+- changeSet:
+    id: 1697057373563-25
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: snippet_id
+        baseTableName: snippet_rate
+        constraintName: fk_rate_snippet
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: snippet
+        validate: true
+- changeSet:
+    id: 1697057373563-26
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: rater
+        constraintName: fk_rater_user
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+- changeSet:
+    id: 1697057373563-27
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: dataset_id
+        baseTableName: snippet
+        constraintName: fk_snippet_dataset
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: dataset
+        validate: true
+- changeSet:
+    id: 1697057373563-28
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: snippet_id
+        baseTableName: snippet_question
+        constraintName: fk_squestion_snippet
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: snippet
+        validate: true
+

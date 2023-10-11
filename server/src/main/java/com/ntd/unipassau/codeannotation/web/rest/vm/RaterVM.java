@@ -10,6 +10,6 @@ public record RaterVM(
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         UUID id,
         @NotNull
-        Collection<@NotNull RSolutionVM> solutions
+        Collection<@NotNull SolutionVM> solutions
 ) {
 }

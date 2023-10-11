@@ -1,6 +1,6 @@
 package com.ntd.unipassau.codeannotation.repository;
 
-import com.ntd.unipassau.codeannotation.domain.Rater;
+import com.ntd.unipassau.codeannotation.domain.rater.Rater;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

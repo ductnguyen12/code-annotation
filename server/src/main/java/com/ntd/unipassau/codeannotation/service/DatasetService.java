@@ -1,6 +1,6 @@
 package com.ntd.unipassau.codeannotation.service;
 
-import com.ntd.unipassau.codeannotation.domain.Dataset;
+import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import com.ntd.unipassau.codeannotation.repository.DatasetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

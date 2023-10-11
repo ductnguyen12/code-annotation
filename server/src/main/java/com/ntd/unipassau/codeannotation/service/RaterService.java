@@ -1,13 +1,13 @@
 package com.ntd.unipassau.codeannotation.service;
 
-import com.ntd.unipassau.codeannotation.domain.Rater;
+import com.ntd.unipassau.codeannotation.domain.rater.Rater;
 import com.ntd.unipassau.codeannotation.mapper.RaterMapper;
 import com.ntd.unipassau.codeannotation.repository.RaterRepository;
 import com.ntd.unipassau.codeannotation.repository.UserRepository;
 import com.ntd.unipassau.codeannotation.security.SecurityUtils;
 import com.ntd.unipassau.codeannotation.security.UserPrincipal;
-import com.ntd.unipassau.codeannotation.web.rest.vm.RSolutionVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.RaterVM;
+import com.ntd.unipassau.codeannotation.web.rest.vm.SolutionVM;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -24,18 +24,18 @@ public class RaterService {
     private final UserRepository userRepository;
     private final RaterRepository raterRepository;
     private final RaterMapper raterMapper;
-    private final RSolutionService rSolutionService;
+    private final SolutionService solutionService;
 
     @Autowired
     public RaterService(
             UserRepository userRepository,
             RaterRepository raterRepository,
             RaterMapper raterMapper,
-            RSolutionService rSolutionService) {
+            SolutionService solutionService) {
         this.userRepository = userRepository;
         this.raterRepository = raterRepository;
         this.raterMapper = raterMapper;
-        this.rSolutionService = rSolutionService;
+        this.solutionService = solutionService;
     }
 
     @Transactional
@@ -59,8 +59,8 @@ public class RaterService {
                         })
         );
 
-        rSolutionService.createSolutionsInBatch(savedRater, raterVM.solutions());
-        Collection<RSolutionVM> solutions = rSolutionService.getSolutionsByRater(savedRater.getId());
+        solutionService.createRaterSolutionsInBatch(savedRater, raterVM.solutions());
+        Collection<SolutionVM> solutions = solutionService.getSolutionsByRater(savedRater.getId());
 
         return new RaterVM(savedRater.getId(), solutions);
     }
