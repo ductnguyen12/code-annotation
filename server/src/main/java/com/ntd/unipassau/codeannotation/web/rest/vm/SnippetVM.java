@@ -20,7 +20,7 @@ public class SnippetVM {
     private Integer toLine;
     @NotNull(message = "Dataset ID is required")
     private Long datasetId;
-    private Collection<@NotNull(message = "A question can not be null") QuestionVM> questions;
+    private Collection<@NotNull(message = "A question can not be null") SnippetQuestionVM> questions;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String code;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

@@ -5,7 +5,6 @@ import com.ntd.unipassau.codeannotation.domain.rater.Rater;
 import com.ntd.unipassau.codeannotation.domain.rater.Solution;
 import com.ntd.unipassau.codeannotation.mapper.SolutionMapper;
 import com.ntd.unipassau.codeannotation.repository.RaterQuestionRepository;
-import com.ntd.unipassau.codeannotation.repository.RaterRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetQuestionRepository;
 import com.ntd.unipassau.codeannotation.repository.SolutionRepository;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SolutionVM;
@@ -29,8 +28,7 @@ public class SolutionService {
             SolutionMapper solutionMapper,
             SolutionRepository solutionRepository,
             RaterQuestionRepository rQuestionRepository,
-            SnippetQuestionRepository snippetQuestionRepository,
-            RaterRepository raterRepository) {
+            SnippetQuestionRepository snippetQuestionRepository) {
         this.solutionMapper = solutionMapper;
         this.solutionRepository = solutionRepository;
         this.rQuestionRepository = rQuestionRepository;

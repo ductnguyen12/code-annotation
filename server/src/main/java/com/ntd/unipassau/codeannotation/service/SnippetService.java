@@ -9,6 +9,7 @@ import com.ntd.unipassau.codeannotation.mapper.SnippetMapper;
 import com.ntd.unipassau.codeannotation.repository.SnippetRateRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRepository;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetRateVM;
+import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetVM;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +48,10 @@ public class SnippetService {
         this.raterService = raterService;
     }
 
-    public Collection<Snippet> getDatasetSnippets(Long datasetId) {
-        return snippetRepository.findAllByDatasetId(datasetId);
+    @Transactional(readOnly = true)
+    public Collection<SnippetVM> getDatasetSnippets(Long datasetId) {
+        Collection<Snippet> snippets = snippetRepository.findAllByDatasetId(datasetId);
+        return snippetMapper.toSnippetVMs(snippets);
     }
 
     public Optional<Snippet> getById(Long snippetId) {
@@ -124,7 +127,7 @@ public class SnippetService {
                 snippet.getId(),
                 raterService.getCurrentRater()
                         .orElseThrow(() -> new RuntimeException("Saving Solution requires rater")),
-                rateVM.solutions()
+                rateVM.getSolutions()
         );
     }
 

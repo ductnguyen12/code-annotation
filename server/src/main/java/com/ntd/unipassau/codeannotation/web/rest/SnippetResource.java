@@ -43,7 +43,7 @@ public class SnippetResource {
     @GetMapping("/v1/datasets/{datasetId}/snippets")
     @Secured({AuthoritiesConstants.ANONYMOUS, AuthoritiesConstants.USER})
     public Collection<SnippetVM> getDatasetSnippets(@PathVariable Long datasetId) {
-        return snippetMapper.toSnippetVMs(snippetService.getDatasetSnippets(datasetId));
+        return snippetService.getDatasetSnippets(datasetId);
     }
 
     @Operation(summary = "Create a snippet")

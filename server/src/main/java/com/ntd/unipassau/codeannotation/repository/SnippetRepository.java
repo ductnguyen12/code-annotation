@@ -10,7 +10,9 @@ import java.util.Collection;
 @Repository
 public interface SnippetRepository extends JpaRepository<Snippet, Long> {
     @Query("FROM Snippet s LEFT JOIN FETCH s.rate r " +
+            "LEFT JOIN FETCH r.rater " +
             "LEFT JOIN FETCH s.questions q " +
+            "LEFT JOIN FETCH q.solutions " +
             "INNER JOIN FETCH s.dataset d " +
             "WHERE d.id = :datasetId")
     Collection<Snippet> findAllByDatasetId(Long datasetId);

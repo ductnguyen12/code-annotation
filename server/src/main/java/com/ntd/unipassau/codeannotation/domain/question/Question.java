@@ -1,12 +1,15 @@
 package com.ntd.unipassau.codeannotation.domain.question;
 
 import com.ntd.unipassau.codeannotation.domain.AbstractAuditingEntity;
+import com.ntd.unipassau.codeannotation.domain.rater.Solution;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Type;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "question")
@@ -33,4 +36,8 @@ public class Question extends AbstractAuditingEntity<Long> {
     @JoinColumn(name = "question_set_id", foreignKey = @ForeignKey(name = "fk_question_questionset"))
     @ToString.Exclude
     private QuestionSet questionSet;
+
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "question")
+    @ToString.Exclude
+    private Set<Solution> solutions;
 }
