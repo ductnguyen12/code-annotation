@@ -59,6 +59,6 @@ public class RaterQuestionService {
     }
 
     public Collection<RaterQuestionVM> listRaterQuestions() {
-        return rQuestionMapper.toQuestionVMs(rQuestionRepository.findAll());
+        return rQuestionMapper.toQuestionVMs(rQuestionRepository.findAllFetchQuestionSet());
     }
 }

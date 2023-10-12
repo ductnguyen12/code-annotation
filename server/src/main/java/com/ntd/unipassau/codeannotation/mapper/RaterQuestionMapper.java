@@ -23,7 +23,7 @@ public interface RaterQuestionMapper {
 
     Collection<QuestionSetVM> toQuestionSetVMs(Collection<QuestionSet> questionSets);
 
-    @Mapping(target = "questionSetId", ignore = true)
+    @Mapping(target = "questionSetId", source = "questionSet.id")
     RaterQuestionVM toQuestionVM(RaterQuestion question);
 
     @Mapping(target = "questionSet", ignore = true)
