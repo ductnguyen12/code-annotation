@@ -1,6 +1,6 @@
 package com.ntd.unipassau.codeannotation.web.rest.constraint.validator;
 
-import com.ntd.unipassau.codeannotation.domain.rater.RaterQuestion;
+import com.ntd.unipassau.codeannotation.domain.question.Question;
 import com.ntd.unipassau.codeannotation.domain.question.QuestionType;
 import com.ntd.unipassau.codeannotation.domain.rater.SolutionValue;
 import jakarta.validation.ConstraintValidatorContext;
@@ -14,18 +14,19 @@ public class SolutionChoiceValidator extends SolutionValueValidator {
     }
 
     @Override
-    boolean validate(RaterQuestion question, SolutionValue value) {
+    boolean validate(int index, Question question, SolutionValue value) {
         checkMalformedSelectingQuestion(question);
         Collection<Integer> selected = value.getSelected().stream().filter(Objects::nonNull).toList();
-        return checkEmptyChoice(selected)
-                && checkSingleChoiceQuestion(question, selected)
-                && checkOutOfBoundChoice(selected, question.getAnswer().getOptions());
+        return checkEmptyChoice(index, selected)
+                && checkSingleChoiceQuestion(index, question, selected)
+                && checkOutOfBoundChoice(index, selected, question.getAnswer().getOptions());
     }
 
-    protected boolean checkSingleChoiceQuestion(RaterQuestion question, Collection<Integer> selected) {
+    protected boolean checkSingleChoiceQuestion(int index, Question question, Collection<Integer> selected) {
         // Check if there are more than 1 selection for a single choice question
         if (QuestionType.SINGLE_CHOICE == question.getType() && selected.size() > 1) {
             context.buildConstraintViolationWithTemplate("Single choice question only accepts 1 answer")
+                    .addPropertyNode(null).inIterable().atIndex(index)
                     .addPropertyNode("value.selected")
                     .addConstraintViolation();
             return false;

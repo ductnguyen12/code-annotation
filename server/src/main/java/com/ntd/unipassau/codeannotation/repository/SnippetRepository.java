@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Repository
 public interface SnippetRepository extends JpaRepository<Snippet, Long> {
@@ -16,4 +17,9 @@ public interface SnippetRepository extends JpaRepository<Snippet, Long> {
             "INNER JOIN FETCH s.dataset d " +
             "WHERE d.id = :datasetId")
     Collection<Snippet> findAllByDatasetId(Long datasetId);
+
+    @Query("FROM Snippet s " +
+            "LEFT JOIN FETCH s.questions q " +
+            "WHERE s.id = :snippetId")
+    Optional<Snippet> findFetchQuestionsById(Long snippetId);
 }

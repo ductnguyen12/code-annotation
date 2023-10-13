@@ -1,7 +1,7 @@
 package com.ntd.unipassau.codeannotation.web.rest.constraint.validator;
 
 import com.ntd.unipassau.codeannotation.domain.question.Answer;
-import com.ntd.unipassau.codeannotation.domain.rater.RaterQuestion;
+import com.ntd.unipassau.codeannotation.domain.question.Question;
 import com.ntd.unipassau.codeannotation.domain.rater.SolutionValue;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -15,15 +15,15 @@ public class SolutionRatingValidator extends SolutionValueValidator {
     }
 
     @Override
-    boolean validate(RaterQuestion question, SolutionValue value) {
+    boolean validate(int index, Question question, SolutionValue value) {
         checkMalformedSelectingQuestion(question);
         Collection<Integer> selected = value.getSelected().stream().filter(Objects::nonNull).toList();
-        return checkEmptyChoice(selected)
-                && checkOutOfBoundChoice(selected, question.getAnswer().getOptions())
-                && checkAllAttributesAreRated(selected, question.getAnswer().getAttributes());
+        return checkEmptyChoice(index, selected)
+                && checkOutOfBoundChoice(index, selected, question.getAnswer().getOptions())
+                && checkAllAttributesAreRated(index, selected, question.getAnswer().getAttributes());
     }
 
-    protected void checkMalformedSelectingQuestion(RaterQuestion question) {
+    protected void checkMalformedSelectingQuestion(Question question) {
         super.checkMalformedSelectingQuestion(question);
         Answer answer = question.getAnswer();
         if (answer.getAttributes() == null || answer.getAttributes().isEmpty()) {
@@ -31,12 +31,14 @@ public class SolutionRatingValidator extends SolutionValueValidator {
         }
     }
 
-    protected boolean checkAllAttributesAreRated(Collection<Integer> selected, List<String> attributes) {
+    protected boolean checkAllAttributesAreRated(int index, Collection<Integer> selected, List<String> attributes) {
         // Check if all attributes are rated
         if (selected.size() != attributes.size()) {
             context.buildConstraintViolationWithTemplate(
                             "Rating question requires all attributes to be rated but only "
                                     + selected.size() + "/" + attributes.size() + " attributes have been rated")
+                    .addPropertyNode(null)
+                    .inIterable().atIndex(index)
                     .addPropertyNode("value.selected")
                     .addConstraintViolation();
             return false;

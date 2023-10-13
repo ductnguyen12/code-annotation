@@ -55,7 +55,7 @@ public class SnippetService {
     }
 
     public Optional<Snippet> getById(Long snippetId) {
-        return snippetRepository.findById(snippetId);
+        return snippetRepository.findFetchQuestionsById(snippetId);
     }
 
     @SneakyThrows

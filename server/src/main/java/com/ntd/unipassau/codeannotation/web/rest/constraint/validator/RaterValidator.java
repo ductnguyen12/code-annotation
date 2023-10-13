@@ -3,8 +3,8 @@ package com.ntd.unipassau.codeannotation.web.rest.constraint.validator;
 import com.ntd.unipassau.codeannotation.domain.rater.RaterQuestion;
 import com.ntd.unipassau.codeannotation.repository.RaterQuestionRepository;
 import com.ntd.unipassau.codeannotation.web.rest.constraint.RaterConstraint;
-import com.ntd.unipassau.codeannotation.web.rest.vm.SolutionVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.RaterVM;
+import com.ntd.unipassau.codeannotation.web.rest.vm.SolutionVM;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,9 +29,7 @@ public class RaterValidator implements ConstraintValidator<RaterConstraint, Rate
         context.disableDefaultConstraintViolation();
         Collection<SolutionVM> rSolutionVMs = rater.solutions();
         final List<RaterQuestion> allQuestions = rQuestionRepository.findAll();
-
-        return checkRequiredQuestions(context, allQuestions, rSolutionVMs)
-                && checkValidSolutionValues(context, allQuestions, rSolutionVMs);
+        return checkRequiredQuestions(context, allQuestions, rSolutionVMs);
     }
 
     protected boolean checkRequiredQuestions(
@@ -58,28 +55,5 @@ public class RaterValidator implements ConstraintValidator<RaterConstraint, Rate
         }
 
         return true;
-    }
-
-    protected boolean checkValidSolutionValues(
-            ConstraintValidatorContext context,
-            List<RaterQuestion> allQuestions,
-            Collection<SolutionVM> rSolutionVMs) {
-        return rSolutionVMs.stream()
-                .allMatch(rSolutionVM -> {
-                    Optional<RaterQuestion> optRQuestion = allQuestions.stream()
-                            .filter(q -> q.getId().equals(rSolutionVM.questionId()))
-                            .findFirst();
-                    if (optRQuestion.isEmpty()) {
-                        context.buildConstraintViolationWithTemplate("Unknown question ID: "
-                                        + rSolutionVM.questionId())
-                                .addConstraintViolation();
-                        return false;
-                    }
-
-                    RaterQuestion rQuestion = optRQuestion.get();
-                    SolutionValueValidator validator = SolutionValueValidator.createValidator(
-                            context, rQuestion.getType());
-                    return validator.validate(rQuestion, rSolutionVM.value());
-                });
     }
 }

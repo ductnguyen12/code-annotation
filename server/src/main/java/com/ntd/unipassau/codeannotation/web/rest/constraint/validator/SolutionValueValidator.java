@@ -1,7 +1,7 @@
 package com.ntd.unipassau.codeannotation.web.rest.constraint.validator;
 
 import com.ntd.unipassau.codeannotation.domain.question.Answer;
-import com.ntd.unipassau.codeannotation.domain.rater.RaterQuestion;
+import com.ntd.unipassau.codeannotation.domain.question.Question;
 import com.ntd.unipassau.codeannotation.domain.question.QuestionType;
 import com.ntd.unipassau.codeannotation.domain.rater.SolutionValue;
 import jakarta.validation.ConstraintValidatorContext;
@@ -25,16 +25,16 @@ public abstract class SolutionValueValidator {
             case INPUT -> new SolutionInputValidator(context);
             case NON_QUESTION -> new SolutionValueValidator(context) {
                 @Override
-                boolean validate(RaterQuestion question, SolutionValue value) {
+                boolean validate(int index, Question question, SolutionValue value) {
                     return true;
                 }
             };
         };
     }
 
-    abstract boolean validate(RaterQuestion question, SolutionValue value);
+    abstract boolean validate(int index, Question question, SolutionValue value);
 
-    protected void checkMalformedSelectingQuestion(RaterQuestion question) {
+    protected void checkMalformedSelectingQuestion(Question question) {
         // Malformed question was created in the past
         Answer answer = question.getAnswer();
         if (answer == null || answer.getOptions() == null || answer.getOptions().isEmpty()) {
@@ -42,13 +42,14 @@ public abstract class SolutionValueValidator {
         }
     }
 
-    protected boolean checkOutOfBoundChoice(Collection<Integer> selected, List<String> options) {
+    protected boolean checkOutOfBoundChoice(int index, Collection<Integer> selected, List<String> options) {
         // Check if there is any weird selection
-        Optional<Integer> outOfBoundIndex = selected.stream().filter(index -> index >= options.size()).findFirst();
+        Optional<Integer> outOfBoundIndex = selected.stream().filter(i -> i >= options.size()).findFirst();
         if (outOfBoundIndex.isPresent()) {
             context.buildConstraintViolationWithTemplate(
                             "Selected option is out of bound: "
                                     + outOfBoundIndex.get() + "/" + (options.size() - 1))
+                    .addPropertyNode(null).inIterable().atIndex(index)
                     .addPropertyNode("value.selected")
                     .addConstraintViolation();
             return false;
@@ -56,10 +57,11 @@ public abstract class SolutionValueValidator {
         return true;
     }
 
-    protected boolean checkEmptyChoice(Collection<Integer> selected) {
+    protected boolean checkEmptyChoice(int index, Collection<Integer> selected) {
         // Check empty selection
         if (selected.isEmpty()) {
             context.buildConstraintViolationWithTemplate("'value.selected' must not be empty")
+                    .addPropertyNode(null).inIterable().atIndex(index)
                     .addPropertyNode("value.selected")
                     .addConstraintViolation();
             return false;
