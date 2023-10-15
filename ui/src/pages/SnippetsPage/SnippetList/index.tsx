@@ -9,11 +9,12 @@ import Typography from "@mui/material/Typography";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "../../../app/hooks";
 import { useDatasetSnippets } from "../../../hooks/snippet";
+import { Solution } from '../../../interfaces/question.interface';
 import { SnippetRate } from "../../../interfaces/snippet.interface";
 import { chooseSnippet, rateSnippetAsync } from "../../../slices/snippetsSlice";
-import SnippetRating from "./SnippetRating";
 import DatasetDetail from './DatasetDetail';
 import SnippetCode from './SnippetCode';
+import SnippetRating from "./SnippetRating";
 import SnippetToolBox from './SnippetToolBox';
 
 type RouteParams = {
@@ -35,11 +36,17 @@ const SnippetList = () => {
   }
 
   const onRateChange = (): void => {
-    if (!snippets[selected].rate)
+    if (!snippets[selected].rate) {
       return;
+    }
+    const solutions = snippets[selected].questions?.map(q => q.solution).filter(s => s) as Array<Solution>;
+    const rate: SnippetRate = {
+      ...snippets[selected].rate as SnippetRate,
+      solutions: solutions,
+    };
     dispatch(rateSnippetAsync({
       snippetId: snippets[selected].id,
-      rate: snippets[selected].rate as SnippetRate,
+      rate,
     }));
   }
 

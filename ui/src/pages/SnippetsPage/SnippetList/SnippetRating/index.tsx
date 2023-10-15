@@ -7,13 +7,13 @@ import FormControl from '@mui/material/FormControl';
 import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
 import { useAppDispatch } from '../../../../app/hooks';
-import { Question, SnippetRate } from '../../../../interfaces/snippet.interface';
+import { SnippetQuestion as SQuestion, SnippetRate } from '../../../../interfaces/snippet.interface';
 import { updateCurrentRateByKey } from '../../../../slices/snippetsSlice';
 import SnippetQuestion from './SnippetQuestion';
 
 interface SnippetRatingProps {
   rate?: SnippetRate;
-  questions?: Array<Question>;
+  questions?: Array<SQuestion>;
 }
 
 interface Labels {
@@ -41,11 +41,9 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
   const {
     value: rateValue,
     comment,
-    selectedAnswers,
   } = rate || {
     value: 0,
     comment: "",
-    selectedAnswers: [],
   }
 
   return (
@@ -90,9 +88,8 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
         {questions?.map((q, index) => (
           <SnippetQuestion
             key={q.id}
-            index={index + 1}
+            index={index}
             question={q}
-            selectedAnswers={selectedAnswers}
           />
         ))}
       </Grid>

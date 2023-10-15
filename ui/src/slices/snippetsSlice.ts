@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import api from '../api';
 import { RootState } from '../app/store';
+import { Solution } from '../interfaces/question.interface';
 import { Snippet, SnippetRate } from '../interfaces/snippet.interface';
 import { defaultAPIErrorHandle, defaultAPISuccessHandle } from '../util/error-util';
 
@@ -52,9 +53,8 @@ export const snippetsSlice = createSlice({
     updateCurrentRateByKey: (state, action) => {
       if (state.selected < state.snippets.length) {
         const rate: SnippetRate = state.snippets[state.selected].rate || {
-          value: undefined,
+          value: 0,
           comment: undefined,
-          selectedAnswers: [],
         };
         switch (action.payload.key) {
           case 'comment':
@@ -63,15 +63,25 @@ export const snippetsSlice = createSlice({
           case 'rate':
             rate.value = action.payload.value;
             break;
-          case 'choices':
-            rate.selectedAnswers = action.payload.value;
-            break;
           default:
             break;
         }
 
         state.snippets[state.selected].rate = rate;
       }
+    },
+
+    updateQuestionSolution: (state, action: PayloadAction<{ questionIndex: number, solution: Solution }>) => {
+      const {
+        questionIndex,
+        solution,
+      } = action.payload;
+
+      const snippet = state.snippets[state.selected];
+      if (!snippet || !snippet.questions || questionIndex > snippet.questions.length - 1) {
+        return;
+      }
+      snippet.questions[questionIndex].solution = solution;
     },
   },
 
@@ -108,6 +118,7 @@ export const snippetsSlice = createSlice({
 export const {
   chooseSnippet,
   updateCurrentRateByKey,
+  updateQuestionSolution,
 } = snippetsSlice.actions;
 
 export const selectSnippetsState = (state: RootState) => state.snippets;
