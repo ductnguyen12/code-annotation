@@ -12,7 +12,7 @@ import org.mapstruct.MappingTarget;
 public interface ExportModelMapper {
     @Mapping(target = "comment", source = "rate.comment")
     @Mapping(target = "rate", source = "rate.value")
-    @Mapping(target = "rater", source = "rate.lastModifiedBy")
+    @Mapping(target = "rater", source = "rate.rater.id")
     SnippetDoc toSnippetDoc(Snippet snippet);
 
     @Mapping(target = "lastModifiedDate", ignore = true)
