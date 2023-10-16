@@ -80,7 +80,7 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
           emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
           value={rateValue}
         />
-        {rateValue && rateValue > 0 && (
+        {((!!rateValue && rateValue > 0) || hover !== -1)  && (
           <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : rateValue]}</Box>
         )}
       </FormControl>
