@@ -36,3 +36,10 @@ export enum QuestionType {
   RATING = "RATING",
   INPUT = "INPUT",
 }
+
+export interface QuestionSet {
+  id?: number;
+  title: string;
+  description?: string;
+  priority: number;
+}

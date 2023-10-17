@@ -2,6 +2,7 @@ import axios from 'axios';
 import { env } from '../env';
 import * as authAPI from './authAPI';
 import * as datasetAPI from './datasetAPI';
+import * as questionSetAPI from './questionSetAPI';
 import * as raterAPI from './raterAPI';
 import * as snippetAPI from './snippetAPI';
 
@@ -12,6 +13,7 @@ const api = {
   ...snippetAPI,
   ...authAPI,
   ...raterAPI,
+  ...questionSetAPI,
 }
 
 export default api;
