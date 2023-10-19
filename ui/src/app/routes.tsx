@@ -7,6 +7,7 @@ import DatasetsPage from "../pages/DatasetsPage";
 import QuestionSetPage from '../pages/QuestionSetPage';
 import SignInPage from '../pages/SignInPage';
 import SnippetsPage from '../pages/SnippetsPage';
+import DemographicQuestionPage from '../pages/DemographicQuestionPage';
 
 const routes = [
   {
@@ -39,13 +40,13 @@ const routes = [
     protected: true,
   },
   {
-    key: 'raterQuestions',
-    path: '/rater-questions',
-    title: 'Rater Question',
-    element: (<></>),
+    key: 'demographicQuestions',
+    path: '/demographic-questions',
+    title: 'Demographic Question',
+    element: (<DemographicQuestionPage />),
     icon: (<PsychologyAltIcon />),
     inDrawer: true,
-    drawerPathPrefix: '/rater-questions',    // Determine whether a drawer is selected
+    drawerPathPrefix: '/demographic-questions',    // Determine whether a drawer is selected
     protected: true,
   },
   {

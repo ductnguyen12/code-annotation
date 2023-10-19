@@ -9,6 +9,6 @@ import java.util.Collection;
 
 @Repository
 public interface RaterQuestionRepository extends JpaRepository<RaterQuestion, Long> {
-    @Query("FROM RaterQuestion q JOIN FETCH q.questionSet")
+    @Query("FROM RaterQuestion q LEFT JOIN FETCH q.questionSet")
     Collection<RaterQuestion> findAllFetchQuestionSet();
 }

@@ -10,7 +10,7 @@ export interface Question {
 export interface Answer {
   options?: Array<string>;
   attributes?: Array<string>;
-  inputPositions?: Array<string>;
+  inputPositions?: Array<number>;
   correctChoices?: Array<number>;
 }
 
@@ -42,4 +42,8 @@ export interface QuestionSet {
   title: string;
   description?: string;
   priority: number;
+}
+
+export interface DemographicQuestion extends Question {
+  solutions?: Array<Solution>;
 }
