@@ -31,7 +31,7 @@ const routes = [
   {
     key: 'questionSets',
     path: '/question-sets',
-    title: 'Question Set',
+    title: 'Question Group',
     element: (<QuestionSetPage />),
     icon: (<CategoryIcon />),
     inDrawer: true,

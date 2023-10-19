@@ -21,7 +21,7 @@ const QuestionSetPage = () => {
       <>
         <LoadingBackdrop open={'loading' === status} />
         <Typography sx={{ mb: 1 }} variant="h5">
-          Question Set Management
+          Question Group Management
           <span><QuestionSetToolBox /></span>
         </Typography>
         <QuestionSetDialog />

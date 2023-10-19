@@ -35,7 +35,7 @@ export const createQuestionSetAsync = createAsyncThunk(
   async (questionSet: QuestionSet, { dispatch }) => {
     try {
       await api.createQuestionSet(questionSet);
-      defaultAPISuccessHandle(`Created question set '${questionSet.title}' successfully`, dispatch);
+      defaultAPISuccessHandle(`Created question group '${questionSet.title}' successfully`, dispatch);
       dispatch(loadQuestionSetsAsync());
     } catch (error: any) {
       defaultAPIErrorHandle(error, dispatch);
@@ -49,7 +49,7 @@ export const updateQuestionSetAsync = createAsyncThunk(
   async ({ questionSetId, questionSet }: { questionSetId: number, questionSet: QuestionSet }, { dispatch }) => {
     try {
       await api.updateQuestionSet(questionSetId, questionSet);
-      defaultAPISuccessHandle(`Updated question set '${questionSet.title}' successfully`, dispatch);
+      defaultAPISuccessHandle(`Updated question group '${questionSet.title}' successfully`, dispatch);
       dispatch(loadQuestionSetsAsync());
     } catch (error: any) {
       defaultAPIErrorHandle(error, dispatch);
@@ -63,7 +63,7 @@ export const deleteQuestionSetAsync = createAsyncThunk(
   async (questionSetId: number, { dispatch }) => {
     try {
       await api.deleteQuestionSet(questionSetId);
-      defaultAPISuccessHandle(`Delete question set ID '${questionSetId}' successfully`, dispatch);
+      defaultAPISuccessHandle(`Delete question group ID '${questionSetId}' successfully`, dispatch);
       dispatch(loadQuestionSetsAsync());
     } catch (error: any) {
       defaultAPIErrorHandle(error, dispatch);

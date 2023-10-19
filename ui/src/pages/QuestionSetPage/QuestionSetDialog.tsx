@@ -1,20 +1,26 @@
 import { TextField } from "@mui/material"
-import { ReactElement } from "react"
+import { ReactElement, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import FormDialog from "../../components/FormDialog"
 import { QuestionSet } from "../../interfaces/question.interface"
-import { createQuestionSetAsync, selectQuestionSetState, setOpenDialog, updateQuestionSetAsync } from "../../slices/questionSetSlice"
+import { createQuestionSetAsync, selectQuestionSetState, setOpenDialog, setSelected, updateQuestionSetAsync } from "../../slices/questionSetSlice"
 
 
 const QuestionSetDialog = (): ReactElement => {
-  const { register, handleSubmit } = useForm<QuestionSet>();
+  const { register, handleSubmit, setValue } = useForm<QuestionSet>();
   const {
     openDialog,
     selected,
   } = useAppSelector(selectQuestionSetState);
 
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (selected) {
+      (Object.keys(selected) as (keyof QuestionSet)[]).forEach(key => setValue(key, selected[key]));
+    }
+  }, [selected, setValue])
 
   const onSubmission = async (questionSet: QuestionSet) => {
     if (!!selected) {
@@ -25,7 +31,7 @@ const QuestionSetDialog = (): ReactElement => {
     return questionSet;
   };
 
-  const title = !!selected ? `Edit Question Set ID ${selected.id}` : "Create Question Set";
+  const title = !!selected ? `Edit Question Group ID ${selected.id}` : "Create Question Group";
 
   return (
     <FormDialog<QuestionSet>
@@ -33,6 +39,7 @@ const QuestionSetDialog = (): ReactElement => {
       open={openDialog}
       setOpen={(open: boolean) => dispatch(setOpenDialog(open))}
       onSubmit={onSubmission}
+      onClose={() => dispatch(setSelected(undefined))}
       handleSubmit={handleSubmit}
     >
       <TextField

@@ -56,14 +56,14 @@ const QuestionSetTable = () => {
             key={index}
             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
           >
-            {fields.map((field, index) => (
-              <TableCell key={index}>{questionSet[field]}</TableCell>
+            {fields.map((field) => (
+              <TableCell key={field}>{questionSet[field]}</TableCell>
             ))}
-            <TableCell key="actions" align="right">
-              <IconButton aria-label="Edit question set" onClick={() => handleEdit(questionSet)}>
+            <TableCell key="actions">
+              <IconButton aria-label="Edit question group" onClick={() => handleEdit(questionSet)}>
                 <EditIcon />
               </IconButton>
-              <IconButton aria-label="Delete question set" onClick={() => handleDelete(questionSet)}>
+              <IconButton aria-label="Delete question group" onClick={() => handleDelete(questionSet)}>
                 <DeleteIcon />
               </IconButton>
             </TableCell>

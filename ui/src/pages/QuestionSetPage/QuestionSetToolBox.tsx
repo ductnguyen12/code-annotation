@@ -12,7 +12,7 @@ const QuestionSetToolBox = () => {
 
   return (
     <>
-      <IconButton aria-label="Add question set" onClick={() => dispatch(setOpenDialog(!openDialog))}>
+      <IconButton aria-label="Add question group" onClick={() => dispatch(setOpenDialog(!openDialog))}>
         <AddIcon />
       </IconButton>
     </>
