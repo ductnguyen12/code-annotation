@@ -1,6 +1,7 @@
 import FormControl from "@mui/material/FormControl";
 import { Question, Solution } from "../../interfaces/question.interface";
 import MultipleRating from "../MultipleRating";
+import FormLabel from "@mui/material/FormLabel";
 
 const RatingQuestion = ({
   questionIndex,
@@ -31,6 +32,12 @@ const RatingQuestion = ({
 
   return (
     <FormControl>
+      <FormLabel 
+        component="legend"
+        required={!!question.constraint?.required}
+      >
+        {`${questionIndex + 1}.`}
+      </FormLabel>
       <MultipleRating
         name={`question-id-${question.id}`}
         options={question.answer?.options || []}

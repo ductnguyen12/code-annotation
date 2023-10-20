@@ -61,7 +61,6 @@ public class RaterQuestionResource {
 
     @Operation(summary = "Get list of questions for new raters")
     @GetMapping("/v1/rater-questions")
-    @Secured({AuthoritiesConstants.USER})
     public Collection<RaterQuestionVM> listQuestions() {
         return raterQuestionService.listRaterQuestions();
     }

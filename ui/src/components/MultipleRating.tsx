@@ -1,7 +1,5 @@
-import FormControlLabel from "@mui/material/FormControlLabel"
 import FormLabel from "@mui/material/FormLabel"
 import Radio from "@mui/material/Radio"
-import RadioGroup from "@mui/material/RadioGroup"
 import Table from "@mui/material/Table"
 import TableBody from "@mui/material/TableBody"
 import TableCell from "@mui/material/TableCell"
@@ -38,18 +36,15 @@ const MultipleRating = ({
             <TableCell component="th" scope="row">
               <FormLabel id={`${name}-attr-${index}`}>{attribute}</FormLabel>
             </TableCell>
-            <RadioGroup
-              aria-labelledby={`${name}-attr-${index}`}
-              name={name}
-              value={selected[index] > -1 ? selected[index] : undefined}
-              onChange={e => onValueChange(parseInt(e.target.value), index)}
-            >
-              {options.map((_, i) => (
-                <TableCell key={i} align="right">
-                  <FormControlLabel value={i} control={<Radio />} label={undefined} />
-                </TableCell>
-              ))}
-            </RadioGroup>
+            {options.map((_, i) => (
+              <TableCell key={i} align="right">
+                <Radio
+                  checked={i === selected[index]}
+                  value={i}
+                  onChange={e => onValueChange(parseInt(e.target.value), index)}
+                />
+              </TableCell>
+            ))}
           </TableRow>
         ))}
       </TableBody>

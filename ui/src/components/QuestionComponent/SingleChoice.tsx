@@ -18,7 +18,7 @@ const SingleChoice = ({
 }) => {
   const value = solution?.value.selected && solution?.value.selected.length > 0
     ? solution?.value.selected[0]
-    : 0;
+    : -1;
 
   const handleChange = (selected: number) => {
     if (!solution)
@@ -39,7 +39,12 @@ const SingleChoice = ({
 
   return (
     <FormControl>
-      <FormLabel id={`question-id-${question.id}`}>{`${questionIndex + 1}. ${question.content}`}</FormLabel>
+      <FormLabel 
+        id={`question-id-${question.id}`}
+        required={!!question.constraint?.required}
+      >
+        {`${questionIndex + 1}. ${question.content}`}
+      </FormLabel>
       <RadioGroup
         aria-labelledby={`question-id-${question.id}`}
         name={`question-id-${question.id}`}

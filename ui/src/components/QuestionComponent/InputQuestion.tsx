@@ -22,16 +22,25 @@ const InputQuestion = ({
         value: {},
       };
     }
-    solution.value.input = value;
+    if (question.constraint?.isNumber)
+      solution.value.input = parseInt(value);
+    else
+      solution.value.input = value;
     onValueChange(questionIndex, solution);
   }
 
   return (
     <FormControl>
-      <FormLabel id={`question-id-${question.id}`}>{`${questionIndex + 1}. ${question.content}`}</FormLabel>
+      <FormLabel 
+        id={`question-id-${question.id}`} 
+        required={!!question.constraint?.required}
+      >
+        {`${questionIndex + 1}. ${question.content}`}
+      </FormLabel>
       <TextField
         variant="outlined"
-        value={solution?.value.input}
+        size="small"
+        value={solution?.value.input || ""}
         onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event.target.value)}
       />
     </FormControl>

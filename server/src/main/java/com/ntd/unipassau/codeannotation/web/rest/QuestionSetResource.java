@@ -64,7 +64,6 @@ public class QuestionSetResource {
 
     @Operation(summary = "Get list of question sets")
     @GetMapping("/v1/question-sets")
-    @Secured({AuthoritiesConstants.USER})
     public Collection<QuestionSetVM> listQuestionSets() {
         return rQuestionMapper.toQuestionSetVMs(questionSetRepository.findAllFetchQuestions());
     }

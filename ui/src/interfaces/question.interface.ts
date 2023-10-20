@@ -21,7 +21,7 @@ export interface Solution {
 }
 
 export interface SolutionValue {
-  input?: string;
+  input?: string | number;
   selected?: Array<number>;
 }
 

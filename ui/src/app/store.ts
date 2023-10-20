@@ -5,6 +5,7 @@ import datasetsReducer from '../slices/datasetsSlice';
 import demographicQuestionReducer from '../slices/demographicQuestionSlice';
 import notificationReducer from '../slices/notificationSlice';
 import questionSetReducer from '../slices/questionSetSlice';
+import raterRegReducer from '../slices/raterRegSlice';
 import snippetsReducer from '../slices/snippetsSlice';
 
 export const store = configureStore({
@@ -16,6 +17,7 @@ export const store = configureStore({
     auth: authReducer,
     questionSet: questionSetReducer,
     demographicQuestion: demographicQuestionReducer,
+    raterReg: raterRegReducer,
   },
 });
 

@@ -8,6 +8,7 @@ import QuestionSetPage from '../pages/QuestionSetPage';
 import SignInPage from '../pages/SignInPage';
 import SnippetsPage from '../pages/SnippetsPage';
 import DemographicQuestionPage from '../pages/DemographicQuestionPage';
+import RaterRegistrationPage from '../pages/RaterRegistrationPage';
 
 const routes = [
   {
@@ -56,6 +57,13 @@ const routes = [
     element: (<SignInPage />),
     icon: (<LoginIcon />),
     drawerPathPrefix: '/sign-in',
+  },
+  {
+    key: 'raterRegistration',
+    path: '/rater-registration',
+    title: 'Rater Registration',
+    element: (<RaterRegistrationPage />),
+    drawerPathPrefix: '/rater-registration',
   },
 ];
 

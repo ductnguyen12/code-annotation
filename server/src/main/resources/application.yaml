@@ -36,3 +36,5 @@ app:
       - /v1/datasets/{datasetId}
       - /v1/datasets/{datasetId}/snippets
       - /v1/snippets/{snippetId}/rates
+      - /v1/question-sets
+      - /v1/rater-questions

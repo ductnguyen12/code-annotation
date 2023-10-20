@@ -42,7 +42,11 @@ const MultipleChoice = ({
       sx={{ m: 3 }}
       component="fieldset"
       variant="standard">
-      <FormLabel component="legend">{`${questionIndex + 1}. ${question?.content}`}</FormLabel>
+      <FormLabel component="legend"
+        required={!!question.constraint?.required}
+      >
+        {`${questionIndex + 1}. ${question?.content}`}
+      </FormLabel>
       <FormGroup>
         {question?.answer?.options?.map((option, index) => (
           <FormControlLabel
