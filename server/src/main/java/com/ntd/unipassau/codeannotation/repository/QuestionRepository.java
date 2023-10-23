@@ -1,6 +1,6 @@
 package com.ntd.unipassau.codeannotation.repository;
 
-import com.ntd.unipassau.codeannotation.domain.Question;
+import com.ntd.unipassau.codeannotation.domain.question.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

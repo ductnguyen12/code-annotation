@@ -9,6 +9,7 @@ const FormDialog = <T extends FieldValues>({
   setOpen,
   onSubmit,
   onSuccess,
+  onClose,
   handleSubmit,
   children,
 }: {
@@ -17,6 +18,7 @@ const FormDialog = <T extends FieldValues>({
   setOpen: (open: boolean) => void,
   onSubmit: (value: T) => Promise<T>,
   onSuccess?: (value: T) => void,
+  onClose?: () => void,
   handleSubmit: UseFormHandleSubmit<T, undefined>,
   children: ReactNode,
 }): ReactElement => {
@@ -44,7 +46,10 @@ const FormDialog = <T extends FieldValues>({
       title={title ? title : ""}
       open={open}
       setOpen={setOpen}
-      onClose={() => { }}
+      onClose={() => {
+        if (onClose)
+          onClose();
+      }}
       onConfirm={handleConfirm}
     >
       <Box

@@ -1,4 +1,6 @@
+import { Solution } from "./question.interface";
+
 export interface Rater {
   id: string | undefined;
-  yearOfExp: number;
+  solutions?: Array<Solution>;
 }

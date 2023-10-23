@@ -1,7 +1,7 @@
 package com.ntd.unipassau.codeannotation.export;
 
-import com.ntd.unipassau.codeannotation.domain.Dataset;
-import com.ntd.unipassau.codeannotation.domain.Snippet;
+import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
+import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
 import com.ntd.unipassau.codeannotation.export.model.SnippetDoc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;

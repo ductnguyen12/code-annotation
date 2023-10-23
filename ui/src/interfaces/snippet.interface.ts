@@ -1,3 +1,6 @@
+import { Question, Solution } from "./question.interface";
+import { Rater } from "./rater.interface";
+
 export interface Snippet {
   id: number;
   code: string;
@@ -5,25 +8,17 @@ export interface Snippet {
   fromLine: number;
   toLine: number;
   datasetId: number;
-  rate: SnippetRate | undefined;
-  questions?: Array<Question>;
+  rate?: SnippetRate;
+  questions?: Array<SnippetQuestion>;
 }
 
 export interface SnippetRate {
-  value: number | undefined;
-  comment: string | undefined;
-  selectedAnswers?: Array<number>;
+  value: number;
+  comment?: string;
+  rater?: Rater;
+  solutions?: Array<Solution>;
 }
 
-export interface Question {
-  id?: number;
-  content?: string;
-  answers?: Array<Answer>;
-}
-
-export interface Answer {
-  id?: number;
-  content?: string;
-  rightAnswer?: boolean;
-  selected?: boolean;
+export interface SnippetQuestion extends Question {
+  solution?: Solution;
 }

@@ -1,7 +1,7 @@
 package com.ntd.unipassau.codeannotation.service;
 
-import com.ntd.unipassau.codeannotation.domain.Dataset;
-import com.ntd.unipassau.codeannotation.domain.Snippet;
+import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
+import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
 import com.ntd.unipassau.codeannotation.export.DatasetExporter;
 import com.ntd.unipassau.codeannotation.repository.DatasetRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRepository;

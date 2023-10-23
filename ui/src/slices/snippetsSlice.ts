@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import api from '../api';
 import { RootState } from '../app/store';
+import { Solution } from '../interfaces/question.interface';
 import { Snippet, SnippetRate } from '../interfaces/snippet.interface';
 import { defaultAPIErrorHandle, defaultAPISuccessHandle } from '../util/error-util';
 
@@ -38,7 +39,7 @@ export const rateSnippetAsync = createAsyncThunk(
       defaultAPIErrorHandle(error, dispatch);
       throw error;
     }
-    return rate;
+    return { snippetId, rate };
   }
 );
 
@@ -48,6 +49,39 @@ export const snippetsSlice = createSlice({
   reducers: {
     chooseSnippet: (state, action: PayloadAction<number>) => {
       state.selected = action.payload;
+    },
+    updateCurrentRateByKey: (state, action) => {
+      if (state.selected < state.snippets.length) {
+        const rate: SnippetRate = state.snippets[state.selected].rate || {
+          value: 0,
+          comment: undefined,
+        };
+        switch (action.payload.key) {
+          case 'comment':
+            rate.comment = action.payload.value;
+            break;
+          case 'rate':
+            rate.value = action.payload.value;
+            break;
+          default:
+            break;
+        }
+
+        state.snippets[state.selected].rate = rate;
+      }
+    },
+
+    updateQuestionSolution: (state, action: PayloadAction<{ questionIndex: number, solution: Solution }>) => {
+      const {
+        questionIndex,
+        solution,
+      } = action.payload;
+
+      const snippet = state.snippets[state.selected];
+      if (!snippet || !snippet.questions || questionIndex > snippet.questions.length - 1) {
+        return;
+      }
+      snippet.questions[questionIndex].solution = solution;
     },
   },
 
@@ -69,13 +103,11 @@ export const snippetsSlice = createSlice({
       })
       .addCase(rateSnippetAsync.fulfilled, (state, action) => {
         state.status = 'idle';
-        const rate = action.payload as SnippetRate;
-        state.snippets[state.selected].rate = rate;
-        state.snippets[state.selected].questions?.forEach(q => {
-          q.answers?.forEach(a => {
-            a.selected = rate.selectedAnswers?.includes(Number(a.id));
-          })
-        });
+        const { snippetId, rate } = action.payload;
+        state.snippets.forEach(snippet => {
+          if (snippet.id === snippetId)
+            snippet.rate = rate;
+        })
       })
       .addCase(rateSnippetAsync.rejected, (state) => {
         state.status = 'failed';
@@ -83,7 +115,11 @@ export const snippetsSlice = createSlice({
   },
 });
 
-export const { chooseSnippet } = snippetsSlice.actions;
+export const {
+  chooseSnippet,
+  updateCurrentRateByKey,
+  updateQuestionSolution,
+} = snippetsSlice.actions;
 
 export const selectSnippetsState = (state: RootState) => state.snippets;
 

@@ -13,7 +13,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Objects;
 
 /**
  * Base abstract class for entities which will hold definitions for created, last modified, created by,
@@ -76,7 +75,6 @@ public abstract class AbstractAuditingEntity<T> implements Serializable {
     public void setLastModifiedDate(Instant lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
-
 
 
     @Override

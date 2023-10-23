@@ -1,44 +1,46 @@
 package com.ntd.unipassau.codeannotation.web.rest;
 
-import com.ntd.unipassau.codeannotation.domain.Dataset;
-import com.ntd.unipassau.codeannotation.domain.Snippet;
+import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
+import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
+import com.ntd.unipassau.codeannotation.domain.question.Question;
 import com.ntd.unipassau.codeannotation.mapper.SnippetMapper;
 import com.ntd.unipassau.codeannotation.security.AuthoritiesConstants;
-import com.ntd.unipassau.codeannotation.service.AnswerService;
 import com.ntd.unipassau.codeannotation.service.DatasetService;
 import com.ntd.unipassau.codeannotation.service.SnippetService;
 import com.ntd.unipassau.codeannotation.web.rest.errors.BadRequestException;
 import com.ntd.unipassau.codeannotation.web.rest.errors.NotFoundException;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetRateVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetVM;
+import com.ntd.unipassau.codeannotation.web.rest.vm.SolutionVM;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.util.CollectionUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Tag(name = "Snippet Resource")
 @RestController
+@Validated
 public class SnippetResource {
     private final DatasetService datasetService;
-    private final AnswerService answerService;
     private final SnippetService snippetService;
     private final SnippetMapper snippetMapper;
 
     @Autowired
     public SnippetResource(
             DatasetService datasetService,
-            AnswerService answerService,
             SnippetService snippetService,
             SnippetMapper snippetMapper) {
         this.datasetService = datasetService;
-        this.answerService = answerService;
         this.snippetService = snippetService;
         this.snippetMapper = snippetMapper;
     }
@@ -47,7 +49,7 @@ public class SnippetResource {
     @GetMapping("/v1/datasets/{datasetId}/snippets")
     @Secured({AuthoritiesConstants.ANONYMOUS, AuthoritiesConstants.USER})
     public Collection<SnippetVM> getDatasetSnippets(@PathVariable Long datasetId) {
-        return snippetMapper.toSnippetVMs(snippetService.getDatasetSnippets(datasetId));
+        return snippetService.getDatasetSnippets(datasetId);
     }
 
     @Operation(summary = "Create a snippet")
@@ -81,13 +83,30 @@ public class SnippetResource {
         Snippet snippet = snippetService.getById(snippetId)
                 .orElseThrow(() -> new NotFoundException(
                         "Could not find snippet by id: " + snippetId, "pathVars", "snippetId"));
-        if (!CollectionUtils.isEmpty(rate.getSelectedAnswers())) {
-            Collection<Long> nonExistedIds = answerService.getNonExistedIds(rate.getSelectedAnswers());
-            if (nonExistedIds.size() > 0)
-                throw new BadRequestException(
-                        "Answer IDs are not existed: " + Arrays.toString(nonExistedIds.toArray()),
-                        "rate", "selectedAnswers");
-        }
+        validateSnippetSolutions(snippet, rate.getSolutions());
         snippetService.rateSnippet(rate, snippet);
+    }
+
+    private void validateSnippetSolutions(Snippet snippet, Collection<SolutionVM> solutions) {
+        Set<Long> snippetQuestions = snippet.getQuestions().stream().map(Question::getId).collect(Collectors.toSet());
+        Set<Long> solutionQuestions = solutions.stream()
+                .map(SolutionVM::questionId)
+                .collect(Collectors.toSet());
+        if (!snippetQuestions.containsAll(solutionQuestions)) {
+            List<Long> unknownQuestions = solutionQuestions.stream()
+                    .filter(qid -> !snippetQuestions.contains(qid))
+                    .toList();
+            throw new BadRequestException(
+                    "Question ID " + StringUtils.join(unknownQuestions, ", ")
+                            + " do not belong to snippet: " + snippet.getId(),
+                    "rate", "solutions");
+        } else if (!solutionQuestions.containsAll(snippetQuestions)) {
+            List<Long> answeredQuestions = snippetQuestions.stream()
+                    .filter(qid -> !solutionQuestions.contains(qid))
+                    .toList();
+            throw new BadRequestException(
+                    "Question ID " + StringUtils.join(answeredQuestions, ", ") + " have not been answered ",
+                    "rate", "solutions");
+        }
     }
 }

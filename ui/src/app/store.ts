@@ -2,8 +2,10 @@ import { Action, ThunkAction, configureStore } from '@reduxjs/toolkit';
 import appReducer from '../components/App/appSlice';
 import authReducer from '../slices/authSlice';
 import datasetsReducer from '../slices/datasetsSlice';
+import demographicQuestionReducer from '../slices/demographicQuestionSlice';
 import notificationReducer from '../slices/notificationSlice';
-import snippetReducer from '../slices/snippetSlice';
+import questionSetReducer from '../slices/questionSetSlice';
+import raterRegReducer from '../slices/raterRegSlice';
 import snippetsReducer from '../slices/snippetsSlice';
 
 export const store = configureStore({
@@ -12,8 +14,10 @@ export const store = configureStore({
     notification: notificationReducer,
     datasets: datasetsReducer,
     snippets: snippetsReducer,
-    snippet: snippetReducer,
     auth: authReducer,
+    questionSet: questionSetReducer,
+    demographicQuestion: demographicQuestionReducer,
+    raterReg: raterRegReducer,
   },
 });
 
