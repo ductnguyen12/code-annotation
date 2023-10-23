@@ -16,6 +16,7 @@ import {
   Link as RouterLink, useLocation,
 } from 'react-router-dom';
 import routes from '../../app/routes';
+import ProtectedElement from '../ProtectedElement';
 import DrawerHeader from './DrawerHeader';
 
 type AppDrawerProps = {
@@ -53,23 +54,29 @@ const AppDrawer: FC<AppDrawerProps> = ({
       </DrawerHeader>
       <Divider />
       <List>
-        {routes.filter(r => r.inDrawer).map(r => (
-          <ListItem
-            key={r.key}
-            disablePadding
-          >
-            <ListItemButton
-              selected={location.pathname.startsWith(r.drawerPathPrefix || 'null')}
-              component={RouterLink}
-              to={r.path}
+        {routes.filter(r => r.inDrawer).map(r => {
+          const element = (
+            <ListItem
+              key={r.key}
+              disablePadding
             >
-              <ListItemIcon>
-                {r.icon}
-              </ListItemIcon>
-              <ListItemText primary={r.title} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+              <ListItemButton
+                selected={location.pathname.startsWith(r.drawerPathPrefix || 'null')}
+                component={RouterLink}
+                to={r.path}
+              >
+                <ListItemIcon>
+                  {r.icon}
+                </ListItemIcon>
+                <ListItemText primary={r.title} />
+              </ListItemButton>
+            </ListItem>
+          );
+
+          return r.protected
+            ? (<ProtectedElement key={r.key} hidden={true}>{element}</ProtectedElement>)
+            : element;
+        })}
       </List>
     </Drawer>
   );
