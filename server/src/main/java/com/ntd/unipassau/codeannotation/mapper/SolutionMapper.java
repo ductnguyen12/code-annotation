@@ -7,11 +7,12 @@ import org.mapstruct.Mapping;
 
 import java.util.Collection;
 
-@Mapper(componentModel = "spring", uses = {RaterQuestionMapper.class})
+@Mapper(componentModel = "spring", uses = {DemographicQuestionMapper.class})
 public interface SolutionMapper {
 
+    @Mapping(target = "raterId", source = "id.raterId")
     @Mapping(target = "value", source = "solution")
-    @Mapping(target = "questionId", source = "question.id")
+    @Mapping(target = "questionId", source = "id.questionId")
     SolutionVM toSolutionVM(Solution solution);
 
     @Mapping(target = "rater", ignore = true)
@@ -21,6 +22,7 @@ public interface SolutionMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "id.raterId", source = "raterId")
     @Mapping(target = "id.questionId", source = "questionId")
     @Mapping(target = "solution", source = "value")
     Solution toSolution(SolutionVM solutionVM);

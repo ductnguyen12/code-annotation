@@ -8,9 +8,9 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "rater_question")
+@Table(name = "demographic_question")
 @Setter
 @Getter
 @ToString
-public class RaterQuestion extends Question {
+public class DemographicQuestion extends Question {
 }

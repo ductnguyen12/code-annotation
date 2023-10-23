@@ -4,10 +4,15 @@ import com.ntd.unipassau.codeannotation.client.RemoteFileReader;
 import com.ntd.unipassau.codeannotation.client.impl.HttpFileReader;
 import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
 import com.ntd.unipassau.codeannotation.domain.dataset.SnippetQuestion;
+import com.ntd.unipassau.codeannotation.domain.question.Question;
+import com.ntd.unipassau.codeannotation.domain.rater.Rater;
 import com.ntd.unipassau.codeannotation.domain.rater.SnippetRate;
+import com.ntd.unipassau.codeannotation.domain.rater.Solution;
 import com.ntd.unipassau.codeannotation.mapper.SnippetMapper;
 import com.ntd.unipassau.codeannotation.repository.SnippetRateRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRepository;
+import com.ntd.unipassau.codeannotation.repository.SolutionRepository;
+import com.ntd.unipassau.codeannotation.security.SecurityUtils;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetRateVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetVM;
 import lombok.SneakyThrows;
@@ -15,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -31,6 +37,7 @@ public class SnippetService {
     private final SnippetQuestionService snippetQuestionService;
     private final SolutionService solutionService;
     private final RaterService raterService;
+    private final SolutionRepository solutionRepository;
 
     @Autowired
     public SnippetService(
@@ -39,19 +46,46 @@ public class SnippetService {
             SnippetMapper snippetMapper,
             SnippetQuestionService snippetQuestionService,
             SolutionService solutionService,
-            RaterService raterService) {
+            RaterService raterService,
+            SolutionRepository solutionRepository) {
         this.snippetRepository = snippetRepository;
         this.snippetRateRepository = snippetRateRepository;
         this.solutionService = solutionService;
         this.snippetMapper = snippetMapper;
         this.snippetQuestionService = snippetQuestionService;
         this.raterService = raterService;
+        this.solutionRepository = solutionRepository;
     }
 
     @Transactional(readOnly = true)
     public Collection<SnippetVM> getDatasetSnippets(Long datasetId) {
         Collection<Snippet> snippets = snippetRepository.findAllByDatasetId(datasetId);
-        return snippetMapper.toSnippetVMs(snippets);
+        Collection<SnippetVM> snippetVMs = snippetMapper.toSnippetVMs(snippets);
+
+        // Admin can retrieve all rates and solutions
+        if (SecurityUtils.isAuthenticated())
+            return snippetVMs;
+
+        // Filter rates and solutions for current rater
+        raterService.getCurrentRater()
+                .ifPresent(rater -> snippetVMs.forEach(s -> {
+                    if (!CollectionUtils.isEmpty(s.getRates())) {
+                        s.setRates(s.getRates().stream()
+                                .filter(r -> rater.getId().equals(r.getRater().id()))
+                                .collect(Collectors.toList()));
+                    }
+                    if (!CollectionUtils.isEmpty(s.getQuestions())) {
+                        s.getQuestions().forEach(q -> {
+                            if (!CollectionUtils.isEmpty(q.getSolutions())) {
+                                q.setSolutions(q.getSolutions().stream()
+                                        .filter(sl -> rater.getId().equals(sl.raterId()))
+                                        .collect(Collectors.toList()));
+                            }
+                        });
+                    }
+                }));
+
+        return snippetVMs;
     }
 
     public Optional<Snippet> getById(Long snippetId) {
@@ -77,15 +111,18 @@ public class SnippetService {
     public Collection<Snippet> createSnippetsInBatch(Collection<Snippet> snippets) {
         Collection<SnippetQuestion> questions = new LinkedHashSet<>();
         Collection<SnippetRate> rates = new LinkedHashSet<>();
+
+        // Separate rates and snipets in order to avoid saving one by one
         snippets.forEach(s -> {
             questions.addAll(s.getQuestions());
-            if (s.getRate() != null) {
-                rates.add(s.getRate());
+            if (!CollectionUtils.isEmpty(s.getRates())) {
+                rates.addAll(s.getRates());
             }
             s.setQuestions(null);
-            s.setRate(null);
+            s.setRates(new LinkedHashSet<>());
         });
 
+        // Save all in batch
         snippetRepository.saveAll(snippets);
         snippetQuestionService.createAllInBatch(questions);
         createRatesInBatch(rates);
@@ -109,10 +146,18 @@ public class SnippetService {
                 .flatMap(s -> s.getQuestions().stream())
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
+        Set<Solution> solutions = questions.stream().map(Question::getSolutions)
+                .filter(Objects::nonNull)
+                .flatMap(Set::stream)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        solutionRepository.deleteAllInBatch(solutions);
         snippetQuestionService.deleteAllInBatch(questions);
 
         Set<SnippetRate> rates = snippets.stream()
-                .map(Snippet::getRate)
+                .map(Snippet::getRates)
+                .filter(Objects::nonNull)
+                .flatMap(Set::stream)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
         snippetRateRepository.deleteAllInBatch(rates);
@@ -132,15 +177,18 @@ public class SnippetService {
     }
 
     private void saveSnippetRate(SnippetRateVM rateVM, Snippet snippet) {
-        SnippetRate rate = snippet.getRate();
+        Rater rater = raterService.getCurrentRater()
+                .orElseThrow(() -> new RuntimeException("Saving SnippetRate requires rater"));
+        SnippetRate rate = snippetRateRepository.findBySnippetAndRater(snippet.getId(), rater.getId())
+                .orElse(null);
+
         if (rate == null) {
             rate = snippetMapper.toSnippetRate(rateVM);
         } else {
             BeanUtils.copyProperties(rateVM, rate);
         }
         rate.setSnippet(snippet);
-        rate.setRater(raterService.getCurrentRater()
-                .orElseThrow(() -> new RuntimeException("Saving SnippetRate requires rater")));
+        rate.setRater(rater);
 
         snippetRateRepository.save(rate);
     }

@@ -1,7 +1,7 @@
 package com.ntd.unipassau.codeannotation.web.rest;
 
 import com.ntd.unipassau.codeannotation.domain.question.QuestionSet;
-import com.ntd.unipassau.codeannotation.mapper.RaterQuestionMapper;
+import com.ntd.unipassau.codeannotation.mapper.DemographicQuestionMapper;
 import com.ntd.unipassau.codeannotation.repository.QuestionSetRepository;
 import com.ntd.unipassau.codeannotation.security.AuthoritiesConstants;
 import com.ntd.unipassau.codeannotation.web.rest.errors.NotFoundException;
@@ -17,16 +17,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 
-@Tag(name = "Rater Question Set Resource")
+@Tag(name = "Question Set Resource")
 @RestController
 public class QuestionSetResource {
     private final QuestionSetRepository questionSetRepository;
-    private final RaterQuestionMapper rQuestionMapper;
+    private final DemographicQuestionMapper rQuestionMapper;
 
     @Autowired
     public QuestionSetResource(
             QuestionSetRepository questionSetRepository,
-            RaterQuestionMapper rQuestionMapper) {
+            DemographicQuestionMapper rQuestionMapper) {
         this.questionSetRepository = questionSetRepository;
         this.rQuestionMapper = rQuestionMapper;
     }

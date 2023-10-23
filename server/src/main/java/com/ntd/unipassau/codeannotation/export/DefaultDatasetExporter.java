@@ -2,11 +2,15 @@ package com.ntd.unipassau.codeannotation.export;
 
 import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
+import com.ntd.unipassau.codeannotation.domain.rater.Rater;
+import com.ntd.unipassau.codeannotation.export.model.RateDoc;
 import com.ntd.unipassau.codeannotation.export.model.SnippetDoc;
+import com.ntd.unipassau.codeannotation.repository.RaterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,9 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class DefaultDatasetExporter implements DatasetExporter {
@@ -25,13 +28,16 @@ public class DefaultDatasetExporter implements DatasetExporter {
     private final static String METADATA_FILENAME = "{0}.{1}";
 
     private final ExportModelMapper exportModelMapper;
+    private final RaterRepository raterRepository;
     private final MetadataExporter metadataExporter;
 
     @Autowired
     public DefaultDatasetExporter(
             ExportModelMapper exportModelMapper,
+            RaterRepository raterRepository,
             MetadataExporter metadataExporter) {
         this.exportModelMapper = exportModelMapper;
+        this.raterRepository = raterRepository;
         this.metadataExporter = metadataExporter;
     }
 
@@ -76,10 +82,20 @@ public class DefaultDatasetExporter implements DatasetExporter {
         if (metadataFiles == null) {
             return dataset;
         }
+
+        // Use set of all raters id to validate rater info from request
+        Set<UUID> allRaters = raterRepository.findAll().stream().map(Rater::getId).collect(Collectors.toSet());
         Set<Snippet> snippets = new LinkedHashSet<>();
         for (File file : metadataFiles) {
             // Parse metadata
             SnippetDoc snippetDoc = metadataExporter.readSnippetMetadata(file.toPath());
+            if (!CollectionUtils.isEmpty(snippetDoc.getRates())) {
+                // Filter out not existed rater
+                List<RateDoc> rates = snippetDoc.getRates().stream()
+                        .filter(r -> allRaters.contains(UUID.fromString(r.getRater())))
+                        .collect(Collectors.toList());
+                snippetDoc.setRates(rates);
+            }
 
             Path sourceCodePath = file.toPath().getParent()
                     .resolve(ExportFileUtil.getBaseFilename(file.getName()));

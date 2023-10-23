@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface SnippetRepository extends JpaRepository<Snippet, Long> {
-    @Query("FROM Snippet s LEFT JOIN FETCH s.rate r " +
+    @Query("FROM Snippet s LEFT JOIN FETCH s.rates r " +
             "LEFT JOIN FETCH r.rater " +
             "LEFT JOIN FETCH s.questions q " +
             "LEFT JOIN FETCH q.solutions " +

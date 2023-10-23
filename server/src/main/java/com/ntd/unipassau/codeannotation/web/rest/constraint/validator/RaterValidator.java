@@ -1,7 +1,7 @@
 package com.ntd.unipassau.codeannotation.web.rest.constraint.validator;
 
-import com.ntd.unipassau.codeannotation.domain.rater.RaterQuestion;
-import com.ntd.unipassau.codeannotation.repository.RaterQuestionRepository;
+import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestion;
+import com.ntd.unipassau.codeannotation.repository.DemographicQuestionRepository;
 import com.ntd.unipassau.codeannotation.web.rest.constraint.RaterConstraint;
 import com.ntd.unipassau.codeannotation.web.rest.vm.RaterVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SolutionVM;
@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 
 @Component
 public class RaterValidator implements ConstraintValidator<RaterConstraint, RaterVM> {
-    private final RaterQuestionRepository rQuestionRepository;
+    private final DemographicQuestionRepository rQuestionRepository;
 
     @Autowired
-    public RaterValidator(RaterQuestionRepository rQuestionRepository) {
+    public RaterValidator(DemographicQuestionRepository rQuestionRepository) {
         this.rQuestionRepository = rQuestionRepository;
     }
 
@@ -28,20 +28,20 @@ public class RaterValidator implements ConstraintValidator<RaterConstraint, Rate
     public boolean isValid(RaterVM rater, ConstraintValidatorContext context) {
         context.disableDefaultConstraintViolation();
         Collection<SolutionVM> rSolutionVMs = rater.solutions();
-        final List<RaterQuestion> allQuestions = rQuestionRepository.findAll();
+        final List<DemographicQuestion> allQuestions = rQuestionRepository.findAll();
         return checkRequiredQuestions(context, allQuestions, rSolutionVMs);
     }
 
     protected boolean checkRequiredQuestions(
             ConstraintValidatorContext context,
-            List<RaterQuestion> allQuestions,
+            List<DemographicQuestion> allQuestions,
             Collection<SolutionVM> rSolutionVMs) {
         Set<Long> answeredQuestions = rSolutionVMs.stream()
                 .map(SolutionVM::questionId)
                 .collect(Collectors.toSet());
         Set<Long> requiredNotAnsweredQuestions = allQuestions.stream()
                 .filter(q -> null != q.getConstraint() && q.getConstraint().getRequired())
-                .map(RaterQuestion::getId)
+                .map(DemographicQuestion::getId)
                 .filter(id -> !answeredQuestions.contains(id))
                 .collect(Collectors.toSet());
 

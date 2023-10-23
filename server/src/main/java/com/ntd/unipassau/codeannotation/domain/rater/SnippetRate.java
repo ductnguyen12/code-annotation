@@ -8,7 +8,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "snippet_rate")
+@Table(name = "snippet_rate",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"snippet_id", "rater_id"})})
 @Setter
 @Getter
 @ToString
@@ -19,8 +20,8 @@ public class SnippetRate extends AbstractAuditingEntity<Long> {
     private Long id;
     private String comment;
     private Integer value;
-    @OneToOne(optional = false)
-    @JoinColumn(name = "snippet_id", unique = true, nullable = false, foreignKey = @ForeignKey(name = "fk_rate_snippet"))
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "snippet_id", nullable = false, foreignKey = @ForeignKey(name = "fk_rate_snippet"))
     @ToString.Exclude
     private Snippet snippet;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

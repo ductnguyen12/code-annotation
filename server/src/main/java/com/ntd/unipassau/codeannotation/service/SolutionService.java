@@ -4,7 +4,7 @@ import com.ntd.unipassau.codeannotation.domain.question.Question;
 import com.ntd.unipassau.codeannotation.domain.rater.Rater;
 import com.ntd.unipassau.codeannotation.domain.rater.Solution;
 import com.ntd.unipassau.codeannotation.mapper.SolutionMapper;
-import com.ntd.unipassau.codeannotation.repository.RaterQuestionRepository;
+import com.ntd.unipassau.codeannotation.repository.DemographicQuestionRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetQuestionRepository;
 import com.ntd.unipassau.codeannotation.repository.SolutionRepository;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SolutionVM;
@@ -20,14 +20,14 @@ import java.util.stream.Collectors;
 public class SolutionService {
     private final SolutionMapper solutionMapper;
     private final SolutionRepository solutionRepository;
-    private final RaterQuestionRepository rQuestionRepository;
+    private final DemographicQuestionRepository rQuestionRepository;
     private final SnippetQuestionRepository snippetQuestionRepository;
 
     @Autowired
     public SolutionService(
             SolutionMapper solutionMapper,
             SolutionRepository solutionRepository,
-            RaterQuestionRepository rQuestionRepository,
+            DemographicQuestionRepository rQuestionRepository,
             SnippetQuestionRepository snippetQuestionRepository) {
         this.solutionMapper = solutionMapper;
         this.solutionRepository = solutionRepository;
@@ -45,7 +45,7 @@ public class SolutionService {
     @Transactional
     public void createSnippetSolutionsInBatch(Long snippetId, Rater rater, Collection<SolutionVM> solutionVMs) {
         // Delete old solution
-        solutionRepository.deleteSnippetSolutionsBySnippetId(snippetId);
+        solutionRepository.deleteSnippetSolutionsBySnippetId(rater.getId(), snippetId);
         createSolutionsInBatch(rater, solutionVMs, snippetQuestionRepository);
     }
 

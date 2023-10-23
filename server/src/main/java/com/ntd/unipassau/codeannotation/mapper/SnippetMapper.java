@@ -11,14 +11,15 @@ import org.mapstruct.Mapping;
 
 import java.util.Collection;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {SolutionMapper.class})
 public interface SnippetMapper {
+    @Mapping(target = "rate", ignore = true)
     @Mapping(target = "datasetId", source = "dataset.id")
     SnippetVM toSnippetVM(Snippet snippet);
 
     Collection<SnippetVM> toSnippetVMs(Collection<Snippet> snippets);
 
-    @Mapping(target = "rate", ignore = true)
+    @Mapping(target = "rates", ignore = true)
     @Mapping(target = "dataset", ignore = true)
     @Mapping(target = "lastModifiedDate", ignore = true)
     @Mapping(target = "lastModifiedBy", ignore = true)
@@ -26,9 +27,6 @@ public interface SnippetMapper {
     @Mapping(target = "createdBy", ignore = true)
     Snippet toSnippet(SnippetVM snippetVM);
 
-    @Mapping(target = "solution.value", source = "solution.solution")
-    @Mapping(target = "solution.question", ignore = true)
-    @Mapping(target = "solution.questionId", source = "solution.question.id")
     @Mapping(target = "questionSetId", source = "questionSet.id")
     SnippetQuestionVM toSnippetQuestionVM(SnippetQuestion snippetQuestion);
 
@@ -36,6 +34,7 @@ public interface SnippetMapper {
     @Mapping(target = "rater.solutions", ignore = true)
     SnippetRateVM toSnippetRateVM(SnippetRate rate);
 
+    @Mapping(target = "snippet", ignore = true)
     @Mapping(target = "lastModifiedDate", ignore = true)
     @Mapping(target = "lastModifiedBy", ignore = true)
     @Mapping(target = "id", ignore = true)

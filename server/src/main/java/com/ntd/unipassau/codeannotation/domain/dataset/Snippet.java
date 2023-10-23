@@ -39,6 +39,7 @@ public class Snippet extends AbstractAuditingEntity<Long> {
     @ToString.Exclude
     public Set<SnippetQuestion> questions;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "snippet")
-    private SnippetRate rate;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "snippet")
+    @ToString.Exclude
+    private Set<SnippetRate> rates;
 }
