@@ -10,15 +10,19 @@ import { updateQuestionSolution } from '../../../../slices/snippetsSlice';
 interface SnippetQuestionProps {
   index: number;
   question: SQuestion;
+  editable?: boolean;
 }
 
 const SnippetQuestion: React.FC<SnippetQuestionProps> = ({
   index,
   question,
+  editable,
 }) => {
   const dispatch = useAppDispatch();
 
   const handleChange = (questionIndex: number, solution: Solution) => {
+    if (!editable)
+      return;
     dispatch(updateQuestionSolution({ questionIndex, solution }));
   };
 
