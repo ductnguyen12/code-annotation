@@ -13,13 +13,12 @@ import InputLabel from "@mui/material/InputLabel"
 import OutlinedInput from "@mui/material/OutlinedInput"
 import Paper from "@mui/material/Paper"
 import { Navigate } from "react-router-dom"
-import { useAppDispatch } from "../../app/hooks"
-import { useAuthentication } from "../../hooks/auth"
+import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { Login } from "../../interfaces/auth.interface"
-import { signInAsync } from "../../slices/authSlice"
+import { selectAuthState, signInAsync } from "../../slices/authSlice"
 
 const SignInPage = () => {
-  const { authenticated, status } = useAuthentication();
+  const { authenticated, status } = useAppSelector(selectAuthState);
   const dispatch = useAppDispatch();
   const onSubmit: SubmitHandler<Login> = (login: Login) => {
     dispatch(signInAsync(login));

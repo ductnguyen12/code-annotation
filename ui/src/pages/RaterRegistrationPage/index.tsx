@@ -1,17 +1,16 @@
-import Typography from '@mui/material/Typography';
 
 import { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import LoadingBackdrop from "../../components/LoadingBackdrop";
+import { selectDemographicQuestionState } from '../../slices/demographicQuestionSlice';
+import { selectQuestionSetState } from '../../slices/questionSetSlice';
 import { selectRaterRegState, setRater } from "../../slices/raterRegSlice";
 import DemographicQuestions from "./DemographicQuestions";
-import { selectQuestionSetState } from '../../slices/questionSetSlice';
-import { selectDemographicQuestionState } from '../../slices/demographicQuestionSlice';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const RaterRegistrationPage = () => {
-  const [searchParams, _] = useSearchParams();
+  const [searchParams,] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 

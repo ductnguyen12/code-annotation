@@ -1,7 +1,6 @@
 package com.ntd.unipassau.codeannotation.domain.question;
 
 import com.ntd.unipassau.codeannotation.domain.AbstractAuditingEntity;
-import com.ntd.unipassau.codeannotation.domain.rater.RaterQuestion;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,5 +25,5 @@ public class QuestionSet extends AbstractAuditingEntity<Long> {
 
     @OneToMany(mappedBy = "questionSet")
     @ToString.Exclude
-    private Collection<RaterQuestion> questions;
+    private Collection<Question> questions;
 }

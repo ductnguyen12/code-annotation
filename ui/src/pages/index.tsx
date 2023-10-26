@@ -12,6 +12,7 @@ import routes from "../app/routes";
 import { changeTitle } from "../components/App/appSlice";
 import DrawerHeader from "../components/AppDrawer/DrawerHeader";
 import ProtectedElement from "../components/ProtectedElement";
+import { useAuthentication } from "../hooks/auth";
 
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' && prop !== 'drawerWidth' })(
@@ -50,6 +51,8 @@ const Pages: FC<PagesProps> = ({
   const theme: Theme = useTheme();
   const location = useLocation();
   const dispatch = useAppDispatch();
+
+  useAuthentication();
 
   useEffect(() => {
     // Find specific currently using route

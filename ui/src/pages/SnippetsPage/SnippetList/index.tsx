@@ -12,6 +12,7 @@ import LoadingBackdrop from '../../../components/LoadingBackdrop';
 import { useDatasetSnippets } from "../../../hooks/snippet";
 import { Solution } from '../../../interfaces/question.interface';
 import { SnippetRate } from "../../../interfaces/snippet.interface";
+import { pushNotification } from '../../../slices/notificationSlice';
 import { chooseSnippet, rateSnippetAsync } from "../../../slices/snippetsSlice";
 import DatasetDetail from './DatasetDetail';
 import SnippetCode from './SnippetCode';
@@ -28,16 +29,27 @@ const SnippetList = () => {
     status,
     snippets,
     selected,
+    selectedRater,
   } = useDatasetSnippets(id ? parseInt(id) : undefined);
   const dispatch = useAppDispatch();
 
   const onSelectSnippet = (index: number) => {
-    onRateChange();
-    dispatch(chooseSnippet(index));
+    if (!isEditable()) {
+      dispatch(chooseSnippet(index));
+    } else {
+      onRateChange(index);
+    }
   }
 
-  const onRateChange = (): void => {
-    if (!snippets[selected].rate) {
+  const onRateChange = (nextSnippet?: number): void => {
+    if (!isEditable())
+      return;
+    if (snippets[selected].rate === undefined
+      || (snippets[selected].rate?.value as number) < 1) {
+      dispatch(pushNotification({
+        message: 'Rating is required',
+        variant: 'error',
+      }));
       return;
     }
     const solutions = snippets[selected].questions?.map(q => q.solution).filter(s => s) as Array<Solution>;
@@ -48,8 +60,11 @@ const SnippetList = () => {
     dispatch(rateSnippetAsync({
       snippetId: snippets[selected].id,
       rate,
+      nextSnippet,
     }));
   }
+
+  const isEditable = () => !selectedRater;
 
   return (
     <Box>
@@ -78,8 +93,15 @@ const SnippetList = () => {
             />
             <SnippetCode />
             <SnippetRating
-              rate={snippets[selected].rate}
+              rate={
+                // Edit my rating or view other's rating
+                isEditable()
+                  ? snippets[selected].rate
+                  : snippets[selected].rates?.find(r => selectedRater === r.rater?.id)
+              }
               questions={snippets[selected].questions}
+              rater={selectedRater}
+              editable={isEditable()}
             />
             <Box
               sx={{
@@ -98,13 +120,13 @@ const SnippetList = () => {
                   <ArrowForwardIcon fontSize="large" />
                 </IconButton>
               )}
-              {selected === snippets.length - 1 && (
+              {selected === snippets.length - 1 && isEditable() && (
                 <LoadingButton
                   loading={false}
                   endIcon={<SendIcon />}
                   loadingPosition="end"
                   variant="contained"
-                  onClick={onRateChange}
+                  onClick={() => onRateChange()}
                 >
                   <span>Submit</span>
                 </LoadingButton>

@@ -14,6 +14,8 @@ import SnippetQuestion from './SnippetQuestion';
 interface SnippetRatingProps {
   rate?: SnippetRate;
   questions?: Array<SQuestion>;
+  rater?: string;                 // For filtering soluton
+  editable?: boolean;
 }
 
 interface Labels {
@@ -35,6 +37,8 @@ function getLabelText(value: number) {
 const SnippetRating: React.FC<SnippetRatingProps> = ({
   rate,
   questions,
+  rater,
+  editable,
 }) => {
   const dispatch = useAppDispatch();
   const [hover, setHover] = React.useState(-1);
@@ -44,6 +48,12 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
   } = rate || {
     value: 0,
     comment: "",
+  }
+
+  const handleChange = (key: string, value: any) => {
+    if (!editable)
+      return;
+    dispatch(updateCurrentRateByKey({ key, value }));
   }
 
   return (
@@ -66,21 +76,21 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
           multiline
           fullWidth
           rows={3}
-          value={comment}
-          onChange={(event) => dispatch(updateCurrentRateByKey({ key: 'comment', value: event.target.value }))}
+          value={comment || ""}
+          onChange={(event) => handleChange('comment', event.target.value)}
         />
       </FormControl>
       <FormControl>
         <Rating
           getLabelText={getLabelText}
-          onChange={(event, newValue) => dispatch(updateCurrentRateByKey({ key: 'rate', value: newValue ? newValue : 0 }))}
+          onChange={(event, newValue) => handleChange('rate', newValue ? newValue : 0)}
           onChangeActive={(event, newHover) => {
             setHover(newHover);
           }}
           emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
           value={rateValue}
         />
-        {((!!rateValue && rateValue > 0) || hover !== -1)  && (
+        {((!!rateValue && rateValue > 0) || hover !== -1) && (
           <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : rateValue]}</Box>
         )}
       </FormControl>
@@ -90,6 +100,8 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
             key={q.id}
             index={index}
             question={q}
+            rater={rater}
+            editable={editable}
           />
         ))}
       </Grid>

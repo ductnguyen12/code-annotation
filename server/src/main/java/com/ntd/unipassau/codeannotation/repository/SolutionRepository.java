@@ -16,17 +16,17 @@ public interface SolutionRepository extends JpaRepository<Solution, Solution.Sol
 
     @Query("DELETE FROM Solution s WHERE s.id in (" +
             "SELECT s2.id FROM Solution s2 JOIN s2.rater r JOIN s2.question q " +
-            "INNER JOIN RaterQuestion rq ON q.id = rq.id " +
+            "INNER JOIN DemographicQuestion dq ON q.id = dq.id " +
             "WHERE r.id = :raterId" +
             ")")
     @Modifying
     void deleteRaterSolutionsByRaterId(UUID raterId);
 
-    @Query("DELETE FROM Solution s WHERE s.id in (" +
+    @Query("DELETE FROM Solution s WHERE s.id.raterId = :raterId AND s.id in (" +
             "SELECT s2.id FROM Solution s2 JOIN s2.question q " +
             "INNER JOIN SnippetQuestion sq ON q.id = sq.id " +
             "WHERE sq.snippet.id = :snippetId" +
             ")")
     @Modifying
-    void deleteSnippetSolutionsBySnippetId(Long snippetId);
+    void deleteSnippetSolutionsBySnippetId(UUID raterId, Long snippetId);
 }

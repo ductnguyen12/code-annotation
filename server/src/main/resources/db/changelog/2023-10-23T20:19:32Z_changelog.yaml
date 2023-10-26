@@ -1,0 +1,23 @@
+databaseChangeLog:
+- changeSet:
+    id: 1698055317926-63
+    author: ducnt (generated)
+    changes:
+    - dropUniqueConstraint:
+        constraintName: uc_snippet_ratesnippet_id_col
+        tableName: snippet_rate
+- changeSet:
+    id: 1698092383816-62
+    author: ducnt (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: snippet_id, rater_id
+        constraintName: UK6hy790paelyoo3d6jegxluxpa
+        tableName: snippet_rate
+- changeSet:
+    id: 1698085734848-61
+    author: ducnt (generated)
+    changes:
+    - renameTable:
+        oldTableName: rater_question
+        newTableName: demographic_question

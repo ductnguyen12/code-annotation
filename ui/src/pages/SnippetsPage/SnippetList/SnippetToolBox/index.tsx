@@ -2,16 +2,18 @@ import AddIcon from '@mui/icons-material/Add';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { IconButton } from "@mui/material";
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useEffect } from 'react';
+import { useCookies } from 'react-cookie';
 import { useParams } from "react-router-dom";
 import api from '../../../../api';
-import { useAppDispatch } from "../../../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import ProtectedElement from '../../../../components/ProtectedElement';
 import { Snippet } from "../../../../interfaces/snippet.interface";
 import { pushNotification } from '../../../../slices/notificationSlice';
-import { loadDatasetSnippetsAsync } from "../../../../slices/snippetsSlice";
+import { chooseRater, loadDatasetSnippetsAsync, selectSnippetsState, setRaters } from "../../../../slices/snippetsSlice";
 import { defaultAPIErrorHandle } from '../../../../util/error-util';
 import CreateSnippetDialog from './CreateSnippetDialog';
+import RaterSelector from './RaterSelector';
 
 type RouteParams = {
   id: string,
@@ -21,6 +23,26 @@ const SnippetToolBox = () => {
   const { id } = useParams<RouteParams>();
   const dispatch = useAppDispatch();
   const [open, setOpen] = React.useState(false);
+
+  const {
+    selected,
+    snippets,
+    selectedRater,
+    raters,
+  } = useAppSelector(selectSnippetsState);
+
+  const [cookies,] = useCookies(['token']);
+
+  useEffect(() => {
+    if (selected < snippets.length) {
+      dispatch(setRaters(
+        snippets[selected].rates?.filter(rate => rate.rater?.id !== undefined)
+          .map(rate => rate.rater?.id as string)
+        || []
+      ));
+    }
+
+  }, [selected, snippets, dispatch])
 
   const onCreatedSnippet = (snippet: Snippet) => {
     if (id) {
@@ -57,6 +79,10 @@ const SnippetToolBox = () => {
         });
   }
 
+  const onRaterChange = (raterId: string | undefined) => {
+    dispatch(chooseRater(raterId));
+  }
+
   return (
     <ProtectedElement hidden={true}>
       <>
@@ -78,6 +104,11 @@ const SnippetToolBox = () => {
         <IconButton aria-label="Export" onClick={onExportSnippets}>
           <FileDownloadIcon />
         </IconButton>
+        <RaterSelector
+          rater={selectedRater}
+          raters={raters.filter(r => r !== cookies.token)}
+          onRaterChange={onRaterChange}
+        />
         <CreateSnippetDialog
           open={open}
           setOpen={setOpen}

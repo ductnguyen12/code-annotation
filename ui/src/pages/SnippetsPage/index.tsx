@@ -12,7 +12,7 @@ const SnippetsPage = () => {
 
   const navigate = useNavigate();
 
-  const [cookies, _] = useCookies(['token']);
+  const [cookies,] = useCookies(['token']);
 
   useEffect(() => {
     if (!cookies.token) {
