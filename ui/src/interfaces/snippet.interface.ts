@@ -8,7 +8,8 @@ export interface Snippet {
   fromLine: number;
   toLine: number;
   datasetId: number;
-  rate?: SnippetRate;
+  rate?: SnippetRate;           // Current user's ratings
+  rates?: Array<SnippetRate>;   // All ratings
   questions?: Array<SnippetQuestion>;
 }
 
@@ -20,5 +21,6 @@ export interface SnippetRate {
 }
 
 export interface SnippetQuestion extends Question {
-  solution?: Solution;
+  solution?: Solution;            // Current user's solution
+  solutions?: Array<Solution>;    // All solutions
 }

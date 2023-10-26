@@ -17,6 +17,7 @@ export interface Answer {
 export interface Solution {
   questionId: number;
   value: SolutionValue;
+  raterId?: string;
   question?: Question;
 }
 

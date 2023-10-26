@@ -10,12 +10,14 @@ import { updateQuestionSolution } from '../../../../slices/snippetsSlice';
 interface SnippetQuestionProps {
   index: number;
   question: SQuestion;
+  rater?: string;         // For filtering soluton
   editable?: boolean;
 }
 
 const SnippetQuestion: React.FC<SnippetQuestionProps> = ({
   index,
   question,
+  rater,
   editable,
 }) => {
   const dispatch = useAppDispatch();
@@ -31,7 +33,10 @@ const SnippetQuestion: React.FC<SnippetQuestionProps> = ({
       <QuestionComponent
         questionIndex={index}
         question={question}
-        solution={question.solution}
+        solution={editable
+          ? question.solution
+          : question.solutions?.find(s => s.raterId === rater)
+        }
         onValueChange={handleChange}
       />
     </Grid>

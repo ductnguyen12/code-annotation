@@ -14,6 +14,7 @@ import SnippetQuestion from './SnippetQuestion';
 interface SnippetRatingProps {
   rate?: SnippetRate;
   questions?: Array<SQuestion>;
+  rater?: string;                 // For filtering soluton
   editable?: boolean;
 }
 
@@ -36,6 +37,7 @@ function getLabelText(value: number) {
 const SnippetRating: React.FC<SnippetRatingProps> = ({
   rate,
   questions,
+  rater,
   editable,
 }) => {
   const dispatch = useAppDispatch();
@@ -98,6 +100,7 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
             key={q.id}
             index={index}
             question={q}
+            rater={rater}
             editable={editable}
           />
         ))}

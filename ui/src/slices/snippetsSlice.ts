@@ -9,12 +9,16 @@ export interface SnippetsState {
   status: 'idle' | 'loading' | 'failed';
   snippets: Snippet[];
   selected: number;
+  selectedRater?: string;
+  raters: string[];
 }
 
 const initialState: SnippetsState = {
   status: 'idle',
   snippets: [],
   selected: 0,
+  selectedRater: undefined,
+  raters: [],
 };
 
 export const loadDatasetSnippetsAsync = createAsyncThunk(
@@ -31,7 +35,15 @@ export const loadDatasetSnippetsAsync = createAsyncThunk(
 
 export const rateSnippetAsync = createAsyncThunk(
   'snippets/rateSnippetAsync',
-  async ({ snippetId, rate }: { snippetId: number, rate: SnippetRate }, { dispatch }) => {
+  async ({
+    snippetId,
+    rate,
+    nextSnippet,
+  }: {
+    snippetId: number,
+    rate: SnippetRate,
+    nextSnippet?: number,
+  }, { dispatch }) => {
     try {
       await api.rateSnippet(snippetId, rate);
       defaultAPISuccessHandle(`Rated snippet '${snippetId}': ${rate.value} stars`, dispatch);
@@ -39,7 +51,7 @@ export const rateSnippetAsync = createAsyncThunk(
       defaultAPIErrorHandle(error, dispatch);
       throw error;
     }
-    return { snippetId, rate };
+    return { snippetId, rate, nextSnippet };
   }
 );
 
@@ -83,6 +95,13 @@ export const snippetsSlice = createSlice({
       }
       snippet.questions[questionIndex].solution = solution;
     },
+
+    chooseRater: (state, action: PayloadAction<string | undefined>) => {
+      state.selectedRater = action.payload;
+    },
+    setRaters: (state, action: PayloadAction<string[]>) => {
+      state.raters = action.payload;
+    },
   },
 
   extraReducers: (builder) => {
@@ -103,11 +122,18 @@ export const snippetsSlice = createSlice({
       })
       .addCase(rateSnippetAsync.fulfilled, (state, action) => {
         state.status = 'idle';
-        const { snippetId, rate } = action.payload;
+        const {
+          snippetId,
+          rate,
+          nextSnippet,
+        } = action.payload;
         state.snippets.forEach(snippet => {
           if (snippet.id === snippetId)
             snippet.rate = rate;
-        })
+        });
+
+        if (nextSnippet !== undefined)
+          state.selected = nextSnippet;
       })
       .addCase(rateSnippetAsync.rejected, (state) => {
         state.status = 'failed';
@@ -119,6 +145,9 @@ export const {
   chooseSnippet,
   updateCurrentRateByKey,
   updateQuestionSolution,
+
+  chooseRater,
+  setRaters,
 } = snippetsSlice.actions;
 
 export const selectSnippetsState = (state: RootState) => state.snippets;
