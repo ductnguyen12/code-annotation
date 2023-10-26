@@ -81,7 +81,7 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
       <FormControl>
         <Rating
           getLabelText={getLabelText}
-          onChange={(event, newValue) => handleChange('comment', newValue ? newValue : 0)}
+          onChange={(event, newValue) => handleChange('rate', newValue ? newValue : 0)}
           onChangeActive={(event, newHover) => {
             setHover(newHover);
           }}
