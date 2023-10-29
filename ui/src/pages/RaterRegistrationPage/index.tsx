@@ -30,7 +30,8 @@ const RaterRegistrationPage = () => {
   const [cookies, setCookie] = useCookies(['token']);
   useEffect(() => {
     if (!cookies.token && rater?.id) {
-      setCookie('token', rater.id, { path: '/', maxAge: 2 << 24, secure: true });   // maxAge ~ 388 days
+      // TODO: set secure to cookies after having https domain
+      setCookie('token', rater.id, { path: '/', maxAge: 2 << 24 });   // maxAge ~ 388 days
     } else if (cookies.token && !rater?.id) {
       dispatch(setRater({ id: cookies.token }))
     }

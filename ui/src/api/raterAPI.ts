@@ -11,8 +11,10 @@ export const registerAsRater = async (raterData: Rater): Promise<Rater> => {
 }
 
 export const setRater = (rater: string | undefined | null) => {
-  if (rater)
-    cookies.set('token', rater, { path: '/', maxAge: 2<<24, secure: true });   // maxAge ~ 388 days
+  if (rater) {
+    // TODO: set secure to cookies after having https domain
+    cookies.set('token', rater, { path: '/', maxAge: 2 << 24 });   // maxAge ~ 388 days
+  }
 }
 
 export const clearRater = () => {
