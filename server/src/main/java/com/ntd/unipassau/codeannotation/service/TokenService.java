@@ -1,6 +1,6 @@
 package com.ntd.unipassau.codeannotation.service;
 
-import com.ntd.unipassau.codeannotation.domain.User;
+import com.ntd.unipassau.codeannotation.domain.rater.Rater;
 import com.ntd.unipassau.codeannotation.repository.RaterRepository;
 import com.ntd.unipassau.codeannotation.repository.UserRepository;
 import com.ntd.unipassau.codeannotation.security.SecurityUtils;
@@ -15,9 +15,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -65,17 +65,25 @@ public class TokenService {
                 .map(userDetails -> tokenProvider.generateToken((UserPrincipal) userDetails));
     }
 
+    @Transactional
     public Optional<UserVM> getCurrentUser() {
         return SecurityUtils.getCurrentUser()
                 .map(UserPrincipal.class::cast)
                 .flatMap(principal -> userRepository.findById(principal.getId())
                         .map(user -> {
-                            UUID raterId = raterRepository.findByUserId(user.getId())
-                                    .map(rater -> rater.getId())
-                                    .orElse(principal.getRaterId());
                             UserVM userVM = new UserVM();
                             BeanUtils.copyProperties(user, userVM);
-                            userVM.setRaterId(raterId);
+
+                            // Enrich rater info (create new rater if necessary)
+                            raterRepository.findByUserId(user.getId())
+                                    .or(() -> {
+                                        Rater rater = new Rater();
+                                        rater.setId(UUID.randomUUID());
+                                        rater.setUser(user);
+                                        return Optional.of(raterRepository.save(rater));
+                                    })
+                                    .ifPresent(rater -> userVM.setRaterId(rater.getId()));
+
                             return userVM;
                         }));
     }
