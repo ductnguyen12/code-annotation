@@ -1,14 +1,14 @@
 version: '3.8'
 services:
   code-annotation-ui:
-    image: ducnt12/code-annotation-ui:dev
+    image: ducnt12/code-annotation-ui:1.0
     container_name: code-annotation-ui
     restart: always
     build:
       context: ./ui
       target: production
     environment:
-      - REACT_APP_BACKEND=http://localhost:3000
+      - REACT_APP_BACKEND=http://${CA_HOST:-localhost:3000}
     labels:
       - traefik.enable=true
       - traefik.http.services.code-annotation-ui.loadbalancer.server.port=80
@@ -16,20 +16,17 @@ services:
       - traefik.http.routers.code-annotation-ui.entrypoints=web
 
   code-annotation-server:
-    image: ducnt12/code-annotation-server:dev
+    image: ducnt12/code-annotation-server:1.0
     container_name: code-annotation-server
     restart: always
     build:
       context: ./server
       target: production
+    env_file:
+      - /mnt/secrets/server-secret.env
     environment:
       - ENV=production
-      - DB_URI=jdbc:postgresql://code-annotation-db:5432/postgres   # Should be defined in CI pipeline
-      - DB_USER=postgres                                            # Should be defined in CI pipeline
-      - DB_PASSWORD=123456aA@                                       # Should be defined in CI pipeline
-      - ROOT_USER=ca_root                                           # Should be defined in CI pipeline
-      - ROOT_PASSWORD=123456aA@                                     # Should be defined in CI pipeline
-      - CORS_ORIGIN_PATTERNS=http://localhost:*
+      - CORS_ORIGIN_PATTERNS=http://${CA_HOST:-localhost:*}
     labels:
       - traefik.enable=true
       - traefik.http.services.code-annotation.loadbalancer.server.port=8080
@@ -43,13 +40,10 @@ services:
     container_name: code-annotation-db
     image: postgres:15.3
     restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=123456aA@
+    env_file:
+      - /mnt/secrets/db-secret.env
     volumes:
-      - ./volumes/postgresql/:/var/lib/postgresql/data/
+      - /mnt/postgresql/:/var/lib/postgresql/data/
 
   traefik:
     image: traefik:v2.9
@@ -69,10 +63,8 @@ services:
     #   - traefik.http.routers.dashboard.service=api@internal
     #   - traefik.http.routers.dashboard.rule=Host(`${CA_HOST:-localhost}`)
     ports:
-      - 3000:3000
+      - 80:3000
     #  - 8090:8090
-    environment:
-      - CA_HOST=localhost
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
