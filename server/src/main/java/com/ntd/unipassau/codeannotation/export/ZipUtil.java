@@ -3,11 +3,14 @@ package com.ntd.unipassau.codeannotation.export;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public final class ZipUtil {
+    private final static String ANTI_FILENAME_PATTERN = ".*(__MACOSX|.DS_Store).*";
+
     public static void zipDirectory(Path dir, Path outPath) throws IOException {
         try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(outPath.toFile()))) {
             Files.walkFileTree(dir, new ZipPathVisitor(dir, zos));
@@ -20,6 +23,12 @@ public final class ZipUtil {
 
             while (zipEntry != null) {
                 Path newPath = zipSlipProtect(zipEntry, outPath);
+
+                // Prevent extracting weird files
+                if (newPath.toString().matches(ANTI_FILENAME_PATTERN)) {
+                    zipEntry = zis.getNextEntry();
+                    continue;
+                }
 
                 if (zipEntry.isDirectory()) {
                     Files.createDirectories(newPath);
