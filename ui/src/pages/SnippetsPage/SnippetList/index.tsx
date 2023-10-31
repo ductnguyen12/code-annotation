@@ -41,7 +41,7 @@ const SnippetList = () => {
     }
   }
 
-  const onRateChange = (nextSnippet?: number): void => {
+  const onRateChange = (nextSnippet?: number, successfulMsg?: string): void => {
     if (!isEditable())
       return;
     if (snippets[selected].rate === undefined
@@ -61,6 +61,7 @@ const SnippetList = () => {
       snippetId: snippets[selected].id,
       rate,
       nextSnippet,
+      successfulMsg,
     }));
   }
 
@@ -126,7 +127,7 @@ const SnippetList = () => {
                   endIcon={<SendIcon />}
                   loadingPosition="end"
                   variant="contained"
-                  onClick={() => onRateChange()}
+                  onClick={() => onRateChange(undefined, 'Submit ratings successfully!')}
                 >
                   <span>Submit</span>
                 </LoadingButton>

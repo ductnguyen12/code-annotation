@@ -39,14 +39,17 @@ export const rateSnippetAsync = createAsyncThunk(
     snippetId,
     rate,
     nextSnippet,
+    successfulMsg,
   }: {
     snippetId: number,
     rate: SnippetRate,
     nextSnippet?: number,
+    successfulMsg?: string,
   }, { dispatch }) => {
     try {
       await api.rateSnippet(snippetId, rate);
-      defaultAPISuccessHandle(`Rated snippet '${snippetId}': ${rate.value} stars`, dispatch);
+      if (successfulMsg)
+        defaultAPISuccessHandle(successfulMsg, dispatch);
     } catch (error: any) {
       defaultAPIErrorHandle(error, dispatch);
       throw error;
