@@ -114,6 +114,8 @@ public class SnippetService {
 
         // Separate rates and snipets in order to avoid saving one by one
         snippets.forEach(s -> {
+            if (CollectionUtils.isEmpty(s.getQuestions()))
+                return;
             questions.addAll(s.getQuestions());
             if (!CollectionUtils.isEmpty(s.getRates())) {
                 rates.addAll(s.getRates());
