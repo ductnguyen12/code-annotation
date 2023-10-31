@@ -17,6 +17,10 @@ export const createDataset = async (dataset: Dataset): Promise<Dataset> => {
   return response.data;
 }
 
+export const deleteDataset = async (datasetId: number): Promise<void> => {
+  await axios.delete<void>(`/api/v1/datasets/${datasetId}`);
+}
+
 export const importDatasetSnippets = async (datasetId: number, file: File): Promise<void> => {
   const formData = new FormData();
   formData.append('file', file);

@@ -40,6 +40,19 @@ export const loadDatasetAsync = createAsyncThunk(
   }
 );
 
+export const deleteDatasetAsync = createAsyncThunk<number, number, { dispatch: Dispatch }>(
+  'datasets/deleteDataset',
+  async (datasetId: number, { dispatch }) => {
+    try {
+      await api.deleteDataset(datasetId);
+      return datasetId;
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch, 'Could not fetch list of datasets');
+      throw error;
+    }
+  }
+);
+
 export const datasetsSlice = createSlice({
   name: 'datasets',
   initialState,
@@ -73,7 +86,19 @@ export const datasetsSlice = createSlice({
       })
       .addCase(loadDatasetAsync.rejected, (state) => {
         state.status = 'failed';
-      });
+      })
+
+      .addCase(deleteDatasetAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteDatasetAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.datasets = state.datasets.filter(dataset => dataset.id !== action.payload);
+      })
+      .addCase(deleteDatasetAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+      ;
   },
 });
 

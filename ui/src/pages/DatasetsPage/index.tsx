@@ -1,9 +1,11 @@
-import { Box, Grid } from "@mui/material";
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import Box from "@mui/material/Box";
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
+import CardHeader from "@mui/material/CardHeader";
+import Grid from "@mui/material/Grid";
+import IconButton from '@mui/material/IconButton';
 
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
@@ -13,11 +15,13 @@ import { useDatasets } from "../../hooks/dataset";
 import { Dataset } from "../../interfaces/dataset.interface";
 import { loadDatasetsAsync } from "../../slices/datasetsSlice";
 import CreateDatasetDialog from "./CreateDatasetDialog";
+import DeleteDatasetDialog from "./DeleteDatasetDialog";
 
 const DatasetsPage = () => {
   const { status, datasets } = useDatasets();
   const dispatch = useAppDispatch();
   const [open, setOpen] = React.useState(false);
+  const [deleteDataset, setDeleteDataset] = React.useState<Dataset | undefined>(undefined);
 
   const onCreatedDataset = (dataset: Dataset) => {
     dispatch(loadDatasetsAsync());
@@ -48,15 +52,15 @@ const DatasetsPage = () => {
         {datasets.map(d => (
           <Grid key={d.id} item xs={3}>
             <Card>
-              <CardContent>
-                <Typography variant="h5" component="div">
-                  {`${d.id}. ${d.name}`}
-                </Typography>
-                <Typography variant="body2">
-                  {d.description}
-                </Typography>
-              </CardContent>
-              <CardActions>
+              <CardHeader
+                title={`${d.id}. ${d.name}`}
+                subheader={d.description}
+              />
+              <CardActions
+                sx={{
+                  justifyContent: 'space-between',
+                }}
+              >
                 <Button
                   size="small"
                   component={RouterLink}
@@ -64,8 +68,18 @@ const DatasetsPage = () => {
                 >
                   Snippets
                 </Button>
+                <IconButton
+                  aria-label="delete"
+                  onClick={() => setDeleteDataset(d)}
+                >
+                  <DeleteForeverIcon color="error" />
+                </IconButton>
               </CardActions>
             </Card>
+            <DeleteDatasetDialog
+              dataset={deleteDataset}
+              onCancel={() => setDeleteDataset(undefined)}
+            />
           </Grid>
         ))}
       </Grid>
