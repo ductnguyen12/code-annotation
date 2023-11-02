@@ -59,18 +59,15 @@ const DemographicQuestionDialog = (): ReactElement => {
   }, [selected, getValues, setValue]);
 
   useEffect(() => {
-    setValue('type', questionType);
     if (QuestionType.INPUT === questionType)
       setOptions([]);
     if (QuestionType.RATING !== questionType)
       setAttributes([]);
-  }, [questionType, setValue]);
-
-  useEffect(() => {
-    setValue('questionSetId', questionSet > 0 ? questionSet : undefined);
-  }, [questionSet, setValue]);
+  }, [questionType]);
 
   const onSubmission = async (question: DemographicQuestion) => {
+    question.type = questionType;
+    question.questionSetId = questionSet > 0 ? questionSet : undefined;
     question.answer = {
       attributes,
       options: options.map(option => option.option),
@@ -90,9 +87,12 @@ const DemographicQuestionDialog = (): ReactElement => {
 
   const resetForm = () => {
     dispatch(setSelected(undefined));
+    setNewOption(undefined);
     setOptions([]);
     setAttributes([]);
+    setNewAttribute(undefined);
     setQuestionType(DEFAULT_TYPE);
+    setQuestionSet(0);
     reset();
   }
 
@@ -314,8 +314,9 @@ const DemographicQuestionDialog = (): ReactElement => {
                   value={attribute}
                   sx={{ width: '90%' }}
                   onChange={(e) => {
-                    attributes[i] = e.target.value;
-                    setAttributes([...attributes]);
+                    const newAttributes = [...attributes];
+                    newAttributes[i] = e.target.value;
+                    setAttributes(newAttributes);
                   }}
                 />
                 <IconButton
