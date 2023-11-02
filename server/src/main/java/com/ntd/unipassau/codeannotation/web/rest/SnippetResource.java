@@ -47,7 +47,7 @@ public class SnippetResource {
 
     @Operation(summary = "Get dataset snippets")
     @GetMapping("/v1/datasets/{datasetId}/snippets")
-    @Secured({AuthoritiesConstants.ANONYMOUS, AuthoritiesConstants.USER})
+    @Secured({AuthoritiesConstants.RATER, AuthoritiesConstants.USER})
     public Collection<SnippetVM> getDatasetSnippets(@PathVariable Long datasetId) {
         return snippetService.getDatasetSnippets(datasetId);
     }
@@ -78,7 +78,7 @@ public class SnippetResource {
     @Operation(summary = "Rate a snippet")
     @PostMapping("/v1/snippets/{snippetId}/rates")
     @ResponseStatus(HttpStatus.CREATED)
-    @Secured({AuthoritiesConstants.ANONYMOUS, AuthoritiesConstants.USER})
+    @Secured({AuthoritiesConstants.RATER, AuthoritiesConstants.USER})
     public void createSnippetRate(@PathVariable Long snippetId, @RequestBody @Valid SnippetRateVM rate) {
         Snippet snippet = snippetService.getById(snippetId)
                 .orElseThrow(() -> new NotFoundException(

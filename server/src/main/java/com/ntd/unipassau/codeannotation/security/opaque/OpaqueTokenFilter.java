@@ -18,9 +18,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class OpaqueTokenFilter extends OncePerRequestFilter {
@@ -49,7 +50,9 @@ public class OpaqueTokenFilter extends OncePerRequestFilter {
             if (authentication == null) {
                 authentication = tokenOpt.map(token -> new AnonymousAuthenticationToken(
                         token, token,
-                        Collections.singletonList(new SimpleGrantedAuthority(AuthoritiesConstants.ANONYMOUS))
+                        Stream.of(AuthoritiesConstants.ANONYMOUS, AuthoritiesConstants.RATER)
+                                .map(SimpleGrantedAuthority::new)
+                                .collect(Collectors.toList())
                 )).orElse(null);
             } else if (authentication.getPrincipal() instanceof UserPrincipal principal) {
                 tokenOpt.ifPresent(token -> principal.setRaterId(UUID.fromString(token)));

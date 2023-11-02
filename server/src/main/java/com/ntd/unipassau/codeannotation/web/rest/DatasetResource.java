@@ -55,7 +55,7 @@ public class DatasetResource {
 
     @Operation(summary = "Get dataset by id")
     @GetMapping("/v1/datasets/{datasetId}")
-    @Secured({AuthoritiesConstants.ANONYMOUS, AuthoritiesConstants.USER})
+    @Secured({AuthoritiesConstants.RATER, AuthoritiesConstants.USER})
     public DatasetVM getDataset(@PathVariable Long datasetId) {
         return datasetMapper.toDatasetVM(
                 datasetService.getById(datasetId)
