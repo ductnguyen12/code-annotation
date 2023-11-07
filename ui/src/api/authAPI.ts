@@ -80,7 +80,7 @@ const loadToken = (): AccessToken => {
     tokenType: localStorage.getItem("type") || "",
     refreshToken: localStorage.getItem("refresh") || "",
     expiresIn: parseInt(localStorage.getItem("expired") || "0"),
-    refreshExpiresIn: parseInt(localStorage.getItem("refreshExpired") || "0"),
+    refreshExpiresIn: parseInt(localStorage.getItem("refreshExpiresIn") || "0"),
   }
 };
 
@@ -88,7 +88,7 @@ const clearToken = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("refresh");
   localStorage.removeItem("type");
-  localStorage.removeItem("expiresIn");
+  localStorage.removeItem("expired");
   localStorage.removeItem("refreshExpiresIn");
 };
 
