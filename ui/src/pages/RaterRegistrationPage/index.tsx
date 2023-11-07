@@ -4,6 +4,7 @@ import { useCookies } from 'react-cookie';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import LoadingBackdrop from "../../components/LoadingBackdrop";
+import { selectAuthState } from '../../slices/authSlice';
 import { selectDemographicQuestionState } from '../../slices/demographicQuestionSlice';
 import { selectQuestionSetState } from '../../slices/questionSetSlice';
 import { selectRaterRegState, setRater } from "../../slices/raterRegSlice";
@@ -13,6 +14,10 @@ const RaterRegistrationPage = () => {
   const [searchParams,] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  const {
+    authenticated,
+  } = useAppSelector(selectAuthState);
 
   const {
     status: questionSetsLoading,
@@ -28,7 +33,11 @@ const RaterRegistrationPage = () => {
   } = useAppSelector(selectRaterRegState);
 
   const [cookies, setCookie] = useCookies(['token']);
+
   useEffect(() => {
+    if (authenticated) {
+      navigate(searchParams.get('next') as string);
+    }
     if (!cookies.token && rater?.id) {
       // TODO: set secure to cookies after having https domain
       setCookie('token', rater.id, { path: '/', maxAge: 2 << 24 });   // maxAge ~ 388 days
@@ -38,7 +47,7 @@ const RaterRegistrationPage = () => {
     if (rater?.id) {
       navigate(searchParams.get('next') as string);
     }
-  }, [rater, cookies.token, setCookie, navigate, searchParams, dispatch]);
+  }, [authenticated, rater, cookies.token, setCookie, navigate, searchParams, dispatch]);
 
   return (
     <>
