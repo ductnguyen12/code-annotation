@@ -42,7 +42,15 @@ const SnippetToolBox = () => {
       ));
     }
 
-  }, [selected, snippets, dispatch])
+  }, [selected, snippets, dispatch]);
+
+  useEffect(() => {
+    if (raters.length > 0 && raters[0]) {
+      dispatch(chooseRater(raters[0]));
+    } else {
+      dispatch(chooseRater(undefined));
+    }
+  }, [raters, dispatch]);
 
   const onCreatedSnippet = (snippet: Snippet) => {
     if (id) {

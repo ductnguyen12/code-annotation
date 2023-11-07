@@ -78,7 +78,7 @@ public class SnippetResource {
     @Operation(summary = "Rate a snippet")
     @PostMapping("/v1/snippets/{snippetId}/rates")
     @ResponseStatus(HttpStatus.CREATED)
-    @Secured({AuthoritiesConstants.RATER, AuthoritiesConstants.USER})
+    @Secured({AuthoritiesConstants.RATER})
     public void createSnippetRate(@PathVariable Long snippetId, @RequestBody @Valid SnippetRateVM rate) {
         Snippet snippet = snippetService.getById(snippetId)
                 .orElseThrow(() -> new NotFoundException(

@@ -15,11 +15,7 @@ const RaterSelector = ({
 }) => {
 
   const handleRaterChange = (value: string) => {
-    if (value === 'You') {
-      onRaterChange(undefined);
-    } else {
-      onRaterChange(value);
-    }
+    onRaterChange(value);
   }
 
   return (
@@ -29,13 +25,10 @@ const RaterSelector = ({
         labelId="rater-selector-label"
         id="rater-selector"
         size="small"
-        value={rater || "You"}
+        value={raters.find(r => r === rater) || ""}
         label="Rater"
         onChange={e => handleRaterChange(e.target.value)}
       >
-        <MenuItem value="You">
-          <em>You</em>
-        </MenuItem>
         {raters.map(r => (<MenuItem key={r} value={r}>{r}</MenuItem>))}
       </Select>
       <FormHelperText>Select rater to display his/her ratings and solutions</FormHelperText>

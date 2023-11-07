@@ -7,11 +7,12 @@ import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
 import { useParams } from "react-router-dom";
-import { useAppDispatch } from "../../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import LoadingBackdrop from '../../../components/LoadingBackdrop';
 import { useDatasetSnippets } from "../../../hooks/snippet";
 import { Solution } from '../../../interfaces/question.interface';
 import { SnippetRate } from "../../../interfaces/snippet.interface";
+import { selectAuthState } from '../../../slices/authSlice';
 import { pushNotification } from '../../../slices/notificationSlice';
 import { chooseSnippet, rateSnippetAsync } from "../../../slices/snippetsSlice";
 import DatasetDetail from './DatasetDetail';
@@ -25,12 +26,18 @@ type RouteParams = {
 
 const SnippetList = () => {
   const { id } = useParams<RouteParams>();
+
   const {
     status,
     snippets,
     selected,
     selectedRater,
   } = useDatasetSnippets(id ? parseInt(id) : undefined);
+
+  const {
+    authenticated,
+  } = useAppSelector(selectAuthState);
+
   const dispatch = useAppDispatch();
 
   const onSelectSnippet = (index: number) => {
@@ -65,7 +72,7 @@ const SnippetList = () => {
     }));
   }
 
-  const isEditable = () => !selectedRater;
+  const isEditable = () => !authenticated;
 
   return (
     <Box>
