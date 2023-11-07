@@ -41,16 +41,14 @@ const SnippetToolBox = () => {
         || []
       ));
     }
-
   }, [selected, snippets, dispatch]);
 
   useEffect(() => {
-    if (raters.length > 0 && raters[0]) {
+    if (raters.length > 0 && raters[0] && !selectedRater) {
       dispatch(chooseRater(raters[0]));
-    } else {
-      dispatch(chooseRater(undefined));
     }
-  }, [raters, dispatch]);
+    // eslint-disable-next-line
+  }, [raters]);
 
   const onCreatedSnippet = (snippet: Snippet) => {
     if (id) {
