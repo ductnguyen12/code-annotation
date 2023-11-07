@@ -43,7 +43,8 @@ const setupTokenForAxios = () => {
     async (config: any) => {
       const time = new Date().getTime();
 
-      if (!token.accessToken) {
+      if (!token.accessToken
+        || config.url.includes('/refresh-token')) {
         return config;
       }
       // Access token will be expired in less than 5s
