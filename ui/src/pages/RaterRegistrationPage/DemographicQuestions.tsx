@@ -23,7 +23,13 @@ interface StepData {
   solutions: (Solution | undefined)[];
 }
 
-const DemographicQuestions = (): ReactElement => {
+const DemographicQuestions = ({
+  externalId,
+  externalSystem,
+}: {
+  externalId?: string,
+  externalSystem?: string,
+}): ReactElement => {
   const {
     questionSets,
   } = useQuestionSets();
@@ -61,12 +67,16 @@ const DemographicQuestions = (): ReactElement => {
 
   const hanldeSubmission = () => {
     const solutions = steps.flatMap(step => step.solutions.filter(s => !!s).map(s => s as Solution));
-    dispatch(registerRaterAsync({ solutions } as Rater));
+    dispatch(registerRaterAsync({
+      externalId,
+      externalSystem,
+      solutions,
+    } as Rater));
   }
 
   return (
     <Box>
-      <Stepper 
+      <Stepper
         alternativeLabel
         sx={{
           mt: 2,
