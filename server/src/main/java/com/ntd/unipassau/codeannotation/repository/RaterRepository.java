@@ -13,6 +13,9 @@ import java.util.UUID;
 public interface RaterRepository extends JpaRepository<Rater, UUID> {
     Optional<Rater> findByUserId(UUID userId);
 
+    @Query("FROM Rater r WHERE r.externalId = :externalId AND r.externalSystem = :externalSystem")
+    Optional<Rater> findByExternalInfo(String externalId, String externalSystem);
+
     @Query("FROM Rater r LEFT JOIN FETCH r.solutions s JOIN FETCH s.question q")
     Collection<Rater> findAllFetchSolutions();
 

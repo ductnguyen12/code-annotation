@@ -62,7 +62,7 @@ public class RaterService {
         solutionService.createRaterSolutionsInBatch(savedRater, raterVM.solutions());
         Collection<SolutionVM> solutions = solutionService.getSolutionsByRater(savedRater.getId());
 
-        return new RaterVM(savedRater.getId(), solutions);
+        return raterMapper.toRaterVM(savedRater, solutions);
     }
 
     public Collection<RaterVM> listRaters() {
@@ -77,6 +77,18 @@ public class RaterService {
 
     public void deleteRater(UUID raterId) {
         raterRepository.deleteById(raterId);
+    }
+
+    @Transactional
+    public Optional<RaterVM> getRaterByExternalInfo(String externalSystem, String externalId) {
+        return raterRepository.findByExternalInfo(externalId, externalSystem)
+                .map(raterMapper::toSimpleRaterVM);
+    }
+
+    @Transactional
+    public Optional<RaterVM> getCurrentRaterVM() {
+        return getCurrentRater()
+                .map(raterMapper::toSimpleRaterVM);
     }
 
     /**

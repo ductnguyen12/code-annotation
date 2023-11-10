@@ -33,8 +33,11 @@ app:
       - /v1/auth/token
       - /v1/auth/refresh-token
       - /v1/raters/registration
+      - /v1/raters/me
+      - /v1/raters/{externalSystem}/{externalId}
       - /v1/datasets/{datasetId}
       - /v1/datasets/{datasetId}/snippets
+      - /v1/datasets/{datasetId}/prolific-completion
       - /v1/snippets/{snippetId}/rates
       - /v1/question-sets
       - /v1/demographic-questions

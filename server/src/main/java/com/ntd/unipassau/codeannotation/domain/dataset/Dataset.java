@@ -2,11 +2,14 @@ package com.ntd.unipassau.codeannotation.domain.dataset;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ntd.unipassau.codeannotation.domain.AbstractAuditingEntity;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Type;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -22,6 +25,10 @@ public class Dataset extends AbstractAuditingEntity<Long> {
     private Long id;
     private String name;
     private String description;
+
+    @Type(JsonType.class)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, Map<String, Object>> configuration;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "dataset")
     @ToString.Exclude

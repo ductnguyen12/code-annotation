@@ -1,0 +1,39 @@
+databaseChangeLog:
+- changeSet:
+    id: 1699615766201-62
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: configuration
+            type: jsonb
+        tableName: dataset
+- changeSet:
+    id: 1699615766201-63
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: external_id
+            type: varchar(255)
+        tableName: rater
+- changeSet:
+    id: 1699615766201-64
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: external_system
+            type: varchar(255)
+        tableName: rater
+- changeSet:
+    id: 1699616065110-66
+    author: ducnt (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: external_id, external_system
+        constraintName: uk_rater_external_system
+        tableName: rater

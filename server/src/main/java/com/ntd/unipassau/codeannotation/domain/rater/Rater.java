@@ -11,13 +11,20 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "rater")
+@Table(name = "rater",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_rater_external_system", columnNames = {"externalId", "externalSystem"}),
+        }
+)
 @Setter
 @Getter
 @ToString
 public class Rater extends AbstractAuditingEntity<UUID> {
     @Id
     private UUID id;
+
+    private String externalId;
+    private String externalSystem;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", unique = true, foreignKey = @ForeignKey(name = "fk_rater_user"))

@@ -10,6 +10,8 @@ import java.util.UUID;
 public record RaterVM(
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         UUID id,
+        String externalId,
+        String externalSystem,
         @NotNull
         @SolutionsConstraint
         Collection<@NotNull SolutionVM> solutions
