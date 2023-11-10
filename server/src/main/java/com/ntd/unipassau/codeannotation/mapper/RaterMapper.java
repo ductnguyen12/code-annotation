@@ -2,8 +2,11 @@ package com.ntd.unipassau.codeannotation.mapper;
 
 import com.ntd.unipassau.codeannotation.domain.rater.Rater;
 import com.ntd.unipassau.codeannotation.web.rest.vm.RaterVM;
+import com.ntd.unipassau.codeannotation.web.rest.vm.SolutionVM;
+import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 import java.util.Collection;
 
@@ -19,7 +22,16 @@ public interface RaterMapper {
     @Mapping(target = "solutions", ignore = true)
     Rater toRater(RaterVM rater);
 
+    @Mapping(target = "solutions", source = "solutions")
+    @Mapping(target = ".", source = "rater")
+    RaterVM toRaterVM(Rater rater, Collection<SolutionVM> solutions);
+
+    @Named(value = "toRaterVM")
     RaterVM toRaterVM(Rater rater);
 
+    @Mapping(target = "solutions", ignore = true)
+    RaterVM toSimpleRaterVM(Rater rater);
+
+    @IterableMapping(qualifiedByName = "toRaterVM")
     Collection<RaterVM> toRaterVMs(Collection<Rater> rater);
 }

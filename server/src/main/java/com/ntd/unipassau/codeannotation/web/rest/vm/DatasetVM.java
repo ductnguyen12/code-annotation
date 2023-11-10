@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
 public class DatasetVM {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -11,4 +13,5 @@ public class DatasetVM {
     @NotBlank(message = "Name is required")
     private String name;
     private String description;
+    private Map<String, Map<String, Object>> configuration;
 }
