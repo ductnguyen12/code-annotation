@@ -8,12 +8,14 @@ export interface DatasetsState {
   status: 'idle' | 'loading' | 'failed';
   datasets: Dataset[];
   dataset: Dataset | undefined;
+  configuration: any;
 }
 
 const initialState: DatasetsState = {
   status: 'idle',
   datasets: [],
   dataset: undefined,
+  configuration: {},
 };
 
 export const loadDatasetsAsync = createAsyncThunk<Dataset[], void, { dispatch: Dispatch }>(
@@ -62,6 +64,9 @@ export const datasetsSlice = createSlice({
         state.dataset = state.datasets.find(d => d.id === action.payload);
       }
     },
+    updateConfiguration: (state, action: PayloadAction<{ key: string, value: any }>) => {
+      state.configuration[action.payload.key] = action.payload.value;
+    },
   },
 
   extraReducers: (builder) => {
@@ -102,7 +107,10 @@ export const datasetsSlice = createSlice({
   },
 });
 
-export const { chooseDataset } = datasetsSlice.actions;
+export const {
+  chooseDataset,
+  updateConfiguration,
+} = datasetsSlice.actions;
 
 export const selectDatasets = (state: RootState) => state.datasets.datasets;
 export const selectDatasetsState = (state: RootState) => state.datasets;

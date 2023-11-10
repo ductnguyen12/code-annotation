@@ -28,6 +28,30 @@ export const registerRaterAsync = createAsyncThunk(
   }
 );
 
+export const getRaterByExternalInfoAsync = createAsyncThunk(
+  'raterReg/getRaterByExternalInfoAsync',
+  async ({ externalSystem, externalId }: { externalSystem: string, externalId: string }) => {
+    try {
+      const result = await api.getRaterByExternalInfo(externalSystem, externalId);
+      return result;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+);
+
+export const getCurrentRaterAsync = createAsyncThunk(
+  'raterReg/getCurrentRaterAsync',
+  async () => {
+    try {
+      const result = await api.getCurrentRater();
+      return result;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+);
+
 export const raterRegSlice = createSlice({
   name: 'raterReg',
   initialState,
@@ -47,6 +71,29 @@ export const raterRegSlice = createSlice({
         state.rater = action.payload;
       })
       .addCase(registerRaterAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(getRaterByExternalInfoAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getRaterByExternalInfoAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.rater = action.payload;
+      })
+      .addCase(getRaterByExternalInfoAsync.rejected, (state) => {
+        state.status = 'failed';
+        state.rater = undefined;
+      })
+
+      .addCase(getCurrentRaterAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getCurrentRaterAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.rater = action.payload;
+      })
+      .addCase(getCurrentRaterAsync.rejected, (state) => {
         state.status = 'failed';
       })
       ;

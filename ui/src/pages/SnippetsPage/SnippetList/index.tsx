@@ -13,6 +13,7 @@ import { useDatasetSnippets } from "../../../hooks/snippet";
 import { Solution } from '../../../interfaces/question.interface';
 import { SnippetRate } from "../../../interfaces/snippet.interface";
 import { selectAuthState } from '../../../slices/authSlice';
+import { selectDatasetsState } from '../../../slices/datasetsSlice';
 import { pushNotification } from '../../../slices/notificationSlice';
 import { chooseSnippet, rateSnippetAsync } from "../../../slices/snippetsSlice";
 import DatasetDetail from './DatasetDetail';
@@ -26,6 +27,8 @@ type RouteParams = {
 
 const SnippetList = () => {
   const { id } = useParams<RouteParams>();
+
+  const { dataset } = useAppSelector(selectDatasetsState);
 
   const {
     status,
@@ -48,7 +51,7 @@ const SnippetList = () => {
     }
   }
 
-  const onRateChange = (nextSnippet?: number, successfulMsg?: string): void => {
+  const onRateChange = (nextSnippet?: number, successfulMsg?: string, completeDatasetId?: number): void => {
     if (!isEditable())
       return;
     if (snippets[selected].rate === undefined
@@ -69,6 +72,7 @@ const SnippetList = () => {
       rate,
       nextSnippet,
       successfulMsg,
+      completeDatasetId,
     }));
   }
 
@@ -134,7 +138,11 @@ const SnippetList = () => {
                   endIcon={<SendIcon />}
                   loadingPosition="end"
                   variant="contained"
-                  onClick={() => onRateChange(undefined, 'Submit ratings successfully!')}
+                  onClick={() => onRateChange(
+                    undefined,
+                    'Submit ratings successfully!',
+                    dataset?.configuration?.prolific ? dataset.id : undefined,
+                  )}
                 >
                   <span>Submit</span>
                 </LoadingButton>
