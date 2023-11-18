@@ -6,6 +6,7 @@ import { IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
+import { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import LoadingBackdrop from '../../../components/LoadingBackdrop';
@@ -41,7 +42,14 @@ const SnippetList = () => {
     authenticated,
   } = useAppSelector(selectAuthState);
 
+  const [hideQuestion, setHideQuestion] = useState(false);
+
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    // Align to configuration in dataset everytime selected snippet has been changed 
+    setHideQuestion(!!dataset?.configuration.hiddenQuestions.value);
+  }, [selected, dataset?.configuration.hiddenQuestions.value]);
 
   const onSelectSnippet = (index: number) => {
     if (!isEditable()) {
@@ -62,6 +70,10 @@ const SnippetList = () => {
       }));
       return;
     }
+    if (shouldHideQuestions()) {
+      setHideQuestion(false);
+      return;
+    }
     const solutions = snippets[selected].questions?.map(q => q.solution).filter(s => s) as Array<Solution>;
     const rate: SnippetRate = {
       ...snippets[selected].rate as SnippetRate,
@@ -77,6 +89,11 @@ const SnippetList = () => {
   }
 
   const isEditable = () => !authenticated;
+
+  const shouldHideQuestions = () => !authenticated
+    && hideQuestion
+    && !!dataset?.configuration.hiddenQuestions.value
+    && (snippets[selected].questions?.length || 0) > 0;
 
   return (
     <Box>
@@ -114,6 +131,7 @@ const SnippetList = () => {
               questions={snippets[selected].questions}
               rater={selectedRater}
               editable={isEditable()}
+              hideQuestions={shouldHideQuestions()}
             />
             <Box
               sx={{
@@ -127,26 +145,29 @@ const SnippetList = () => {
                   <ArrowBackIcon fontSize="large" />
                 </IconButton>
               ) : <div />}
-              {selected < snippets.length - 1 && (
+              {(selected < snippets.length - 1 || shouldHideQuestions()) && (
                 <IconButton aria-label="Next" size="large" onClick={() => onSelectSnippet(selected + 1)}>
                   <ArrowForwardIcon fontSize="large" />
                 </IconButton>
               )}
-              {selected === snippets.length - 1 && isEditable() && (
-                <LoadingButton
-                  loading={false}
-                  endIcon={<SendIcon />}
-                  loadingPosition="end"
-                  variant="contained"
-                  onClick={() => onRateChange(
-                    undefined,
-                    'Submit ratings successfully!',
-                    dataset?.configuration?.prolific ? dataset.id : undefined,
-                  )}
-                >
-                  <span>Submit</span>
-                </LoadingButton>
-              )}
+              {selected === snippets.length - 1
+                && isEditable()
+                && !shouldHideQuestions()
+                && (
+                  <LoadingButton
+                    loading={false}
+                    endIcon={<SendIcon />}
+                    loadingPosition="end"
+                    variant="contained"
+                    onClick={() => onRateChange(
+                      undefined,
+                      'Submit ratings successfully!',
+                      dataset?.configuration?.prolific ? dataset.id : undefined,
+                    )}
+                  >
+                    <span>Submit</span>
+                  </LoadingButton>
+                )}
             </Box>
           </Box>
         )

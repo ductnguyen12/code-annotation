@@ -16,6 +16,7 @@ interface SnippetRatingProps {
   questions?: Array<SQuestion>;
   rater?: string;                 // For filtering soluton
   editable?: boolean;
+  hideQuestions?: boolean;
 }
 
 interface Labels {
@@ -39,6 +40,7 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
   questions,
   rater,
   editable,
+  hideQuestions,
 }) => {
   const dispatch = useAppDispatch();
   const [hover, setHover] = React.useState(-1);
@@ -94,17 +96,19 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
           <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : rateValue]}</Box>
         )}
       </FormControl>
-      <Grid container sx={{ m: 1 }} spacing={2}>
-        {questions?.map((q, index) => (
-          <SnippetQuestion
-            key={q.id}
-            index={index}
-            question={q}
-            rater={rater}
-            editable={editable}
-          />
-        ))}
-      </Grid>
+      {!hideQuestions && (
+        <Grid container sx={{ m: 1 }} spacing={2}>
+          {questions?.map((q, index) => (
+            <SnippetQuestion
+              key={q.id}
+              index={index}
+              question={q}
+              rater={rater}
+              editable={editable}
+            />
+          ))}
+        </Grid>
+      )}
     </Box>
   );
 }

@@ -15,7 +15,8 @@ public interface SnippetRepository extends JpaRepository<Snippet, Long> {
             "LEFT JOIN FETCH s.questions q " +
             "LEFT JOIN FETCH q.solutions " +
             "INNER JOIN FETCH s.dataset d " +
-            "WHERE d.id = :datasetId")
+            "WHERE d.id = :datasetId " +
+            "ORDER BY s.id ASC")
     Collection<Snippet> findAllByDatasetId(Long datasetId);
 
     @Query("FROM Snippet s " +
