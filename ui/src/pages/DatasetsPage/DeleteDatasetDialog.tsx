@@ -3,29 +3,36 @@ import Button from '@mui/material/Button';
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useAppDispatch } from "../../app/hooks";
-import { Dataset } from "../../interfaces/dataset.interface";
-import { deleteDatasetAsync } from "../../slices/datasetsSlice";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { chooseDataset, deleteDatasetAsync, selectDatasetsState } from "../../slices/datasetsSlice";
 
 const DeleteDatasetDialog = ({
-  dataset,
-  onCancel,
+  open,
+  setOpen,
 }: {
-  dataset?: Dataset,
-  onCancel: () => void;
+  open: boolean,
+  setOpen: (open: boolean) => void,
 }) => {
   const dispatch = useAppDispatch();
 
+  const {
+    dataset,
+  } = useAppSelector(selectDatasetsState);
+
   const handleDelete = () => {
     dispatch(deleteDatasetAsync(dataset?.id as number));
-    onCancel();
+  }
+
+  const handleClose = () => {
+    dispatch(chooseDataset(-1));
+    setOpen(false);
   }
 
   return (
-    <Dialog fullWidth open={!!dataset} onClose={onCancel}>
+    <Dialog fullWidth open={open} onClose={handleClose}>
       <DialogTitle>Are you sure to delete this dataset?</DialogTitle>
       <DialogActions>
-        <Button onClick={onCancel}>Cancel</Button>
+        <Button onClick={handleClose}>Cancel</Button>
         <Button onClick={handleDelete}>Confirm</Button>
       </DialogActions>
     </Dialog>

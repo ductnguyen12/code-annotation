@@ -1,5 +1,6 @@
 package com.ntd.unipassau.codeannotation.web.rest;
 
+import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import com.ntd.unipassau.codeannotation.mapper.DatasetMapper;
 import com.ntd.unipassau.codeannotation.security.AuthoritiesConstants;
 import com.ntd.unipassau.codeannotation.service.BackupService;
@@ -51,6 +52,16 @@ public class DatasetResource {
     @ResponseStatus(HttpStatus.CREATED)
     public DatasetVM createDataset(@RequestBody @Valid DatasetVM dataset) {
         return datasetMapper.toDatasetVM(datasetService.createDataset(datasetMapper.toDataset(dataset)));
+    }
+
+    @Operation(summary = "Update a dataset")
+    @PutMapping("/v1/datasets/{datasetId}")
+    @Secured({AuthoritiesConstants.USER})
+    public DatasetVM updateDataset(@PathVariable Long datasetId, @RequestBody @Valid DatasetVM dataset) {
+        Dataset oldDataset = datasetService.getById(datasetId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
+        return datasetService.updateDataset(oldDataset, dataset);
     }
 
     @Operation(summary = "Get dataset by id")

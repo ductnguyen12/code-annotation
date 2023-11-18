@@ -17,6 +17,11 @@ export const createDataset = async (dataset: Dataset): Promise<Dataset> => {
   return response.data;
 }
 
+export const updateDataset = async (datasetId: number, dataset: Dataset): Promise<Dataset> => {
+  const response: AxiosResponse<Dataset> = await axios.put<Dataset>(`/api/v1/datasets/${datasetId}`, dataset);
+  return response.data;
+}
+
 export const deleteDataset = async (datasetId: number): Promise<void> => {
   await axios.delete<void>(`/api/v1/datasets/${datasetId}`);
 }

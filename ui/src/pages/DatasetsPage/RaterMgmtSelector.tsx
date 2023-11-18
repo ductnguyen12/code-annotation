@@ -2,12 +2,24 @@ import FormControl from "@mui/material/FormControl"
 import InputLabel from "@mui/material/InputLabel"
 import MenuItem from "@mui/material/MenuItem"
 import Select from "@mui/material/Select"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useAppSelector } from "../../app/hooks"
 import { RaterMgmtSystem } from "../../interfaces/dataset.interface"
+import { selectDatasetsState } from "../../slices/datasetsSlice"
 import RaterMgmtForm from "./RaterMgmtForm"
 
 const RaterMgmtSelector = () => {
   const [system, setSystem] = useState<RaterMgmtSystem>(RaterMgmtSystem.LOCAL);
+
+  const {
+    dataset,
+  } = useAppSelector(selectDatasetsState);
+
+  useEffect(() => {
+    if (!!dataset?.configuration?.prolific) {
+      setSystem(RaterMgmtSystem.PROLIFIC);
+    }
+  }, [dataset]);
 
   return (
     <>
@@ -18,7 +30,7 @@ const RaterMgmtSelector = () => {
           id="rater-management-system-select"
           label="Rater management"
           size="small"
-          defaultValue={RaterMgmtSystem.LOCAL}
+          value={system}
           onChange={e => setSystem(e.target.value as RaterMgmtSystem)}
         >
           {Object.keys(RaterMgmtSystem).map(system => (

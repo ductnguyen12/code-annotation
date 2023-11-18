@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, Dispatch, PayloadAction } from '@reduxjs
 import api from '../api';
 import { RootState } from '../app/store';
 import { Dataset } from '../interfaces/dataset.interface';
-import { defaultAPIErrorHandle } from '../util/error-util';
+import { defaultAPIErrorHandle, defaultAPISuccessHandle } from '../util/error-util';
 
 export interface DatasetsState {
   status: 'idle' | 'loading' | 'failed';
@@ -42,6 +42,34 @@ export const loadDatasetAsync = createAsyncThunk(
   }
 );
 
+export const createDatasetAsync = createAsyncThunk(
+  'datasets/createDatasetAsync',
+  async (dataset: Dataset, { dispatch }) => {
+    try {
+      const newDataset = await api.createDataset(dataset);
+      defaultAPISuccessHandle(`Dataset '${newDataset.id}' was created successfully`, dispatch);
+      return newDataset;
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
+export const updateDatasetAsync = createAsyncThunk(
+  'datasets/updateDatasetAsync',
+  async ({ datasetId, dataset }: { datasetId: number, dataset: Dataset }, { dispatch }) => {
+    try {
+      const updatedDataset = await api.updateDataset(datasetId, dataset);
+      defaultAPISuccessHandle(`Dataset '${datasetId}' was updated successfully`, dispatch);
+      return updatedDataset;
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
 export const deleteDatasetAsync = createAsyncThunk<number, number, { dispatch: Dispatch }>(
   'datasets/deleteDataset',
   async (datasetId: number, { dispatch }) => {
@@ -62,6 +90,10 @@ export const datasetsSlice = createSlice({
     chooseDataset: (state, action: PayloadAction<number>) => {
       if (action.payload >= 0) {
         state.dataset = state.datasets.find(d => d.id === action.payload);
+        state.configuration = state.dataset?.configuration;
+      } else {
+        state.dataset = undefined;
+        state.configuration = undefined;
       }
     },
     updateConfiguration: (state, action: PayloadAction<{ key: string, value: any }>) => {
@@ -93,11 +125,41 @@ export const datasetsSlice = createSlice({
         state.status = 'failed';
       })
 
+      .addCase(createDatasetAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(createDatasetAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.dataset = undefined;
+        state.configuration = undefined;
+        state.datasets.push(action.payload);
+      })
+      .addCase(createDatasetAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(updateDatasetAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(updateDatasetAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.dataset = undefined;
+        state.configuration = undefined;
+        const index = state.datasets.findIndex(dataset => dataset.id === action.payload.id);
+        if (index > -1)
+          state.datasets[index] = action.payload;
+      })
+      .addCase(updateDatasetAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
       .addCase(deleteDatasetAsync.pending, (state) => {
         state.status = 'loading';
       })
       .addCase(deleteDatasetAsync.fulfilled, (state, action) => {
         state.status = 'idle';
+        state.dataset = undefined;
+        state.configuration = undefined;
         state.datasets = state.datasets.filter(dataset => dataset.id !== action.payload);
       })
       .addCase(deleteDatasetAsync.rejected, (state) => {
