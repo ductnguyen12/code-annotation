@@ -48,8 +48,8 @@ const SnippetList = () => {
 
   useEffect(() => {
     // Align to configuration in dataset everytime selected snippet has been changed 
-    setHideQuestion(!!dataset?.configuration.hiddenQuestions.value);
-  }, [selected, dataset?.configuration.hiddenQuestions.value]);
+    setHideQuestion(!authenticated && !!dataset?.configuration?.hiddenQuestions?.value);
+  }, [authenticated, selected, dataset?.configuration?.hiddenQuestions?.value]);
 
   const onSelectSnippet = (index: number) => {
     if (!isEditable()) {
@@ -92,7 +92,7 @@ const SnippetList = () => {
 
   const shouldHideQuestions = () => !authenticated
     && hideQuestion
-    && !!dataset?.configuration.hiddenQuestions.value
+    && !!dataset?.configuration?.hiddenQuestions?.value
     && (snippets[selected].questions?.length || 0) > 0;
 
   return (
