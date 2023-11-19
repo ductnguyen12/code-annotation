@@ -97,6 +97,9 @@ export const datasetsSlice = createSlice({
       }
     },
     updateConfiguration: (state, action: PayloadAction<{ key: string, value: any }>) => {
+      if (!state.configuration) {
+        state.configuration = {};
+      }
       state.configuration[action.payload.key] = action.payload.value;
     },
   },
