@@ -2,6 +2,7 @@ package com.ntd.unipassau.codeannotation.mapper;
 
 import com.ntd.unipassau.codeannotation.domain.question.QuestionSet;
 import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestion;
+import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestionGroup;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DemographicQuestionVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.QuestionSetVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.QuestionVM;
@@ -21,7 +22,17 @@ public interface DemographicQuestionMapper {
     @Mapping(target = "createdBy", ignore = true)
     QuestionSet toQuestionSet(QuestionSetVM questionSetVM);
 
+    @Mapping(target = "datasets", ignore = true)
+    @Mapping(target = "questions", ignore = true)
+    @Mapping(target = "lastModifiedDate", ignore = true)
+    @Mapping(target = "lastModifiedBy", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    DemographicQuestionGroup toDQuestionGroup(QuestionSetVM questionSetVM);
+
     Collection<QuestionSetVM> toQuestionSetVMs(Collection<QuestionSet> questionSets);
+
+    Collection<QuestionSetVM> toDQuestionGroupVMs(Collection<DemographicQuestionGroup> groups);
 
     @Mapping(target = "questionSetId", source = "questionSet.id")
     DemographicQuestionVM toQuestionVM(DemographicQuestion question);

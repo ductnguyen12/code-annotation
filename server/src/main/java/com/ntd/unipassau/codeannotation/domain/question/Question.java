@@ -14,6 +14,7 @@ import java.util.Set;
 @Entity
 @Table(name = "question")
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "dtype")
 @Setter
 @Getter
 @ToString

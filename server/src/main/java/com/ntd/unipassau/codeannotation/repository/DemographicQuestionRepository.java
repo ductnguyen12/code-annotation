@@ -9,6 +9,12 @@ import java.util.Collection;
 
 @Repository
 public interface DemographicQuestionRepository extends JpaRepository<DemographicQuestion, Long> {
-    @Query("FROM DemographicQuestion q LEFT JOIN FETCH q.questionSet")
-    Collection<DemographicQuestion> findAllFetchQuestionSet();
+    @Query("FROM DemographicQuestion q " +
+            "LEFT JOIN FETCH q.questionSet qs " +
+            "WHERE :datasetId IS NULL OR qs.id in (" +
+            "SELECT dqg.id FROM DemographicQuestionGroup dqg " +
+            "JOIN dqg.datasets d WHERE d.id = :datasetId" +
+            ") ORDER BY q.id"
+    )
+    Collection<DemographicQuestion> findAllFetchGroup(Long datasetId);
 }

@@ -39,5 +39,5 @@ app:
       - /v1/datasets/{datasetId}/snippets
       - /v1/datasets/{datasetId}/prolific-completion
       - /v1/snippets/{snippetId}/rates
-      - /v1/question-sets
+      - /v1/demographic-question-groups
       - /v1/demographic-questions

@@ -1,0 +1,109 @@
+databaseChangeLog:
+- changeSet:
+    id: 1700514319551-66
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: demographic_question_groupPK
+            name: id
+            type: BIGINT
+        tableName: demographic_question_group
+- changeSet:
+    id: 1700514319551-67
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: dquestiongroup_datasetPK
+            name: demographic_question_group_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: dquestiongroup_datasetPK
+            name: datasets_id
+            type: BIGINT
+        tableName: dquestiongroup_dataset
+- changeSet:
+    id: 1700514319551-68
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            constraints:
+              nullable: true
+            name: dtype
+            type: varchar(31)
+        tableName: question
+- changeSet:
+    id: 1700514319551-69
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            constraints:
+              nullable: true
+            name: dtype
+            type: varchar(31)
+        tableName: question_set
+- changeSet:
+    id: 1700514319551-70
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: p_language
+            type: varchar(255)
+        tableName: dataset
+- changeSet:
+    id: 1700514319551-71
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: datasets_id
+        baseTableName: dquestiongroup_dataset
+        constraintName: FK2911relf4jicna22ea3umuty
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: dataset
+        validate: true
+- changeSet:
+    id: 1700514319551-72
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: id
+        baseTableName: demographic_question_group
+        constraintName: FK4sjd2u3a1q0mh2oqm6xp7ibe9
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: question_set
+        validate: true
+- changeSet:
+    id: 1700514319551-73
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: demographic_question_group_id
+        baseTableName: dquestiongroup_dataset
+        constraintName: FKm76cwbubwdofjfpmhq2h4u4fk
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: demographic_question_group
+        validate: true

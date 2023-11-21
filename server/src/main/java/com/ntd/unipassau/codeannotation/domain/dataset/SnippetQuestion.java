@@ -8,6 +8,7 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "snippet_question")
+@DiscriminatorValue("snippet")
 @Setter
 @Getter
 @ToString

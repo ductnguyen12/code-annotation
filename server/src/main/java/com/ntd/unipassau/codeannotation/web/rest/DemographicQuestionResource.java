@@ -5,6 +5,7 @@ import com.ntd.unipassau.codeannotation.security.AuthoritiesConstants;
 import com.ntd.unipassau.codeannotation.service.DemographicQuestionService;
 import com.ntd.unipassau.codeannotation.web.rest.constraint.QuestionConstraint;
 import com.ntd.unipassau.codeannotation.web.rest.errors.NotFoundException;
+import com.ntd.unipassau.codeannotation.web.rest.vm.DQuestionParams;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DemographicQuestionVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.QuestionVM;
 import io.swagger.v3.oas.annotations.Operation;
@@ -61,7 +62,7 @@ public class DemographicQuestionResource {
 
     @Operation(summary = "Get list of questions for new raters")
     @GetMapping("/v1/demographic-questions")
-    public Collection<DemographicQuestionVM> listQuestions() {
-        return demographicQuestionService.listDemographicQuestions();
+    public Collection<DemographicQuestionVM> listQuestions(DQuestionParams params) {
+        return demographicQuestionService.listDemographicQuestions(params);
     }
 }

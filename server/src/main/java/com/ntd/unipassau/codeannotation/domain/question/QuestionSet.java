@@ -10,6 +10,8 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "question_set")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "dtype")
 @Setter
 @Getter
 @ToString

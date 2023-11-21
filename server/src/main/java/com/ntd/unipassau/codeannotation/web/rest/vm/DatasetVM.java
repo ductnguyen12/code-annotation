@@ -13,5 +13,6 @@ public class DatasetVM {
     @NotBlank(message = "Name is required")
     private String name;
     private String description;
+    private String pLanguage;
     private Map<String, Map<String, Object>> configuration;
 }
