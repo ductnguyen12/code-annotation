@@ -23,9 +23,11 @@ interface StepData {
 }
 
 const DemographicQuestions = ({
+  datasetId,
   externalId,
   externalSystem,
 }: {
+  datasetId?: number,
   externalId?: string,
   externalSystem?: string,
 }): ReactElement => {
@@ -35,7 +37,7 @@ const DemographicQuestions = ({
 
   const {
     questions,
-  } = useDemographicQuestions();
+  } = useDemographicQuestions(datasetId);
 
   const dispatch = useAppDispatch();
 

@@ -1,14 +1,14 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { DemographicQuestionState, loadDemographicQuestionsAsync, selectDemographicQuestionState } from "../slices/demographicQuestionSlice";
 import { DemographicQuestionGroupState, loadDemographicQuestionGroupsAsync, selectDemographicQuestionGroupState } from "../slices/demographicQuestionGroupSlice";
+import { DemographicQuestionState, loadDemographicQuestionsAsync, selectDemographicQuestionState } from "../slices/demographicQuestionSlice";
 
-export const useDemographicQuestions = (): DemographicQuestionState => {
+export const useDemographicQuestions = (datasetId?: number): DemographicQuestionState => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(loadDemographicQuestionsAsync());
-  }, [dispatch])
+    dispatch(loadDemographicQuestionsAsync(datasetId));
+  }, [dispatch, datasetId]);
 
   return useAppSelector(selectDemographicQuestionState);
 }

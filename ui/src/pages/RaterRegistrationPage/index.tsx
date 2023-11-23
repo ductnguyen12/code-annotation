@@ -5,8 +5,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import LoadingBackdrop from "../../components/LoadingBackdrop";
 import { selectAuthState } from '../../slices/authSlice';
-import { selectDemographicQuestionState } from '../../slices/demographicQuestionSlice';
 import { selectDemographicQuestionGroupState } from '../../slices/demographicQuestionGroupSlice';
+import { selectDemographicQuestionState } from '../../slices/demographicQuestionSlice';
 import { getCurrentRaterAsync, getRaterByExternalInfoAsync, selectRaterRegState } from "../../slices/raterRegSlice";
 import DemographicQuestions from "./DemographicQuestions";
 
@@ -58,10 +58,29 @@ const RaterRegistrationPage = () => {
     }
   }, [authenticated, rater, cookies.token, setCookie, removeCookie, navigate, searchParams, dispatch]);
 
+  const getDatasetId = (): number | undefined => {
+    if (!searchParams.has('next')) {
+      console.log('There is not next param in query params');
+      return undefined;
+    }
+    const subpaths = (searchParams.get('next') as string).split('/');
+    if (subpaths.length < 3) {
+      console.log('Unexpected navigation path', searchParams.get('next'));
+      return undefined;
+    }
+    try {
+      return parseInt(subpaths[2]);
+    } catch (e) {
+      console.log('Not supported datasetId', subpaths[2]);
+      return undefined;
+    }
+  }
+
   return (
     <>
       <LoadingBackdrop open={[status, questionGroupsLoading, questionsLoading].includes('loading')} />
       <DemographicQuestions
+        datasetId={getDatasetId()}
         externalId={searchParams.get('prolificId') || undefined}
         externalSystem={searchParams.has('prolificId') ? 'prolific' : undefined}
       />

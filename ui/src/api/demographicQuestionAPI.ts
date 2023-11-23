@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from "axios";
 import { DemographicQuestion, DemographicQuestionGroup } from "../interfaces/question.interface";
 
-export const getDemographicQuestions = async (): Promise<DemographicQuestion[]> => {
-  const response: AxiosResponse<DemographicQuestion[]> = await axios.get<DemographicQuestion[]>('/api/v1/demographic-questions');
+export const getDemographicQuestions = async (datasetId?: number): Promise<DemographicQuestion[]> => {
+  const response: AxiosResponse<DemographicQuestion[]> = await axios.get<DemographicQuestion[]>('/api/v1/demographic-questions', { params: { datasetId } });
   return response.data;
 }
 

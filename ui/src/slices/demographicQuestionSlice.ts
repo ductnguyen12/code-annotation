@@ -20,9 +20,9 @@ const initialState: DemographicQuestionState = {
 
 export const loadDemographicQuestionsAsync = createAsyncThunk(
   'demographicQuestion/loadDemographicQuestions',
-  async (_, { dispatch }) => {
+  async (datasetId: number | undefined, { dispatch }) => {
     try {
-      return await api.getDemographicQuestions();
+      return await api.getDemographicQuestions(datasetId);
     } catch (error: any) {
       defaultAPIErrorHandle(error, dispatch);
       throw error;
