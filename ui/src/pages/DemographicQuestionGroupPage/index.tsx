@@ -6,15 +6,15 @@ import Typography from '@mui/material/Typography';
 import { useAppSelector } from "../../app/hooks";
 import LoadingBackdrop from "../../components/LoadingBackdrop";
 import ProtectedElement from "../../components/ProtectedElement";
-import { selectQuestionSetState } from "../../slices/questionSetSlice";
-import QuestionSetDialog from "./QuestionSetDialog";
-import QuestionSetTable from "./QuestionSetTable";
-import QuestionSetToolBox from "./QuestionSetToolBox";
+import { selectDemographicQuestionGroupState } from "../../slices/demographicQuestionGroupSlice";
+import DemographicQuestionGroupDialog from "./DemographicQuestionGroupDialog";
+import DemographicQuestionGroupTable from "./DemographicQuestionGroupTable";
+import DemographicQuestionGroupToolBox from "./DemographicQuestionGroupToolBox";
 
-const QuestionSetPage = () => {
+const DemographicQuestionGroupPage = () => {
   const {
     status,
-  } = useAppSelector(selectQuestionSetState);
+  } = useAppSelector(selectDemographicQuestionGroupState);
 
   return (
     <ProtectedElement>
@@ -22,20 +22,20 @@ const QuestionSetPage = () => {
         <LoadingBackdrop open={'loading' === status} />
         <Typography sx={{ mb: 1 }} variant="h5">
           Question Group Management
-          <span><QuestionSetToolBox /></span>
+          <span><DemographicQuestionGroupToolBox /></span>
         </Typography>
-        <QuestionSetDialog />
+        <DemographicQuestionGroupDialog />
         <Box
           sx={{
             display: 'flex',
             justifyContent: 'center',
           }}
         >
-          <QuestionSetTable />
+          <DemographicQuestionGroupTable />
         </Box>
       </>
     </ProtectedElement>
   );
 }
 
-export default QuestionSetPage;
+export default DemographicQuestionGroupPage;

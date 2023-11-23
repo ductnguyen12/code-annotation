@@ -2,6 +2,7 @@ export interface Dataset {
   id: number | undefined;
   name: string;
   description: string;
+  pLanguage?: string;
   configuration?: any;
 }
 

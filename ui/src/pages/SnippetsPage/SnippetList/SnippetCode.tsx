@@ -9,32 +9,7 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import * as highlighters from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { useAppSelector } from "../../../app/hooks";
 import { selectSnippetsState } from "../../../slices/snippetsSlice";
-
-const extLanguageMap = new Map([
-  ['cc', 'cpp'],
-  ['h', 'cpp'],
-  ['c', 'c'],
-  ['java', 'java'],
-  ['js', 'javascript'],
-  ['jsx', 'javascript'],
-  ['ts', 'typescript'],
-  ['tsx', 'typescript'],
-  ['sh', 'bash'],
-  ['', 'bash'],
-  ['cs', 'csharp'],
-  ['py', 'python'],
-  ['scala', 'scala'],
-  ['kt', 'kotlin'],
-  ['kts', 'kotlin'],
-  ['rs', 'rust'],
-  ['dart', 'dart'],
-  ['go', 'go'],
-  ['gradle', 'gradle'],
-  ['groovy', 'groovy'],
-  ['dockerfile', 'dockerfile'],
-  ['json', 'json'],
-  ['xml', 'xml'],
-]);
+import { EXT_LANGUAGE_MAP, PROGRAMMING_LANGUAGES } from "../../../util/programming-languages";
 
 const SnippetCode = () => {
   const {
@@ -51,7 +26,7 @@ const SnippetCode = () => {
   const getExtension = (snippetPath: string) => {
     const parts = snippetPath.trim().split('.');
     const ext = parts[parts.length - 1];
-    return extLanguageMap.has(ext) ? extLanguageMap.get(ext) : ext;
+    return EXT_LANGUAGE_MAP.has(ext) ? EXT_LANGUAGE_MAP.get(ext) : ext;
   }
 
   const handleChangeLanguage = (newLanguege: string) => {
@@ -91,7 +66,7 @@ const SnippetCode = () => {
             value={language}
             onChange={e => handleChangeLanguage(e.target.value as string)}
           >
-            {Array.from(new Set(extLanguageMap.values()).values()).map(pl => (
+            {PROGRAMMING_LANGUAGES.map(pl => (
               <MenuItem key={pl} value={pl}>{pl}</MenuItem>
             ))}
           </Select>

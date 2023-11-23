@@ -11,14 +11,13 @@ import Stepper from '@mui/material/Stepper';
 import { ReactElement, useCallback, useEffect, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import QuestionComponent from '../../components/QuestionComponent';
-import { useDemographicQuestions } from '../../hooks/demographicQuestion';
-import { useQuestionSets } from '../../hooks/questionSet';
-import { DemographicQuestion, QuestionSet, Solution } from "../../interfaces/question.interface";
+import { useDemographicQuestionGroups, useDemographicQuestions } from '../../hooks/demographicQuestion';
+import { DemographicQuestion, DemographicQuestionGroup, Solution } from "../../interfaces/question.interface";
 import { Rater } from '../../interfaces/rater.interface';
 import { registerRaterAsync } from '../../slices/raterRegSlice';
 
 interface StepData {
-  questionSet?: QuestionSet;
+  questionGroup?: DemographicQuestionGroup;
   questions: DemographicQuestion[];
   solutions: (Solution | undefined)[];
 }
@@ -31,8 +30,8 @@ const DemographicQuestions = ({
   externalSystem?: string,
 }): ReactElement => {
   const {
-    questionSets,
-  } = useQuestionSets();
+    questionGroups,
+  } = useDemographicQuestionGroups();
 
   const {
     questions,
@@ -44,18 +43,18 @@ const DemographicQuestions = ({
   const [activeStep, setActiveStep] = useState<number>(0);
 
   const getStepData = useCallback(() => {
-    return questionSets.map(questionSet => {
+    return questionGroups.map(group => {
       return {
-        questionSet,
-        questions: questions.filter(question => questionSet.id === question.questionSetId),
-        solutions: questions.filter(question => questionSet.id === question.questionSetId).map(_ => undefined),
+        questionGroup: group,
+        questions: questions.filter(question => group.id === question.questionSetId),
+        solutions: questions.filter(question => group.id === question.questionSetId).map(_ => undefined),
       } as StepData;
     })
-  }, [questions, questionSets]);
+  }, [questions, questionGroups]);
 
   useEffect(() => {
     setSteps(getStepData());
-  }, [questions, questionSets, getStepData]);
+  }, [questions, questionGroups, getStepData]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -87,7 +86,7 @@ const DemographicQuestions = ({
         {steps.map((step, index) => (
           <Step key={index}>
             <StepLabel>
-              {step.questionSet?.title}
+              {step.questionGroup?.title}
             </StepLabel>
           </Step>
         ))}
@@ -101,7 +100,7 @@ const DemographicQuestions = ({
             margin: 'auto',
           }}
         >
-          {steps[activeStep].questionSet?.description && (
+          {steps[activeStep].questionGroup?.description && (
             <Paper
               elevation={4}
               sx={{
@@ -110,7 +109,7 @@ const DemographicQuestions = ({
                 borderRadius: '12px',
               }}
             >
-              {steps[activeStep].questionSet?.description}
+              {steps[activeStep].questionGroup?.description}
             </Paper>
           )}
           {steps[activeStep].questions.map((question, index) => (

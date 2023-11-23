@@ -10,15 +10,14 @@ import {
 } from "@mui/material";
 
 import { useAppDispatch } from '../../app/hooks';
-import { useDemographicQuestions } from '../../hooks/demographicQuestion';
-import { useQuestionSets } from '../../hooks/questionSet';
+import { useDemographicQuestionGroups, useDemographicQuestions } from '../../hooks/demographicQuestion';
 import { DemographicQuestion } from "../../interfaces/question.interface";
 import { deleteDemographicQuestionAsync, setOpenDialog, setSelected } from '../../slices/demographicQuestionSlice';
 
 const DemographicQuestionTable = () => {
   const {
-    questionSets,
-  } = useQuestionSets();
+    questionGroups,
+  } = useDemographicQuestionGroups();
 
   const {
     questions,
@@ -65,8 +64,8 @@ const DemographicQuestionTable = () => {
             {fields.map((field) => (
               <TableCell key={field}>{question[field] as string}</TableCell>
             ))}
-            <TableCell key="questionSet">
-              {questionSets.find(qs => qs.id === question.questionSetId)?.title}
+            <TableCell key="questionGroups">
+              {questionGroups.find(qs => qs.id === question.questionSetId)?.title}
             </TableCell>
             <TableCell key="actions">
               <IconButton aria-label="Edit question" onClick={() => handleEdit(question)}>

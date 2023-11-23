@@ -4,7 +4,7 @@ import PsychologyAltIcon from '@mui/icons-material/PsychologyAlt';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 
 import DatasetsPage from "../pages/DatasetsPage";
-import QuestionSetPage from '../pages/QuestionSetPage';
+import DemographicQuestionGroupPage from '../pages/DemographicQuestionGroupPage';
 import SignInPage from '../pages/SignInPage';
 import SnippetsPage from '../pages/SnippetsPage';
 import DemographicQuestionPage from '../pages/DemographicQuestionPage';
@@ -31,13 +31,13 @@ const routes = [
     protected: false,
   },
   {
-    key: 'questionSets',
-    path: '/question-sets',
-    title: 'Question Group',
-    element: (<QuestionSetPage />),
+    key: 'demographicQuestionGroups',
+    path: '/demographic-question-groups',
+    title: 'Demograhpic Question Group',
+    element: (<DemographicQuestionGroupPage />),
     icon: (<CategoryIcon />),
     inDrawer: true,
-    drawerPathPrefix: '/question-sets',    // Determine whether a drawer is selected
+    drawerPathPrefix: '/demographic-question-groups',    // Determine whether a drawer is selected
     protected: true,
   },
   {

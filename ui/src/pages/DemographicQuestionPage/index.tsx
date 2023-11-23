@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import { useAppSelector } from "../../app/hooks";
 import LoadingBackdrop from "../../components/LoadingBackdrop";
 import ProtectedElement from "../../components/ProtectedElement";
-import { selectQuestionSetState } from "../../slices/questionSetSlice";
+import { selectDemographicQuestionGroupState } from "../../slices/demographicQuestionGroupSlice";
 import DemographicQuestionDialog from "./DemographicQuestionDialog";
 import DemographicQuestionTable from "./DemographicQuestionTable";
 import DemographicQuestionToolBox from "./DemographicQuestionToolBox";
@@ -14,7 +14,7 @@ import DemographicQuestionToolBox from "./DemographicQuestionToolBox";
 const DemographicQuestionPage = () => {
   const {
     status,
-  } = useAppSelector(selectQuestionSetState);
+  } = useAppSelector(selectDemographicQuestionGroupState);
 
   return (
     <ProtectedElement>

@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import LoadingBackdrop from "../../components/LoadingBackdrop";
 import { selectAuthState } from '../../slices/authSlice';
 import { selectDemographicQuestionState } from '../../slices/demographicQuestionSlice';
-import { selectQuestionSetState } from '../../slices/questionSetSlice';
+import { selectDemographicQuestionGroupState } from '../../slices/demographicQuestionGroupSlice';
 import { getCurrentRaterAsync, getRaterByExternalInfoAsync, selectRaterRegState } from "../../slices/raterRegSlice";
 import DemographicQuestions from "./DemographicQuestions";
 
@@ -20,8 +20,8 @@ const RaterRegistrationPage = () => {
   } = useAppSelector(selectAuthState);
 
   const {
-    status: questionSetsLoading,
-  } = useAppSelector(selectQuestionSetState);
+    status: questionGroupsLoading,
+  } = useAppSelector(selectDemographicQuestionGroupState);
 
   const {
     status: questionsLoading,
@@ -60,7 +60,7 @@ const RaterRegistrationPage = () => {
 
   return (
     <>
-      <LoadingBackdrop open={[status, questionSetsLoading, questionsLoading].includes('loading')} />
+      <LoadingBackdrop open={[status, questionGroupsLoading, questionsLoading].includes('loading')} />
       <DemographicQuestions
         externalId={searchParams.get('prolificId') || undefined}
         externalSystem={searchParams.has('prolificId') ? 'prolific' : undefined}

@@ -1,5 +1,9 @@
 import Checkbox from "@mui/material/Checkbox"
+import FormControl from "@mui/material/FormControl"
 import FormControlLabel from "@mui/material/FormControlLabel"
+import InputLabel from "@mui/material/InputLabel"
+import MenuItem from "@mui/material/MenuItem"
+import Select from "@mui/material/Select"
 import TextField from "@mui/material/TextField"
 import { FC, ReactElement, useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -7,6 +11,7 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import FormDialog from "../../components/FormDialog"
 import { Dataset } from "../../interfaces/dataset.interface"
 import { chooseDataset, createDatasetAsync, selectDatasetsState, updateConfiguration, updateDatasetAsync } from "../../slices/datasetsSlice"
+import { PROGRAMMING_LANGUAGES } from "../../util/programming-languages"
 import RaterMgmtSelector from "./RaterMgmtSelector"
 
 type DatasetDialogProps = {
@@ -42,6 +47,11 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
   const handleSetHiddenQuestions = (checked: boolean) => {
     dispatch(updateConfiguration({ key: "hiddenQuestions", value: { value: checked } }));
   }
+
+  const handleChangeLanguage = (newLanguege: string) => {
+    if (newLanguege)
+      setValue('pLanguage', newLanguege);
+  };
 
   const handleClose = () => {
     dispatch(chooseDataset(-1));
@@ -89,6 +99,21 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
         onChange={(_, checked) => handleSetHiddenQuestions(checked)}
         label="Hide snippet questions before rating"
       />
+      <FormControl sx={{ minWidth: 120 }}>
+        <InputLabel id="programming-language" size="small">Language</InputLabel>
+        <Select
+          labelId="programming-language"
+          id="programming-language-select"
+          label="Language"
+          size="small"
+          onChange={e => handleChangeLanguage(e.target.value as string)}
+        >
+          <MenuItem value=""><em>None</em></MenuItem>
+          {PROGRAMMING_LANGUAGES.map(pl => (
+            <MenuItem key={pl} value={pl}>{pl}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       <RaterMgmtSelector />
     </FormDialog>
   );

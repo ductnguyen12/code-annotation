@@ -10,37 +10,39 @@ import {
 } from "@mui/material";
 
 import { useAppDispatch } from '../../app/hooks';
-import { useQuestionSets } from '../../hooks/questionSet';
-import { QuestionSet } from "../../interfaces/question.interface";
-import { deleteQuestionSetAsync, setOpenDialog, setSelected } from '../../slices/questionSetSlice';
+import { useDemographicQuestionGroups } from '../../hooks/demographicQuestion';
+import { DemographicQuestionGroup } from "../../interfaces/question.interface";
+import { deleteDemographicQuestionGroupAsync, setOpenDialog, setSelected } from '../../slices/demographicQuestionGroupSlice';
 
-const QuestionSetTable = () => {
+const DemographicQuestionGroupTable = () => {
   const {
-    questionSets,
-  } = useQuestionSets();
+    questionGroups,
+  } = useDemographicQuestionGroups();
 
   const dispatch = useAppDispatch();
 
-  const handleEdit = (questionSet: QuestionSet) => {
-    dispatch(setSelected(questionSet));
+  const handleEdit = (group: DemographicQuestionGroup) => {
+    dispatch(setSelected(group));
     dispatch(setOpenDialog(true));
   };
 
-  const handleDelete = (questionSet: QuestionSet) => {
-    dispatch(deleteQuestionSetAsync(questionSet.id as number));
+  const handleDelete = (group: DemographicQuestionGroup) => {
+    dispatch(deleteDemographicQuestionGroupAsync(group.id as number));
   };
 
   const headers = [
     "ID",
     "Title",
     "Description",
+    "Priority",
     "Actions",
   ];
 
-  const fields: (keyof QuestionSet)[] = [
+  const fields: (keyof DemographicQuestionGroup)[] = [
     "id",
     "title",
     "description",
+    "priority",
   ];
 
   return (
@@ -51,19 +53,19 @@ const QuestionSetTable = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {questionSets.map((questionSet, index) => (
+        {questionGroups.map((group, index) => (
           <TableRow
             key={index}
             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
           >
             {fields.map((field) => (
-              <TableCell key={field}>{questionSet[field]}</TableCell>
+              <TableCell key={field}>{group[field] as string}</TableCell>
             ))}
             <TableCell key="actions">
-              <IconButton aria-label="Edit question group" onClick={() => handleEdit(questionSet)}>
+              <IconButton aria-label="Edit question group" onClick={() => handleEdit(group)}>
                 <EditIcon />
               </IconButton>
-              <IconButton aria-label="Delete question group" onClick={() => handleDelete(questionSet)}>
+              <IconButton aria-label="Delete question group" onClick={() => handleDelete(group)}>
                 <DeleteIcon />
               </IconButton>
             </TableCell>
@@ -74,4 +76,4 @@ const QuestionSetTable = () => {
   );
 }
 
-export default QuestionSetTable;
+export default DemographicQuestionGroupTable;

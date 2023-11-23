@@ -1,12 +1,12 @@
 import AddIcon from '@mui/icons-material/Add';
 import { IconButton } from "@mui/material";
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { selectQuestionSetState, setOpenDialog } from '../../slices/questionSetSlice';
+import { selectDemographicQuestionGroupState, setOpenDialog } from '../../slices/demographicQuestionGroupSlice';
 
-const QuestionSetToolBox = () => {
+const DemographicQuestionGroupToolBox = () => {
   const {
     openDialog,
-  } = useAppSelector(selectQuestionSetState);
+  } = useAppSelector(selectDemographicQuestionGroupState);
 
   const dispatch = useAppDispatch();
 
@@ -19,4 +19,4 @@ const QuestionSetToolBox = () => {
   )
 }
 
-export default QuestionSetToolBox;
+export default DemographicQuestionGroupToolBox;

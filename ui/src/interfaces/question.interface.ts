@@ -1,3 +1,5 @@
+import { Dataset } from "./dataset.interface";
+
 export interface Question {
   id?: number;
   content?: string;
@@ -47,4 +49,8 @@ export interface QuestionSet {
 
 export interface DemographicQuestion extends Question {
   solutions?: Array<Solution>;
+}
+
+export interface DemographicQuestionGroup extends QuestionSet {
+  datasets?: Array<Dataset>;
 }

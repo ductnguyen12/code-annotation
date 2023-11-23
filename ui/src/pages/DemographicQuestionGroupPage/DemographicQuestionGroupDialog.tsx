@@ -3,38 +3,38 @@ import { ReactElement, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import FormDialog from "../../components/FormDialog"
-import { QuestionSet } from "../../interfaces/question.interface"
-import { createQuestionSetAsync, selectQuestionSetState, setOpenDialog, setSelected, updateQuestionSetAsync } from "../../slices/questionSetSlice"
+import { DemographicQuestionGroup } from "../../interfaces/question.interface"
+import { createDemographicQuestionGroupAsync, selectDemographicQuestionGroupState, setOpenDialog, setSelected, updateDemographicQuestionGroupAsync } from "../../slices/demographicQuestionGroupSlice"
 
 
-const QuestionSetDialog = (): ReactElement => {
-  const { register, handleSubmit, setValue } = useForm<QuestionSet>();
+const DemographicQuestionGroupDialog = (): ReactElement => {
+  const { register, handleSubmit, setValue } = useForm<DemographicQuestionGroup>();
   const {
     openDialog,
     selected,
-  } = useAppSelector(selectQuestionSetState);
+  } = useAppSelector(selectDemographicQuestionGroupState);
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (selected) {
-      (Object.keys(selected) as (keyof QuestionSet)[]).forEach(key => setValue(key, selected[key]));
+      (Object.keys(selected) as (keyof DemographicQuestionGroup)[]).forEach(key => setValue(key, selected[key]));
     }
   }, [selected, setValue])
 
-  const onSubmission = async (questionSet: QuestionSet) => {
+  const onSubmission = async (group: DemographicQuestionGroup) => {
     if (!!selected) {
-      dispatch(updateQuestionSetAsync({ questionSetId: selected.id as number, questionSet }));
+      dispatch(updateDemographicQuestionGroupAsync({ groupId: selected.id as number, group }));
     } else {
-      dispatch(createQuestionSetAsync(questionSet));
+      dispatch(createDemographicQuestionGroupAsync(group));
     }
-    return questionSet;
+    return group;
   };
 
   const title = !!selected ? `Edit Question Group ID ${selected.id}` : "Create Question Group";
 
   return (
-    <FormDialog<QuestionSet>
+    <FormDialog<DemographicQuestionGroup>
       title={title}
       open={openDialog}
       setOpen={(open: boolean) => dispatch(setOpenDialog(open))}
@@ -65,4 +65,4 @@ const QuestionSetDialog = (): ReactElement => {
   );
 };
 
-export default QuestionSetDialog;
+export default DemographicQuestionGroupDialog;

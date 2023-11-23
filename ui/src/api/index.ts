@@ -4,7 +4,6 @@ import * as authAPI from './authAPI';
 import * as datasetAPI from './datasetAPI';
 import * as demographicQuestionAPI from './demographicQuestionAPI';
 import * as prolificAPI from './prolificAPI';
-import * as questionSetAPI from './questionSetAPI';
 import * as raterAPI from './raterAPI';
 import * as snippetAPI from './snippetAPI';
 
@@ -15,7 +14,6 @@ const api = {
   ...snippetAPI,
   ...authAPI,
   ...raterAPI,
-  ...questionSetAPI,
   ...demographicQuestionAPI,
   ...prolificAPI,
 }
