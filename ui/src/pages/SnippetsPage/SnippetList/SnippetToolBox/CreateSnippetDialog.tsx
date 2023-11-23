@@ -1,10 +1,10 @@
 import { TextField } from "@mui/material"
 import { FC, ReactElement } from "react"
 import { useForm } from "react-hook-form"
-import { useParams } from "react-router-dom"
 import api from "../../../../api"
 import { useAppDispatch } from "../../../../app/hooks"
 import FormDialog from "../../../../components/FormDialog"
+import { useIdFromPath } from "../../../../hooks/common"
 import { Snippet } from "../../../../interfaces/snippet.interface"
 import { pushNotification } from "../../../../slices/notificationSlice"
 import { defaultAPIErrorHandle } from "../../../../util/error-util"
@@ -21,12 +21,12 @@ const CreateSnippetDialog: FC<CreateSnippetDialogProps> = ({
   onCreated,
 }): ReactElement => {
   const { register, handleSubmit } = useForm<Snippet>();
-  const { id } = useParams<{ id: string }>();
+  const datasetId = useIdFromPath();
   const dispatch = useAppDispatch();
 
   const onCreateSnippet = async (snippet: Snippet) => {
-    if (id) {
-      snippet.datasetId = parseInt(id);
+    if (datasetId) {
+      snippet.datasetId = datasetId;
       try {
         const newSnippet = await api.createSnippet(snippet);
         dispatch(pushNotification({ message: `Snippet '${newSnippet.id}' was created successfully`, variant: 'success' }));

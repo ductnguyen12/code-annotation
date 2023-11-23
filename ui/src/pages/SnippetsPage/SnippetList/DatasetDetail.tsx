@@ -1,21 +1,17 @@
 import Typography from "@mui/material/Typography";
 import { useEffect } from 'react';
-import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import { useIdFromPath } from "../../../hooks/common";
 import { loadDatasetAsync, selectDatasetsState } from "../../../slices/datasetsSlice";
 
-type RouteParams = {
-  id: string,
-}
-
 const DatasetDetail = () => {
-  const { id } = useParams<RouteParams>();
+  const id = useIdFromPath();
   const { dataset } = useAppSelector(selectDatasetsState);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!dataset && id) {
-      dispatch(loadDatasetAsync(parseInt(id)));
+      dispatch(loadDatasetAsync(id));
     }
   }, [dataset, id, dispatch])
 

@@ -7,9 +7,9 @@ import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from 'react';
-import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import LoadingBackdrop from '../../../components/LoadingBackdrop';
+import { useIdFromPath } from '../../../hooks/common';
 import { useDatasetSnippets } from "../../../hooks/snippet";
 import { Solution } from '../../../interfaces/question.interface';
 import { SnippetRate } from "../../../interfaces/snippet.interface";
@@ -22,12 +22,8 @@ import SnippetCode from './SnippetCode';
 import SnippetRating from "./SnippetRating";
 import SnippetToolBox from './SnippetToolBox';
 
-type RouteParams = {
-  id: string,
-}
-
 const SnippetList = () => {
-  const { id } = useParams<RouteParams>();
+  const datasetId = useIdFromPath();
 
   const { dataset } = useAppSelector(selectDatasetsState);
 
@@ -36,7 +32,7 @@ const SnippetList = () => {
     snippets,
     selected,
     selectedRater,
-  } = useDatasetSnippets(id ? parseInt(id) : undefined);
+  } = useDatasetSnippets(datasetId);
 
   const {
     authenticated,
