@@ -12,15 +12,11 @@ import { ReactElement, useCallback, useEffect, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import QuestionComponent from '../../components/QuestionComponent';
 import { useDemographicQuestionGroups, useDemographicQuestions } from '../../hooks/demographicQuestion';
-import { DemographicQuestion, DemographicQuestionGroup, Solution } from "../../interfaces/question.interface";
+import { Solution } from "../../interfaces/question.interface";
 import { Rater } from '../../interfaces/rater.interface';
 import { registerRaterAsync } from '../../slices/raterRegSlice';
+import { StepData } from './stepper.interface';
 
-interface StepData {
-  questionGroup?: DemographicQuestionGroup;
-  questions: DemographicQuestion[];
-  solutions: (Solution | undefined)[];
-}
 
 const DemographicQuestions = ({
   datasetId,
@@ -43,6 +39,8 @@ const DemographicQuestions = ({
 
   const [steps, setSteps] = useState<StepData[]>([]);
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [validities, setValidities] = useState<boolean[]>([]);
+  const [showErrors, setShowErrors] = useState<boolean[]>([]);
 
   const getStepData = useCallback(() => {
     return questionGroups.map(group => {
@@ -58,13 +56,33 @@ const DemographicQuestions = ({
     setSteps(getStepData());
   }, [questions, questionGroups, getStepData]);
 
+  useEffect(() => {
+    if (!steps[activeStep] || !steps[activeStep].questions) {
+      return;
+    }
+    setShowErrors(steps[activeStep].questions.map(_ => false));
+    setValidities(steps[activeStep].questions.map(_ => true));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeStep, setShowErrors]);
+
   const handleNext = () => {
+    if (!validities.every(Boolean)) {
+      setShowErrors([...showErrors.fill(true)]);
+      return;
+    }
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+
+  const handleValidityChange = (questionIndex: number, validity: boolean) => {
+    if (validities[questionIndex] === validity)
+      return;
+    validities[questionIndex] = validity;
+    setValidities([...validities]);
+  }
 
   const hanldeSubmission = () => {
     const solutions = steps.flatMap(step => step.solutions.filter(s => !!s).map(s => s as Solution));
@@ -128,10 +146,18 @@ const DemographicQuestions = ({
                 questionIndex={index}
                 question={question}
                 solution={steps[activeStep].solutions[index]}
+                showError={showErrors.length > index && showErrors[index]}
+                setShowError={(showError: boolean) => {
+                  if (showErrors.length > index) {
+                    showErrors[index] = showError;
+                    setShowErrors([...showErrors]);
+                  }
+                }}
                 onValueChange={(questionIndex: number, solution: Solution) => {
                   steps[activeStep].solutions[questionIndex] = solution;
                   setSteps([...steps]);
                 }}
+                onValidityChange={handleValidityChange}
               />
             </Paper>
           ))}

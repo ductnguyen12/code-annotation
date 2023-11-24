@@ -11,13 +11,17 @@ const MultipleRating = ({
   options,
   attributes,
   selected,
+  onFocus,
+  onBlur,
   onValueChange,
 }: {
   name: string,
   options: Array<string>,
   attributes: Array<string>,
   selected: Array<number>,
-  onValueChange: (selected: number, index: number) => void;
+  onFocus: () => void,
+  onBlur: () => void,
+  onValueChange: (selected: number, index: number) => void,
 }) => {
   return (
     <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -41,6 +45,8 @@ const MultipleRating = ({
                 <Radio
                   checked={i === selected[index]}
                   value={i}
+                  onFocus={onFocus}
+                  onBlur={onBlur}
                   onChange={e => onValueChange(parseInt(e.target.value), index)}
                 />
               </TableCell>
