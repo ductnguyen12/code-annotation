@@ -1,24 +1,51 @@
 import FormControl from "@mui/material/FormControl"
 import FormControlLabel from "@mui/material/FormControlLabel"
+import FormHelperText from "@mui/material/FormHelperText"
 import FormLabel from "@mui/material/FormLabel"
 import Radio from "@mui/material/Radio"
 import RadioGroup from "@mui/material/RadioGroup"
+import { useCallback, useEffect } from "react"
 import { Question, Solution } from "../../interfaces/question.interface"
 
 const SingleChoice = ({
   questionIndex,
   question,
   solution,
+  validity,
+  showError,
+  onInit,
+  onFocus,
+  onBlur,
   onValueChange,
 }: {
   questionIndex: number,
   question: Question,
   solution?: Solution,
-  onValueChange: (questionIndex: number, solution: Solution) => void;
+  validity?: boolean,
+  showError?: boolean,
+  onInit: (validity: boolean) => void,
+  onFocus: () => void,
+  onBlur: (validity: boolean) => void,
+  onValueChange: (questionIndex: number, solution: Solution) => void,
 }) => {
   const value = solution?.value.selected && solution?.value.selected.length > 0
     ? solution?.value.selected[0]
     : -1;
+
+  const required = !!question.constraint?.required;
+  const validate = useCallback(() => {
+    return !required || (solution?.value?.selected?.length || 0) > 0;
+  }, [required, solution]);
+
+  useEffect(() => {
+    const valid = validate();
+    onInit(valid);
+  }, [validate, onInit]);
+
+  const handleBlur = () => {
+    const valid = validate();
+    onBlur(valid);
+  }
 
   const handleChange = (selected: number) => {
     if (!solution)
@@ -38,8 +65,10 @@ const SingleChoice = ({
   }
 
   return (
-    <FormControl>
-      <FormLabel 
+    <FormControl
+      error={showError && !validity}
+    >
+      <FormLabel
         id={`question-id-${question.id}`}
         required={!!question.constraint?.required}
       >
@@ -49,12 +78,15 @@ const SingleChoice = ({
         aria-labelledby={`question-id-${question.id}`}
         name={`question-id-${question.id}`}
         value={value}
+        onFocus={onFocus}
+        onBlur={handleBlur}
         onChange={e => handleChange(parseInt(e.target.value))}
       >
         {question.answer?.options?.map((option, index) => (
           <FormControlLabel key={index} value={index} control={<Radio />} label={option} />
         ))}
       </RadioGroup>
+      <FormHelperText>{showError && !validity ? 'This question is required' : ''}</FormHelperText>
     </FormControl>
   )
 }
