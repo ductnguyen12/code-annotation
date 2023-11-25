@@ -19,6 +19,7 @@ public interface DatasetRepository extends JpaRepository<Dataset, Long> {
     Optional<Dataset> findFetchAllById(Long datasetId);
 
     @Query("FROM Dataset d " +
-            "LEFT JOIN FETCH d.dQuestionGroups g")
+            "LEFT JOIN FETCH d.dQuestionGroups g " +
+            "ORDER BY d.id")
     Set<Dataset> findAllFetchDQGroups();
 }

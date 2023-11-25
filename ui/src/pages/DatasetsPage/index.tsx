@@ -40,6 +40,14 @@ const DatasetsPage = () => {
             Create
           </Button>
         </Grid>
+        <DatasetDialog
+          open={open}
+          setOpen={setOpen}
+        />
+        <DeleteDatasetDialog
+          open={openDelete}
+          setOpen={setOpenDelete}
+        />
         {datasets.map(d => (
           <Grid key={d.id} item xs={3}>
             <Card>
@@ -81,14 +89,6 @@ const DatasetsPage = () => {
                 </span>
               </CardActions>
             </Card>
-            <DatasetDialog
-              open={open}
-              setOpen={setOpen}
-            />
-            <DeleteDatasetDialog
-              open={openDelete}
-              setOpen={setOpenDelete}
-            />
           </Grid>
         ))}
       </Grid>

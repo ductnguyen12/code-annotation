@@ -74,7 +74,9 @@ public class DatasetService {
         dataset.setDQuestionGroups(dqGroups);
 
         createDataset(dataset);
-        return datasetMapper.toDatasetVM(dataset);
+        DatasetVM result = datasetMapper.toDatasetVM(dataset);
+        result.setDemographicQuestionGroupIds(datasetVM.getDemographicQuestionGroupIds());
+        return result;
     }
 
     @Transactional
@@ -103,7 +105,9 @@ public class DatasetService {
         dataset.getDQuestionGroups().addAll(dQuestionGroups);
 
         datasetRepository.save(dataset);
-        return datasetMapper.toDatasetVM(dataset);
+        DatasetVM result = datasetMapper.toDatasetVM(dataset);
+        result.setDemographicQuestionGroupIds(newDataset.getDemographicQuestionGroupIds());
+        return result;
     }
 
     @Transactional

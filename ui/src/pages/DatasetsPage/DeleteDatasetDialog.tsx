@@ -21,6 +21,7 @@ const DeleteDatasetDialog = ({
 
   const handleDelete = () => {
     dispatch(deleteDatasetAsync(dataset?.id as number));
+    handleClose();
   }
 
   const handleClose = () => {
