@@ -2,6 +2,7 @@ package com.ntd.unipassau.codeannotation.domain.dataset;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ntd.unipassau.codeannotation.domain.AbstractAuditingEntity;
+import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestionGroup;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -35,6 +36,10 @@ public class Dataset extends AbstractAuditingEntity<Long> {
     @ToString.Exclude
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Set<Snippet> snippets;
+
+    @ManyToMany(mappedBy = "datasets", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ToString.Exclude
+    private Set<DemographicQuestionGroup> dQuestionGroups;
 
     @Override
     public boolean equals(Object o) {

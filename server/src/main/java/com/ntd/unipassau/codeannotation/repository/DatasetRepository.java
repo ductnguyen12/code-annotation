@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface DatasetRepository extends JpaRepository<Dataset, Long> {
@@ -16,4 +17,8 @@ public interface DatasetRepository extends JpaRepository<Dataset, Long> {
             "LEFT JOIN FETCH q.solutions so " +
             "WHERE d.id = :datasetId")
     Optional<Dataset> findFetchAllById(Long datasetId);
+
+    @Query("FROM Dataset d " +
+            "LEFT JOIN FETCH d.dQuestionGroups g")
+    Set<Dataset> findAllFetchDQGroups();
 }

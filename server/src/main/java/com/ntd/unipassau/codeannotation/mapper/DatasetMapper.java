@@ -9,10 +9,12 @@ import java.util.Collection;
 
 @Mapper(componentModel = "spring")
 public interface DatasetMapper {
+    @Mapping(target = "demographicQuestionGroupIds", ignore = true)
     DatasetVM toDatasetVM(Dataset dataset);
 
     Collection<DatasetVM> toDatasetVMs(Collection<Dataset> datasets);
 
+    @Mapping(target = "DQuestionGroups", ignore = true)
     @Mapping(target = "snippets", ignore = true)
     @Mapping(target = "lastModifiedDate", ignore = true)
     @Mapping(target = "lastModifiedBy", ignore = true)

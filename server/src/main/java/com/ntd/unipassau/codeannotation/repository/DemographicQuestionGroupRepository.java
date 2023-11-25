@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.Set;
 
 @Repository
 public interface DemographicQuestionGroupRepository extends JpaRepository<DemographicQuestionGroup, Long> {
@@ -15,4 +16,14 @@ public interface DemographicQuestionGroupRepository extends JpaRepository<Demogr
             "WHERE :datasetId IS NULL OR d.id = :datasetId " +
             "ORDER BY dqg.priority")
     Collection<DemographicQuestionGroup> findAllFetchQuestions(Long datasetId);
+
+    @Query("FROM DemographicQuestionGroup dqg " +
+            "LEFT JOIN FETCH dqg.datasets d " +
+            "WHERE dqg.id IN :ids")
+    Set<DemographicQuestionGroup> findAllFetchDatasetsByIds(Collection<Long> ids);
+
+    @Query("FROM DemographicQuestionGroup dqg " +
+            "INNER JOIN FETCH dqg.datasets d " +
+            "WHERE d.id = :datasetId")
+    Set<DemographicQuestionGroup> findAllFetchDataset(Long datasetId);
 }

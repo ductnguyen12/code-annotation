@@ -5,7 +5,6 @@ import com.ntd.unipassau.codeannotation.mapper.DemographicQuestionMapper;
 import com.ntd.unipassau.codeannotation.repository.DemographicQuestionGroupRepository;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DQuestionGroupParams;
 import com.ntd.unipassau.codeannotation.web.rest.vm.QuestionSetVM;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,12 +25,6 @@ public class DQuestionGroupService {
             DemographicQuestionMapper dqMapper) {
         this.dqgRepository = dqgRepository;
         this.dqMapper = dqMapper;
-    }
-
-    @PostConstruct
-    public void init() {
-        Collection<DemographicQuestionGroup> allFetchQuestions = dqgRepository.findAllFetchQuestions(1L);
-        System.out.println(allFetchQuestions);
     }
 
     @Transactional

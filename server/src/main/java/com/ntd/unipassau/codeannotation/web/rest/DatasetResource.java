@@ -1,7 +1,5 @@
 package com.ntd.unipassau.codeannotation.web.rest;
 
-import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
-import com.ntd.unipassau.codeannotation.mapper.DatasetMapper;
 import com.ntd.unipassau.codeannotation.security.AuthoritiesConstants;
 import com.ntd.unipassau.codeannotation.service.BackupService;
 import com.ntd.unipassau.codeannotation.service.DatasetService;
@@ -29,50 +27,44 @@ import java.util.Collection;
 public class DatasetResource {
     private final BackupService backupService;
     private final DatasetService datasetService;
-    private final DatasetMapper datasetMapper;
 
     @Autowired
     public DatasetResource(
             BackupService backupService,
-            DatasetService datasetService,
-            DatasetMapper datasetMapper) {
+            DatasetService datasetService) {
         this.backupService = backupService;
         this.datasetService = datasetService;
-        this.datasetMapper = datasetMapper;
     }
 
     @Operation(summary = "Get all datasets")
     @GetMapping("/v1/datasets")
     public Collection<DatasetVM> getDatasets() {
-        return datasetMapper.toDatasetVMs(datasetService.getAllDatasets());
+        return datasetService.getAllDatasets();
     }
 
     @Operation(summary = "Create a dataset")
     @PostMapping("/v1/datasets")
     @ResponseStatus(HttpStatus.CREATED)
     public DatasetVM createDataset(@RequestBody @Valid DatasetVM dataset) {
-        return datasetMapper.toDatasetVM(datasetService.createDataset(datasetMapper.toDataset(dataset)));
+        return datasetService.createDataset(dataset);
     }
 
     @Operation(summary = "Update a dataset")
     @PutMapping("/v1/datasets/{datasetId}")
     @Secured({AuthoritiesConstants.USER})
     public DatasetVM updateDataset(@PathVariable Long datasetId, @RequestBody @Valid DatasetVM dataset) {
-        Dataset oldDataset = datasetService.getById(datasetId)
+        return datasetService.updateDataset(datasetId, dataset)
                 .orElseThrow(() -> new NotFoundException(
                         "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
-        return datasetService.updateDataset(oldDataset, dataset);
     }
 
     @Operation(summary = "Get dataset by id")
     @GetMapping("/v1/datasets/{datasetId}")
     @Secured({AuthoritiesConstants.RATER, AuthoritiesConstants.USER})
     public DatasetVM getDataset(@PathVariable Long datasetId) {
-        return datasetMapper.toDatasetVM(
-                datasetService.getById(datasetId)
-                        .orElseThrow(() -> new NotFoundException(
-                                "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"))
-        );
+        return datasetService.getDatasetById(datasetId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
     }
 
     @Operation(summary = "Delete a dataset")
@@ -80,10 +72,9 @@ public class DatasetResource {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Secured({AuthoritiesConstants.USER})
     public void deleteDataset(@PathVariable Long datasetId) {
-        datasetService.getById(datasetId)
+        datasetService.deleteDataset(datasetId)
                 .orElseThrow(() -> new NotFoundException(
                         "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
-        datasetService.deleteDataset(datasetId);
     }
 
     @Operation(summary = "Export dataset's snippets and annotation")
