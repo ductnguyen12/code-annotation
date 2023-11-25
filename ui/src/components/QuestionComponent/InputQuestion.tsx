@@ -1,9 +1,9 @@
 import FormControl from "@mui/material/FormControl"
+import FormHelperText from "@mui/material/FormHelperText"
 import FormLabel from "@mui/material/FormLabel"
 import TextField from "@mui/material/TextField"
-import { useCallback, useEffect } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { Question, Solution } from "../../interfaces/question.interface"
-import FormHelperText from "@mui/material/FormHelperText"
 
 const InputQuestion = ({
   questionIndex,
@@ -26,7 +26,7 @@ const InputQuestion = ({
   onBlur: (validity: boolean) => void,
   onValueChange: (questionIndex: number, solution: Solution) => void,
 }) => {
-  const required = !!question.constraint?.required;
+  const required = useMemo(() => !!question.constraint?.required, [question]);
   const validate = useCallback(() => {
     return !required || !!solution?.value.input;
   }, [required, solution]);

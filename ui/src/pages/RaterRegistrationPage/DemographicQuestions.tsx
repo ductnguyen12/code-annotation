@@ -53,7 +53,13 @@ const DemographicQuestions = ({
   }, [questions, questionGroups]);
 
   useEffect(() => {
-    setSteps(getStepData());
+    const stepData = getStepData();
+    setSteps(stepData);
+    setActiveStep(0);
+    if (stepData.length > 0) {
+      setShowErrors(stepData[0].questions?.map(_ => false) || []);
+      setValidities(stepData[0].questions?.map(_ => true) || []);
+    }
   }, [questions, questionGroups, getStepData]);
 
   useEffect(() => {
@@ -85,6 +91,11 @@ const DemographicQuestions = ({
   }
 
   const hanldeSubmission = () => {
+    if (!validities.every(Boolean)) {
+      setShowErrors([...showErrors.fill(true)]);
+      return;
+    }
+
     const solutions = steps.flatMap(step => step.solutions.filter(s => !!s).map(s => s as Solution));
     dispatch(registerRaterAsync({
       externalId,

@@ -4,7 +4,7 @@ import FormControlLabel from "@mui/material/FormControlLabel"
 import FormGroup from "@mui/material/FormGroup"
 import FormHelperText from "@mui/material/FormHelperText"
 import FormLabel from "@mui/material/FormLabel"
-import { useCallback, useEffect } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { Question, Solution } from "../../interfaces/question.interface"
 
 const MultipleChoice = ({
@@ -28,7 +28,7 @@ const MultipleChoice = ({
   onBlur: (validity: boolean) => void,
   onValueChange: (questionIndex: number, solution: Solution) => void,
 }) => {
-  const required = !!question.constraint?.required;
+  const required = useMemo(() => !!question.constraint?.required, [question]);
   const validate = useCallback(() => {
     return !required || (solution?.value?.selected?.length || 0) > 0;
   }, [required, solution]);
@@ -71,7 +71,7 @@ const MultipleChoice = ({
       error={showError && !validity}
     >
       <FormLabel component="legend"
-        required={!!question.constraint?.required}
+        required={required}
       >
         {`${questionIndex + 1}. ${question?.content}`}
       </FormLabel>

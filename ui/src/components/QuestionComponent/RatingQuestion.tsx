@@ -1,7 +1,7 @@
 import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import FormLabel from "@mui/material/FormLabel";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Question, Solution } from "../../interfaces/question.interface";
 import MultipleRating from "../MultipleRating";
 
@@ -26,10 +26,11 @@ const RatingQuestion = ({
   onBlur: (validity: boolean) => void,
   onValueChange: (questionIndex: number, solution: Solution) => void,
 }) => {
-  const required = !!question.constraint?.required;
+  const required = useMemo(() => !!question.constraint?.required, [question]);
   const validate = useCallback(() => {
-    return !required || (solution?.value?.selected?.length || 0) > 0;
-  }, [required, solution]);
+    return !required
+      || (solution?.value?.selected?.filter(v => v > -1).length || 0) === (question.answer?.attributes?.length || 0);
+  }, [required, solution, question]);
 
   useEffect(() => {
     const valid = validate();
@@ -62,7 +63,7 @@ const RatingQuestion = ({
     >
       <FormLabel
         component="legend"
-        required={!!question.constraint?.required}
+        required={required}
       >
         {`${questionIndex + 1}.`}
       </FormLabel>

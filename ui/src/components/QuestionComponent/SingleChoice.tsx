@@ -4,7 +4,7 @@ import FormHelperText from "@mui/material/FormHelperText"
 import FormLabel from "@mui/material/FormLabel"
 import Radio from "@mui/material/Radio"
 import RadioGroup from "@mui/material/RadioGroup"
-import { useCallback, useEffect } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { Question, Solution } from "../../interfaces/question.interface"
 
 const SingleChoice = ({
@@ -32,7 +32,7 @@ const SingleChoice = ({
     ? solution?.value.selected[0]
     : -1;
 
-  const required = !!question.constraint?.required;
+  const required = useMemo(() => !!question.constraint?.required, [question]);
   const validate = useCallback(() => {
     return !required || (solution?.value?.selected?.length || 0) > 0;
   }, [required, solution]);
@@ -70,7 +70,7 @@ const SingleChoice = ({
     >
       <FormLabel
         id={`question-id-${question.id}`}
-        required={!!question.constraint?.required}
+        required={required}
       >
         {`${questionIndex + 1}. ${question.content}`}
       </FormLabel>
