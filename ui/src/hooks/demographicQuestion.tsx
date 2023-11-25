@@ -1,7 +1,15 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { DemographicQuestionGroupState, loadDemographicQuestionGroupsAsync, selectDemographicQuestionGroupState } from "../slices/demographicQuestionGroupSlice";
-import { DemographicQuestionState, loadDemographicQuestionsAsync, selectDemographicQuestionState } from "../slices/demographicQuestionSlice";
+import {
+  DemographicQuestionGroupState,
+  filterDemographicQuestionGroupsByParamsAsync,
+  selectDemographicQuestionGroupState,
+} from "../slices/demographicQuestionGroupSlice";
+import {
+  DemographicQuestionState,
+  loadDemographicQuestionsAsync,
+  selectDemographicQuestionState,
+} from "../slices/demographicQuestionSlice";
 
 export const useDemographicQuestions = (datasetId?: number): DemographicQuestionState => {
   const dispatch = useAppDispatch();
@@ -13,12 +21,12 @@ export const useDemographicQuestions = (datasetId?: number): DemographicQuestion
   return useAppSelector(selectDemographicQuestionState);
 }
 
-export const useDemographicQuestionGroups = (): DemographicQuestionGroupState => {
+export const useDemographicQuestionGroups = (datasetId?: number): DemographicQuestionGroupState => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(loadDemographicQuestionGroupsAsync());
-  }, [dispatch])
+    dispatch(filterDemographicQuestionGroupsByParamsAsync({ datasetId }));
+  }, [dispatch, datasetId])
 
   return useAppSelector(selectDemographicQuestionGroupState);
 }

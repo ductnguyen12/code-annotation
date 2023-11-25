@@ -29,7 +29,7 @@ const DemographicQuestions = ({
 }): ReactElement => {
   const {
     questionGroups,
-  } = useDemographicQuestionGroups();
+  } = useDemographicQuestionGroups(datasetId);
 
   const {
     questions,

@@ -30,6 +30,18 @@ export const loadDemographicQuestionGroupsAsync = createAsyncThunk(
   }
 );
 
+export const filterDemographicQuestionGroupsByParamsAsync = createAsyncThunk(
+  'demographicQuestionGroup/filterDemographicQuestionGroupsByParamsAsync',
+  async (params: { datasetId?: number }, { dispatch }) => {
+    try {
+      return await api.getDemographicQuestionGroups(params);
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
 export const createDemographicQuestionGroupAsync = createAsyncThunk(
   'demographicQuestionGroup/createDemographicQuestionGroup',
   async (questionGroup: DemographicQuestionGroup, { dispatch }) => {
@@ -95,6 +107,17 @@ export const demographicQuestionGroupSlice = createSlice({
         state.questionGroups = action.payload;
       })
       .addCase(loadDemographicQuestionGroupsAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(filterDemographicQuestionGroupsByParamsAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(filterDemographicQuestionGroupsByParamsAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.questionGroups = action.payload;
+      })
+      .addCase(filterDemographicQuestionGroupsByParamsAsync.rejected, (state) => {
         state.status = 'failed';
       })
 
