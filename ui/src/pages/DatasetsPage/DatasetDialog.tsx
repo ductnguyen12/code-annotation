@@ -10,8 +10,15 @@ import { useForm } from "react-hook-form"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import FormDialog from "../../components/FormDialog"
 import { Dataset } from "../../interfaces/dataset.interface"
-import { chooseDataset, createDatasetAsync, selectDatasetsState, updateConfiguration, updateDatasetAsync } from "../../slices/datasetsSlice"
+import {
+  chooseDataset,
+  createDatasetAsync,
+  selectDatasetsState,
+  updateConfiguration,
+  updateDatasetAsync
+} from "../../slices/datasetsSlice"
 import { PROGRAMMING_LANGUAGES } from "../../util/programming-languages"
+import DemographicQuestionGroupSelector from "./DemographicQuestionGroupSelector"
 import RaterMgmtSelector from "./RaterMgmtSelector"
 
 type DatasetDialogProps = {
@@ -28,6 +35,7 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
 
   const {
     dataset,
+    demographicQuestionGroupIds,
     configuration,
   } = useAppSelector(selectDatasetsState);
 
@@ -58,6 +66,7 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
   }
 
   const onSubmission = async (newDataset: Dataset) => {
+    newDataset.demographicQuestionGroupIds = demographicQuestionGroupIds;
     newDataset.configuration = configuration;
 
     if (!!dataset) {
@@ -106,6 +115,7 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
           id="programming-language-select"
           label="Language"
           size="small"
+          defaultValue=""
           onChange={e => handleChangeLanguage(e.target.value as string)}
         >
           <MenuItem value=""><em>None</em></MenuItem>
@@ -115,6 +125,7 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
         </Select>
       </FormControl>
       <RaterMgmtSelector />
+      <DemographicQuestionGroupSelector />
     </FormDialog>
   );
 }

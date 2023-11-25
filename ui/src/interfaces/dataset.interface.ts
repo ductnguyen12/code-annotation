@@ -3,6 +3,7 @@ export interface Dataset {
   name: string;
   description: string;
   pLanguage?: string;
+  demographicQuestionGroupIds?: number[],
   configuration?: any;
 }
 
