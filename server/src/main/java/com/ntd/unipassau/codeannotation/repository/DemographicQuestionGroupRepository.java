@@ -26,4 +26,9 @@ public interface DemographicQuestionGroupRepository extends JpaRepository<Demogr
             "INNER JOIN FETCH dqg.datasets d " +
             "WHERE d.id = :datasetId")
     Set<DemographicQuestionGroup> findAllFetchDataset(Long datasetId);
+
+    @Query("FROM DemographicQuestionGroup dqg " +
+            "LEFT JOIN FETCH dqg.questions q " +
+            "WHERE dqg.id IN :ids")
+    Set<DemographicQuestionGroup> findAllFetchQuestionsByIds(Collection<Long> ids);
 }

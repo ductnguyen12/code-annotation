@@ -1,0 +1,62 @@
+databaseChangeLog:
+- changeSet:
+    id: 1701097329755-73
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: question_question_setPK
+            name: question_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: question_question_setPK
+            name: question_set_id
+            type: BIGINT
+        tableName: question_question_set
+- changeSet:
+    id: 1701097329755-74
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: question_id
+        baseTableName: question_question_set
+        constraintName: fk_question_questionset
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: question
+        validate: true
+- changeSet:
+    id: 1701097329755-75
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: question_set_id
+        baseTableName: question_question_set
+        constraintName: fk_questionset_question
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: question_set
+        validate: true
+- changeSet:
+    id: 1701097329755-76
+    author: ducnt (generated)
+    changes:
+    - dropForeignKeyConstraint:
+        baseTableName: question
+        constraintName: fk_question_questionset
+- changeSet:
+    id: 1701097329755-77
+    author: ducnt (generated)
+    changes:
+    - dropColumn:
+        columnName: question_set_id
+        tableName: question

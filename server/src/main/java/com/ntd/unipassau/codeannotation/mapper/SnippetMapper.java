@@ -27,7 +27,7 @@ public interface SnippetMapper {
     @Mapping(target = "createdBy", ignore = true)
     Snippet toSnippet(SnippetVM snippetVM);
 
-    @Mapping(target = "questionSetId", source = "questionSet.id")
+    @Mapping(target = "questionSetIds", ignore = true)
     SnippetQuestionVM toSnippetQuestionVM(SnippetQuestion snippetQuestion);
 
     @Mapping(target = "solutions", ignore = true)

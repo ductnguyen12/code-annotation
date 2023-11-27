@@ -7,7 +7,6 @@ import com.ntd.unipassau.codeannotation.web.rest.constraint.QuestionConstraint;
 import com.ntd.unipassau.codeannotation.web.rest.errors.NotFoundException;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DQuestionParams;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DemographicQuestionVM;
-import com.ntd.unipassau.codeannotation.web.rest.vm.QuestionVM;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -36,7 +35,8 @@ public class DemographicQuestionResource {
     @PostMapping("/v1/demographic-questions")
     @ResponseStatus(HttpStatus.CREATED)
     @Secured({AuthoritiesConstants.USER})
-    public DemographicQuestionVM createQuestion(@RequestBody @Valid @QuestionConstraint QuestionVM questionVM) {
+    public DemographicQuestionVM createQuestion(
+            @RequestBody @Valid @QuestionConstraint DemographicQuestionVM questionVM) {
         return demographicQuestionService.createDemographicQuestion(questionVM);
     }
 
@@ -45,7 +45,7 @@ public class DemographicQuestionResource {
     @Secured({AuthoritiesConstants.USER})
     public DemographicQuestionVM updateQuestion(
             @PathVariable Long questionId,
-            @RequestBody @Valid @QuestionConstraint QuestionVM questionVM) {
+            @RequestBody @Valid @QuestionConstraint DemographicQuestionVM questionVM) {
         demographicQuestionRepository.findById(questionId)
                 .orElseThrow(() -> new NotFoundException(
                         "Could not find rater-question by id: " + questionId, "pathVars", "questionId"));

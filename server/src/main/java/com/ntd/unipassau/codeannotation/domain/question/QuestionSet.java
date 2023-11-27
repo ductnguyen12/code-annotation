@@ -25,7 +25,7 @@ public class QuestionSet extends AbstractAuditingEntity<Long> {
     private String description;
     private Integer priority;
 
-    @OneToMany(mappedBy = "questionSet")
+    @ManyToMany(mappedBy = "questionSets")
     @ToString.Exclude
     private Collection<Question> questions;
 }

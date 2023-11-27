@@ -7,60 +7,60 @@ import com.ntd.unipassau.codeannotation.repository.DemographicQuestionGroupRepos
 import com.ntd.unipassau.codeannotation.repository.DemographicQuestionRepository;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DQuestionParams;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DemographicQuestionVM;
-import com.ntd.unipassau.codeannotation.web.rest.vm.QuestionVM;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Service
 public class DemographicQuestionService {
-    private final DemographicQuestionRepository rQuestionRepository;
+    private final DemographicQuestionRepository dQuestionRepository;
     private final DemographicQuestionGroupRepository dqgRepository;
-    private final DemographicQuestionMapper rQuestionMapper;
+    private final DemographicQuestionMapper dQuestionMapper;
 
     @Autowired
     public DemographicQuestionService(
-            DemographicQuestionRepository rQuestionRepository,
+            DemographicQuestionRepository dQuestionRepository,
             DemographicQuestionGroupRepository dqgRepository,
-            DemographicQuestionMapper rQuestionMapper) {
-        this.rQuestionRepository = rQuestionRepository;
-        this.rQuestionMapper = rQuestionMapper;
+            DemographicQuestionMapper dQuestionMapper) {
+        this.dQuestionRepository = dQuestionRepository;
+        this.dQuestionMapper = dQuestionMapper;
         this.dqgRepository = dqgRepository;
     }
 
     @Transactional
-    public DemographicQuestionVM createDemographicQuestion(QuestionVM questionVM) {
-        DemographicQuestion rQuestion = rQuestionMapper.toQuestion(questionVM);
-        if (questionVM.getQuestionSetId() != null) {
-            DemographicQuestionGroup group = dqgRepository.findById(questionVM.getQuestionSetId())
-                    .orElseThrow(() -> new RuntimeException(
-                            "Could not find demographic question group by id: " + questionVM.getQuestionSetId()));
-            rQuestion.setQuestionSet(group);
-        }
-        rQuestionRepository.save(rQuestion);
-        return rQuestionMapper.toQuestionVM(rQuestion);
+    public DemographicQuestionVM createDemographicQuestion(DemographicQuestionVM questionVM) {
+        DemographicQuestion dQuestion = dQuestionMapper.toQuestion(questionVM);
+        return updateDemographicQuestion(dQuestion, questionVM);
     }
 
     @Transactional
-    public DemographicQuestionVM updateDemographicQuestion(Long questionId, QuestionVM questionVM) {
-        DemographicQuestion rQuestion = rQuestionRepository.findById(questionId)
+    public DemographicQuestionVM updateDemographicQuestion(Long questionId, DemographicQuestionVM questionVM) {
+        DemographicQuestion dQuestion = dQuestionRepository.findById(questionId)
                 .orElseThrow(() -> new RuntimeException("Could not find rater-question by id: " + questionId));
-        BeanUtils.copyProperties(questionVM, rQuestion, "id");
-        if (questionVM.getQuestionSetId() != null) {
-            DemographicQuestionGroup group = dqgRepository.findById(questionVM.getQuestionSetId())
-                    .orElseThrow(() -> new RuntimeException(
-                            "Could not find demographic question group by id: " + questionVM.getQuestionSetId()));
-            rQuestion.setQuestionSet(group);
-        }
-        rQuestionRepository.save(rQuestion);
-        return rQuestionMapper.toQuestionVM(rQuestion);
+        BeanUtils.copyProperties(questionVM, dQuestion, "id");
+        return updateDemographicQuestion(dQuestion, questionVM);
     }
 
     @Transactional(readOnly = true)
     public Collection<DemographicQuestionVM> listDemographicQuestions(DQuestionParams params) {
-        return rQuestionMapper.toQuestionVMs(rQuestionRepository.findAllFetchGroup(params.getDatasetId()));
+        return dQuestionMapper.toQuestionVMs(dQuestionRepository.findAllFetchGroup(params.getDatasetId()));
+    }
+
+    private DemographicQuestionVM updateDemographicQuestion(
+            DemographicQuestion rQuestion, DemographicQuestionVM questionVM) {
+        if (questionVM.getQuestionSetIds() != null) {
+            Set<DemographicQuestionGroup> groups =
+                    dqgRepository.findAllFetchQuestionsByIds(questionVM.getQuestionSetIds());
+            groups.forEach(group -> group.getQuestions().add(rQuestion));
+            rQuestion.setQuestionSets(new LinkedHashSet<>(groups));
+        }
+        dQuestionRepository.save(rQuestion);
+        return dQuestionMapper.toQuestionVM(rQuestion);
     }
 }

@@ -33,10 +33,17 @@ public class Question extends AbstractAuditingEntity<Long> {
     @Column(columnDefinition = "jsonb")
     private Answer answer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_set_id", foreignKey = @ForeignKey(name = "fk_question_questionset"))
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "question_question_set",
+            joinColumns =
+            @JoinColumn(name = "question_id", referencedColumnName = "id",
+                    foreignKey = @ForeignKey(name = "fk_question_questionset")),
+            inverseJoinColumns =
+            @JoinColumn(name = "question_set_id", referencedColumnName = "id",
+                    foreignKey = @ForeignKey(name = "fk_questionset_question"))
+    )
     @ToString.Exclude
-    private QuestionSet questionSet;
+    private Set<QuestionSet> questionSets;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "question")
     @ToString.Exclude
