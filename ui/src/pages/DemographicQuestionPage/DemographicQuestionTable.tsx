@@ -1,6 +1,7 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {
+  Chip,
   IconButton,
   Table,
   TableBody,
@@ -9,15 +10,16 @@ import {
   TableRow
 } from "@mui/material";
 
-import { useAppDispatch } from '../../app/hooks';
-import { useDemographicQuestionGroups, useDemographicQuestions } from '../../hooks/demographicQuestion';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { useDemographicQuestions } from '../../hooks/demographicQuestion';
 import { DemographicQuestion } from "../../interfaces/question.interface";
+import { selectDemographicQuestionGroupState } from '../../slices/demographicQuestionGroupSlice';
 import { deleteDemographicQuestionAsync, setOpenDialog, setSelected } from '../../slices/demographicQuestionSlice';
 
 const DemographicQuestionTable = () => {
   const {
     questionGroups,
-  } = useDemographicQuestionGroups();
+  } = useAppSelector(selectDemographicQuestionGroupState);
 
   const {
     questions,
@@ -64,10 +66,29 @@ const DemographicQuestionTable = () => {
             {fields.map((field) => (
               <TableCell key={field}>{question[field] as string}</TableCell>
             ))}
-            <TableCell key="questionGroups">
-              {questionGroups.find(qs => qs.id === question.questionSetId)?.title}
+            <TableCell
+              key="questionGroups"
+              align="center"
+              sx={{
+                maxWidth: '350px',
+              }}
+            >
+              {questionGroups
+                .filter(group => question.groupIds?.includes(group.id as number))
+                .map(group => (
+                  <Chip
+                    key={group.id}
+                    label={group.title}
+                    sx={{
+                      m: 0.5,
+                    }}
+                  />
+                ))}
             </TableCell>
-            <TableCell key="actions">
+            <TableCell
+              key="actions"
+              align="center"
+            >
               <IconButton aria-label="Edit question" onClick={() => handleEdit(question)}>
                 <EditIcon />
               </IconButton>

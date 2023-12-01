@@ -6,7 +6,6 @@ export interface Question {
   type: QuestionType;
   constraint?: QuestionConstraint;
   answer?: Answer;
-  questionSetId?: number;
 }
 
 export interface Answer {
@@ -48,6 +47,7 @@ export interface QuestionSet {
 }
 
 export interface DemographicQuestion extends Question {
+  groupIds?: Array<number>;
   solutions?: Array<Solution>;
 }
 

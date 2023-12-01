@@ -4,8 +4,9 @@ import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Ico
 import { ReactElement, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import DemographicQuestionGroupSelector from '../../components/DemographicQuestionGroupSelector';
 import FormDialog from "../../components/FormDialog";
-import { DemographicQuestion, QuestionType } from "../../interfaces/question.interface";
+import { DemographicQuestion, DemographicQuestionGroup, QuestionType } from "../../interfaces/question.interface";
 import { selectDemographicQuestionGroupState } from "../../slices/demographicQuestionGroupSlice";
 import { createDemographicQuestionAsync, selectDemographicQuestionState, setOpenDialog, setSelected, updateDemographicQuestionAsync } from "../../slices/demographicQuestionSlice";
 
@@ -35,7 +36,7 @@ const DemographicQuestionDialog = (): ReactElement => {
   const [attributes, setAttributes] = useState<string[]>([]);
   const [newAttribute, setNewAttribute] = useState<string | undefined>(undefined);
   const [questionType, setQuestionType] = useState<QuestionType>(DEFAULT_TYPE);
-  const [questionGroup, setQuestionGroup] = useState<number>(0);
+  const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
 
   useEffect(() => {
     setOptions(
@@ -52,7 +53,7 @@ const DemographicQuestionDialog = (): ReactElement => {
     );
     setAttributes(selected?.answer?.attributes || []);
     setQuestionType(selected ? selected.type : DEFAULT_TYPE);
-    setQuestionGroup(selected && selected.questionSetId ? selected.questionSetId : 0);
+    setSelectedGroups(selected?.groupIds || []);
 
     (Object.keys(getValues()) as (keyof DemographicQuestion)[])
       .forEach(key => setValue(key, selected ? selected[key] : undefined));
@@ -67,7 +68,7 @@ const DemographicQuestionDialog = (): ReactElement => {
 
   const onSubmission = async (question: DemographicQuestion) => {
     question.type = questionType;
-    question.questionSetId = questionGroup > 0 ? questionGroup : undefined;
+    question.groupIds = selectedGroups;
     question.answer = {
       attributes,
       options: options.map(option => option.option),
@@ -92,8 +93,12 @@ const DemographicQuestionDialog = (): ReactElement => {
     setAttributes([]);
     setNewAttribute(undefined);
     setQuestionType(DEFAULT_TYPE);
-    setQuestionGroup(0);
+    setSelectedGroups([]);
     reset();
+  }
+
+  const handleGroupsChange = (newGroups: DemographicQuestionGroup[]) => {
+    setSelectedGroups(newGroups.map(group => group.id as number));
   }
 
   const handleAddOption = () => {
@@ -173,21 +178,11 @@ const DemographicQuestionDialog = (): ReactElement => {
       </FormControl>
 
       {/* ===== Question group ===== */}
-      <FormControl fullWidth>
-        <InputLabel size="small" id="question-set">Question Group</InputLabel>
-        <Select
-          id="question-set-select"
-          label="Question Group"
-          size="small"
-          value={questionGroup}
-          onChange={e => setQuestionGroup(e.target.value as number)}
-        >
-          <MenuItem key='undefined' value={0}><i>No Group</i></MenuItem>
-          {questionGroups.map(group => (
-            <MenuItem key={group.id} value={group.id}>{group.title}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <DemographicQuestionGroupSelector
+        questionGroups={questionGroups}
+        selectedIds={selectedGroups}
+        onValuesChange={handleGroupsChange}
+      />
 
       {/* ===== Options ===== */}
       {QuestionType.INPUT !== questionType && (

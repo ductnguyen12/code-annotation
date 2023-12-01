@@ -8,7 +8,6 @@ export interface DatasetsState {
   status: 'idle' | 'loading' | 'failed';
   datasets: Dataset[];
   dataset?: Dataset;
-  demographicQuestionGroupIds: number[],
   configuration: any;
 }
 
@@ -16,7 +15,6 @@ const initialState: DatasetsState = {
   status: 'idle',
   datasets: [],
   dataset: undefined,
-  demographicQuestionGroupIds: [],
   configuration: {},
 };
 
@@ -92,16 +90,11 @@ export const datasetsSlice = createSlice({
     chooseDataset: (state, action: PayloadAction<number>) => {
       if (action.payload >= 0) {
         state.dataset = state.datasets.find(d => d.id === action.payload);
-        state.demographicQuestionGroupIds = state.dataset?.demographicQuestionGroupIds || [];
         state.configuration = state.dataset?.configuration;
       } else {
         state.dataset = undefined;
-        state.demographicQuestionGroupIds = [];
         state.configuration = undefined;
       }
-    },
-    setDemograhpicQuestions: (state, action: PayloadAction<number[]>) => {
-      state.demographicQuestionGroupIds = action.payload;
     },
     updateConfiguration: (state, action: PayloadAction<{ key: string, value: any }>) => {
       if (!state.configuration) {
@@ -141,7 +134,6 @@ export const datasetsSlice = createSlice({
       .addCase(createDatasetAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.dataset = undefined;
-        state.demographicQuestionGroupIds = [];
         state.configuration = undefined;
         state.datasets.push(action.payload);
       })
@@ -155,7 +147,6 @@ export const datasetsSlice = createSlice({
       .addCase(updateDatasetAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.dataset = undefined;
-        state.demographicQuestionGroupIds = [];
         state.configuration = undefined;
         const index = state.datasets.findIndex(dataset => dataset.id === action.payload.id);
         if (index > -1)
@@ -171,7 +162,6 @@ export const datasetsSlice = createSlice({
       .addCase(deleteDatasetAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.dataset = undefined;
-        state.demographicQuestionGroupIds = [];
         state.configuration = undefined;
         state.datasets = state.datasets.filter(dataset => dataset.id !== action.payload);
       })
@@ -184,7 +174,6 @@ export const datasetsSlice = createSlice({
 
 export const {
   chooseDataset,
-  setDemograhpicQuestions,
   updateConfiguration,
 } = datasetsSlice.actions;
 

@@ -5,11 +5,14 @@ import InputLabel from "@mui/material/InputLabel"
 import MenuItem from "@mui/material/MenuItem"
 import Select from "@mui/material/Select"
 import TextField from "@mui/material/TextField"
-import { FC, ReactElement, useEffect } from "react"
+import { FC, ReactElement, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
+import DemographicQuestionGroupSelector from "../../components/DemographicQuestionGroupSelector"
 import FormDialog from "../../components/FormDialog"
+import { useDemographicQuestionGroups } from "../../hooks/demographicQuestion"
 import { Dataset } from "../../interfaces/dataset.interface"
+import { DemographicQuestionGroup } from "../../interfaces/question.interface"
 import {
   chooseDataset,
   createDatasetAsync,
@@ -18,7 +21,6 @@ import {
   updateDatasetAsync
 } from "../../slices/datasetsSlice"
 import { PROGRAMMING_LANGUAGES } from "../../util/programming-languages"
-import DemographicQuestionGroupSelector from "./DemographicQuestionGroupSelector"
 import RaterMgmtSelector from "./RaterMgmtSelector"
 
 type DatasetDialogProps = {
@@ -35,9 +37,15 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
 
   const {
     dataset,
-    demographicQuestionGroupIds,
     configuration,
   } = useAppSelector(selectDatasetsState);
+
+  const {
+    questionGroups,
+  } = useDemographicQuestionGroups();
+
+  const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
+  const [pLanguage, setPLanguage] = useState('');
 
   useEffect(() => {
     if (dataset) {
@@ -50,23 +58,31 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
         description: '',
       });
     }
+    setSelectedGroups(dataset?.demographicQuestionGroupIds || []);
+    setPLanguage(dataset?.pLanguage || '');
   }, [dataset, setValue, reset]);
 
   const handleSetHiddenQuestions = (checked: boolean) => {
     dispatch(updateConfiguration({ key: "hiddenQuestions", value: { value: checked } }));
   }
 
-  const handleChangeLanguage = (newLanguege: string) => {
-    if (newLanguege)
-      setValue('pLanguage', newLanguege);
+  const handleChangeLanguage = (newLanguage: string) => {
+    if (newLanguage) {
+      setValue('pLanguage', newLanguage);
+      setPLanguage(newLanguage);
+    }
   };
+
+  const handleDQuestionGroupsChange = (newGroups: DemographicQuestionGroup[]) => {
+    setSelectedGroups(newGroups.map(group => group.id as number));
+  }
 
   const handleClose = () => {
     dispatch(chooseDataset(-1));
   }
 
   const onSubmission = async (newDataset: Dataset) => {
-    newDataset.demographicQuestionGroupIds = demographicQuestionGroupIds;
+    newDataset.demographicQuestionGroupIds = selectedGroups;
     newDataset.configuration = configuration;
 
     if (!!dataset) {
@@ -115,6 +131,7 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
           id="programming-language-select"
           label="Language"
           size="small"
+          value={pLanguage}
           defaultValue=""
           onChange={e => handleChangeLanguage(e.target.value as string)}
         >
@@ -125,7 +142,11 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
         </Select>
       </FormControl>
       <RaterMgmtSelector />
-      <DemographicQuestionGroupSelector />
+      <DemographicQuestionGroupSelector
+        questionGroups={questionGroups}
+        selectedIds={selectedGroups}
+        onValuesChange={handleDQuestionGroupsChange}
+      />
     </FormDialog>
   );
 }

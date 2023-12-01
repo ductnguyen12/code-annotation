@@ -46,8 +46,8 @@ const DemographicQuestions = ({
     return questionGroups.map(group => {
       return {
         questionGroup: group,
-        questions: questions.filter(question => group.id === question.questionSetId),
-        solutions: questions.filter(question => group.id === question.questionSetId).map(_ => undefined),
+        questions: questions.filter(question => question.groupIds?.includes(group.id as number)),
+        solutions: questions.filter(question => question.groupIds?.includes(group.id as number)).map(_ => undefined),
       } as StepData;
     })
   }, [questions, questionGroups]);
