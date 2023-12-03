@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 import api from '../api';
 import { RootState } from '../app/store';
-import { Dataset } from '../interfaces/dataset.interface';
+import { Dataset, DatasetStatistics } from '../interfaces/dataset.interface';
 import { defaultAPIErrorHandle, defaultAPISuccessHandle } from '../util/error-util';
 
 export interface DatasetsState {
@@ -9,6 +9,7 @@ export interface DatasetsState {
   datasets: Dataset[];
   dataset?: Dataset;
   configuration: any;
+  statistics?: DatasetStatistics;
 }
 
 const initialState: DatasetsState = {
@@ -16,6 +17,7 @@ const initialState: DatasetsState = {
   datasets: [],
   dataset: undefined,
   configuration: {},
+  statistics: undefined,
 };
 
 export const loadDatasetsAsync = createAsyncThunk<Dataset[], void, { dispatch: Dispatch }>(
@@ -35,6 +37,18 @@ export const loadDatasetAsync = createAsyncThunk(
   async (datasetId: number, { dispatch }) => {
     try {
       return await api.getDataset(datasetId);
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
+export const loadDatasetStatisticsAsync = createAsyncThunk(
+  'datasets/loadDatasetStatistics',
+  async (datasetId: number, { dispatch }) => {
+    try {
+      return await api.getDatasetStatistics(datasetId);
     } catch (error: any) {
       defaultAPIErrorHandle(error, dispatch);
       throw error;
@@ -125,6 +139,18 @@ export const datasetsSlice = createSlice({
         state.dataset = action.payload;
       })
       .addCase(loadDatasetAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(loadDatasetStatisticsAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(loadDatasetStatisticsAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.dataset = action.payload.dataset;
+        state.statistics = action.payload;
+      })
+      .addCase(loadDatasetStatisticsAsync.rejected, (state) => {
         state.status = 'failed';
       })
 

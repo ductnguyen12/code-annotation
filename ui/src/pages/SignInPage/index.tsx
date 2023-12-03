@@ -14,11 +14,13 @@ import OutlinedInput from "@mui/material/OutlinedInput"
 import Paper from "@mui/material/Paper"
 import { Navigate } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
+import { useNextQueryParam } from "../../hooks/common"
 import { Login } from "../../interfaces/auth.interface"
 import { selectAuthState, signInAsync } from "../../slices/authSlice"
 
 const SignInPage = () => {
   const { authenticated, status } = useAppSelector(selectAuthState);
+  const nextPage = useNextQueryParam();
   const dispatch = useAppDispatch();
   const onSubmit: SubmitHandler<Login> = (login: Login) => {
     dispatch(signInAsync(login));
@@ -32,7 +34,7 @@ const SignInPage = () => {
   };
 
   return !!authenticated
-    ? (<Navigate to="/datasets" replace />)
+    ? (<Navigate to={nextPage || '/datasets'} replace />)
     : (
       <Paper
         elevation={3}

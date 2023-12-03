@@ -1,11 +1,15 @@
 package com.ntd.unipassau.codeannotation.service;
 
 import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
+import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
 import com.ntd.unipassau.codeannotation.domain.question.QuestionSet;
 import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestionGroup;
+import com.ntd.unipassau.codeannotation.domain.rater.SnippetRate;
 import com.ntd.unipassau.codeannotation.mapper.DatasetMapper;
 import com.ntd.unipassau.codeannotation.repository.DatasetRepository;
 import com.ntd.unipassau.codeannotation.repository.DemographicQuestionGroupRepository;
+import com.ntd.unipassau.codeannotation.repository.SnippetRepository;
+import com.ntd.unipassau.codeannotation.web.rest.vm.DatasetStatistics;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DatasetVM;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +26,18 @@ public class DatasetService {
     private final DemographicQuestionGroupRepository dqgRepository;
     private final DatasetRepository datasetRepository;
     private final DatasetMapper datasetMapper;
+    private final SnippetRepository snippetRepository;
 
     @Autowired
     public DatasetService(
             DemographicQuestionGroupRepository dqgRepository,
             DatasetRepository datasetRepository,
-            DatasetMapper datasetMapper) {
+            DatasetMapper datasetMapper,
+            SnippetRepository snippetRepository) {
         this.dqgRepository = dqgRepository;
         this.datasetRepository = datasetRepository;
         this.datasetMapper = datasetMapper;
+        this.snippetRepository = snippetRepository;
     }
 
     @Transactional(readOnly = true)
@@ -121,5 +128,36 @@ public class DatasetService {
                     datasetRepository.delete(dataset);
                     return dataset;
                 });
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<DatasetStatistics> getDatasetStatistics(Long datasetId) {
+        return datasetRepository.findById(datasetId)
+                .map(dataset -> {
+                    Collection<Snippet> snippets = snippetRepository.findAllByDatasetId(datasetId);
+                    return DatasetStatistics.builder()
+                            .dataset(datasetMapper.toDatasetVM(dataset))
+                            .numberOfSnippets(snippets.size())
+                            .numberOfParticipants(countNumberOfParticipants(snippets))
+                            .averageRating(calculateAverageRating(snippets))
+                            .build();
+                });
+    }
+
+    private int countNumberOfParticipants(Collection<Snippet> snippets) {
+        return (int) snippets.stream()
+                .flatMap(snippet -> snippet.getRates().stream())
+                .map(rating -> rating.getRater().getId())
+                .distinct()
+                .count();
+    }
+
+    private double calculateAverageRating(Collection<Snippet> snippets) {
+        return snippets.stream()
+                .flatMap(snippet -> snippet.getRates().stream())
+                .filter(rating -> rating != null && rating.getValue() != null)
+                .mapToInt(SnippetRate::getValue)
+                .average()
+                .orElse(0d);
     }
 }

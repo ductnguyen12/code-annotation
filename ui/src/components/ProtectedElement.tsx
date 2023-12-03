@@ -1,5 +1,5 @@
 import { FC, ReactElement } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAppSelector } from "../app/hooks";
 import { selectAuthState } from "../slices/authSlice";
 
@@ -13,9 +13,19 @@ const ProtectedElement: FC<ProtectedRouteProps> = ({
   hidden = false,
 }): ReactElement => {
   const { authenticated } = useAppSelector(selectAuthState);
+  const location = useLocation();
   if (!authenticated) {
-    if (!hidden)
-      return (<Navigate to="/sign-in" replace />);
+    if (!hidden) {
+      return (
+        <Navigate
+          replace
+          to={{
+            pathname: "/sign-in",
+            search: `?next=${location.pathname}`
+          }}
+        />
+      );
+    }
     return (<></>);
   }
   return children;

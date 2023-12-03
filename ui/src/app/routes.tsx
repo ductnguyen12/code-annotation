@@ -3,12 +3,13 @@ import LoginIcon from '@mui/icons-material/Login';
 import PsychologyAltIcon from '@mui/icons-material/PsychologyAlt';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 
+import { DatasetOverviewPage } from '../pages/DatasetOverviewPage';
 import DatasetsPage from "../pages/DatasetsPage";
 import DemographicQuestionGroupPage from '../pages/DemographicQuestionGroupPage';
-import SignInPage from '../pages/SignInPage';
-import SnippetsPage from '../pages/SnippetsPage';
 import DemographicQuestionPage from '../pages/DemographicQuestionPage';
 import RaterRegistrationPage from '../pages/RaterRegistrationPage';
+import SignInPage from '../pages/SignInPage';
+import SnippetsPage from '../pages/SnippetsPage';
 
 const routes = [
   {
@@ -22,9 +23,18 @@ const routes = [
     protected: true,
   },
   {
+    key: 'dataset',
+    path: '/datasets/:id/overview',
+    title: 'Dataset',
+    element: (<DatasetOverviewPage />),
+    inDrawer: false,
+    drawerPathPrefix: '/datasets',
+    protected: true,
+  },
+  {
     key: 'datasetSnippets',
     path: '/datasets/:id/snippets',
-    title: 'Datasets',
+    title: 'Dataset Snippets',
     element: (<SnippetsPage />),
     inDrawer: false,
     drawerPathPrefix: '/datasets',

@@ -3,8 +3,15 @@ export interface Dataset {
   name: string;
   description: string;
   pLanguage?: string;
-  demographicQuestionGroupIds?: number[],
+  demographicQuestionGroupIds?: number[];
   configuration?: any;
+}
+
+export interface DatasetStatistics {
+  numberOfSnippets: number;
+  numberOfParticipants: number;
+  averageRating: number;
+  dataset: Dataset;
 }
 
 export enum RaterMgmtSystem {

@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { Dataset } from "../interfaces/dataset.interface";
+import { Dataset, DatasetStatistics } from "../interfaces/dataset.interface";
 import { downloadFile } from "./util";
 
 export const getDatasets = async (): Promise<Dataset[]> => {
@@ -34,4 +34,10 @@ export const importDatasetSnippets = async (datasetId: number, file: File): Prom
 
 export const exportDatasetSnippets = async (datasetId: number): Promise<void> => {
   await downloadFile(`/api/v1/datasets/${datasetId}/export-snippets`, `dataset-${datasetId}-snippets.zip`);
+}
+
+export const getDatasetStatistics = async (datasetId: number): Promise<DatasetStatistics> => {
+  const response: AxiosResponse<DatasetStatistics> =
+    await axios.get<DatasetStatistics>(`/api/v1/datasets/${datasetId}/statistics`);
+  return response.data;
 }

@@ -4,6 +4,7 @@ import { useCookies } from 'react-cookie';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import LoadingBackdrop from "../../components/LoadingBackdrop";
+import { useNextQueryParam } from '../../hooks/common';
 import { selectAuthState } from '../../slices/authSlice';
 import { selectDemographicQuestionGroupState } from '../../slices/demographicQuestionGroupSlice';
 import { selectDemographicQuestionState } from '../../slices/demographicQuestionSlice';
@@ -12,6 +13,7 @@ import DemographicQuestions from "./DemographicQuestions";
 
 const RaterRegistrationPage = () => {
   const [searchParams,] = useSearchParams();
+  const nextPage = useNextQueryParam();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -36,7 +38,7 @@ const RaterRegistrationPage = () => {
 
   useEffect(() => {
     if (authenticated) {
-      navigate(searchParams.get('next') as string);
+      navigate(nextPage || '/datasets');
       return;
     }
     const prolificId = searchParams.get('prolificId');
@@ -54,9 +56,9 @@ const RaterRegistrationPage = () => {
       return;
     }
     if (rater?.id) {
-      navigate(searchParams.get('next') as string);
+      navigate(nextPage || '/datasets');
     }
-  }, [authenticated, rater, cookies.token, setCookie, removeCookie, navigate, searchParams, dispatch]);
+  }, [authenticated, rater, cookies.token, searchParams, nextPage, setCookie, removeCookie, navigate, dispatch]);
 
   const getDatasetId = (): number | undefined => {
     if (!searchParams.has('next')) {

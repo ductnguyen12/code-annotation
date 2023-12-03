@@ -5,6 +5,7 @@ import com.ntd.unipassau.codeannotation.service.BackupService;
 import com.ntd.unipassau.codeannotation.service.DatasetService;
 import com.ntd.unipassau.codeannotation.web.rest.errors.BadRequestException;
 import com.ntd.unipassau.codeannotation.web.rest.errors.NotFoundException;
+import com.ntd.unipassau.codeannotation.web.rest.vm.DatasetStatistics;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DatasetVM;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -106,5 +107,14 @@ public class DatasetResource {
         }
 
         backupService.importSnippets(datasetId, file.getResource());
+    }
+
+    @Operation(summary = "Get dataset's statistics")
+    @GetMapping(value = "/v1/datasets/{datasetId}/statistics")
+    @Secured({AuthoritiesConstants.USER})
+    public DatasetStatistics getDatasetStatistics(@PathVariable Long datasetId) {
+        return datasetService.getDatasetStatistics(datasetId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
     }
 }

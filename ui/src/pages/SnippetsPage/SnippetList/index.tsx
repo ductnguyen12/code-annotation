@@ -2,30 +2,30 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import SendIcon from '@mui/icons-material/Send';
 import { LoadingButton } from '@mui/lab';
-import { IconButton } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from 'react';
+import { Link as RouterLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import DatasetDetail from '../../../components/DatasetDetail';
 import LoadingBackdrop from '../../../components/LoadingBackdrop';
 import { useIdFromPath } from '../../../hooks/common';
+import { useDataset } from '../../../hooks/dataset';
 import { useDatasetSnippets } from "../../../hooks/snippet";
 import { Solution } from '../../../interfaces/question.interface';
 import { SnippetRate } from "../../../interfaces/snippet.interface";
 import { selectAuthState } from '../../../slices/authSlice';
-import { selectDatasetsState } from '../../../slices/datasetsSlice';
 import { pushNotification } from '../../../slices/notificationSlice';
 import { chooseSnippet, rateSnippetAsync } from "../../../slices/snippetsSlice";
-import DatasetDetail from './DatasetDetail';
 import SnippetCode from './SnippetCode';
 import SnippetRating from "./SnippetRating";
 import SnippetToolBox from './SnippetToolBox';
 
 const SnippetList = () => {
   const datasetId = useIdFromPath();
-
-  const { dataset } = useAppSelector(selectDatasetsState);
+  const dataset = useDataset(datasetId);
 
   const {
     status,
@@ -94,7 +94,16 @@ const SnippetList = () => {
   return (
     <Box>
       <LoadingBackdrop open={'loading' === status} />
-      <DatasetDetail />
+      {dataset && (<DatasetDetail dataset={dataset} />)}
+      <Button
+        component={RouterLink}
+        to={`/datasets/${datasetId}/overview`}
+        sx={{
+          mb: 3,
+        }}
+      >
+        Detail
+      </Button>
       <Typography sx={{ mb: 2 }} variant="h5">
         Snippets
         <span><SnippetToolBox /></span>
