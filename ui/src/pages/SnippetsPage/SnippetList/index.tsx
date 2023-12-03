@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import DatasetDetail from '../../../components/DatasetDetail';
 import LoadingBackdrop from '../../../components/LoadingBackdrop';
 import { useIdFromPath } from '../../../hooks/common';
-import { useDataset } from '../../../hooks/dataset';
+import { useDataset, useDatasetStatistics } from '../../../hooks/dataset';
 import { useDatasetSnippets } from "../../../hooks/snippet";
 import { Solution } from '../../../interfaces/question.interface';
 import { SnippetRate } from "../../../interfaces/snippet.interface";
@@ -33,6 +33,8 @@ const SnippetList = () => {
     selected,
     selectedRater,
   } = useDatasetSnippets(datasetId);
+
+  const statistics = useDatasetStatistics(datasetId);
 
   const {
     authenticated,
@@ -137,6 +139,7 @@ const SnippetList = () => {
               rater={selectedRater}
               editable={isEditable()}
               hideQuestions={shouldHideQuestions()}
+              statistics={statistics?.snippets[snippets[selected].id]}
             />
             <Box
               sx={{

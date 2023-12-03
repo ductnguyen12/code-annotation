@@ -1,12 +1,13 @@
 import * as React from 'react';
 
 import StarIcon from '@mui/icons-material/Star';
-import { Grid } from '@mui/material';
+import { Grid, styled } from '@mui/material';
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
 import { useAppDispatch } from '../../../../app/hooks';
+import ProtectedElement from '../../../../components/ProtectedElement';
 import { SnippetQuestion as SQuestion, SnippetRate } from '../../../../interfaces/snippet.interface';
 import { updateCurrentRateByKey } from '../../../../slices/snippetsSlice';
 import SnippetQuestion from './SnippetQuestion';
@@ -17,6 +18,9 @@ interface SnippetRatingProps {
   rater?: string;                 // For filtering soluton
   editable?: boolean;
   hideQuestions?: boolean;
+  statistics?: {
+    averageRating: number,
+  };
 }
 
 interface Labels {
@@ -35,12 +39,19 @@ function getLabelText(value: number) {
   return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
 }
 
+const AverageRating = styled(Rating)({
+  '& .MuiRating-iconFilled': {
+    color: '#1976d2',
+  },
+});
+
 const SnippetRating: React.FC<SnippetRatingProps> = ({
   rate,
   questions,
   rater,
   editable,
   hideQuestions,
+  statistics,
 }) => {
   const dispatch = useAppDispatch();
   const [hover, setHover] = React.useState(-1);
@@ -92,10 +103,28 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
           emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
           value={rateValue}
         />
-        {((!!rateValue && rateValue > 0) || hover !== -1) && (
-          <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : rateValue]}</Box>
-        )}
+        <Box
+          hidden={!rateValue && hover === -1}
+          sx={{
+            ml: 2,
+            minHeight: '24px',
+            display: 'block',
+          }}
+        >
+          {labels[hover !== -1 ? hover : rateValue]}
+        </Box>
       </FormControl>
+      <ProtectedElement hidden>
+        <>
+          <AverageRating
+            readOnly
+            precision={0.5}
+            emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+            value={Math.floor((statistics?.averageRating || 0) * 4) / 4}
+          />
+          <Box>({statistics?.averageRating || 0.0} on average)</Box>
+        </>
+      </ProtectedElement>
       {!hideQuestions && (
         <Grid container sx={{ m: 1 }} spacing={2}>
           {questions?.map((q, index) => (

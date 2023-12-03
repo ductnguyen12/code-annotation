@@ -12,6 +12,12 @@ export interface DatasetStatistics {
   numberOfParticipants: number;
   averageRating: number;
   dataset: Dataset;
+  snippets: {
+    [key: number]: {
+      averageRating: number,
+      numberOfParticipants: number,
+    }
+  };
 }
 
 export enum RaterMgmtSystem {

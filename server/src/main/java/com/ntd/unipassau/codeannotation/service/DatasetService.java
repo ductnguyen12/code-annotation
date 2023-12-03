@@ -16,9 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -140,13 +138,30 @@ public class DatasetService {
                             .numberOfSnippets(snippets.size())
                             .numberOfParticipants(countNumberOfParticipants(snippets))
                             .averageRating(calculateAverageRating(snippets))
+                            .snippets(calculateSnippetStatistics(snippets))
                             .build();
                 });
+    }
+
+    private Map<Long, DatasetStatistics.SnippetStatistics> calculateSnippetStatistics(Collection<Snippet> snippets) {
+        return snippets.stream()
+                .map(snippet -> {
+                    double averageRating = calculateAverageRating(List.of(snippet));
+                    int numberOfParticipants = countNumberOfParticipants(List.of(snippet));
+                    return Map.entry(
+                            snippet.getId(),
+                            DatasetStatistics.SnippetStatistics.builder()
+                                    .averageRating(averageRating)
+                                    .numberOfParticipants(numberOfParticipants)
+                                    .build());
+                })
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private int countNumberOfParticipants(Collection<Snippet> snippets) {
         return (int) snippets.stream()
                 .flatMap(snippet -> snippet.getRates().stream())
+                .filter(rating -> rating != null && rating.getValue() != null)
                 .map(rating -> rating.getRater().getId())
                 .distinct()
                 .count();
