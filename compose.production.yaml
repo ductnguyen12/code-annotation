@@ -13,7 +13,8 @@ services:
       - traefik.enable=true
       - traefik.http.services.code-annotation-ui.loadbalancer.server.port=80
       - traefik.http.routers.code-annotation-ui.rule=Host(`${CA_HOST:-localhost}`)
-      - traefik.http.routers.code-annotation-ui.entrypoints=web
+      - traefik.http.routers.code-annotation-ui.entrypoints=websecure
+      - traefik.http.routers.code-annotation-ui.tls=true
 
   code-annotation-server:
     image: ducnt12/code-annotation-server:1.0
@@ -26,13 +27,14 @@ services:
       - /mnt/secrets/server-secret.env
     environment:
       - ENV=production
-      - CORS_ORIGIN_PATTERNS=http://${CA_HOST:-localhost:*}
+      - CORS_ORIGIN_PATTERNS=https://${CA_HOST:-localhost:*}
     labels:
       - traefik.enable=true
       - traefik.http.services.code-annotation.loadbalancer.server.port=8080
       - traefik.http.routers.code-annotation.rule=Host(`${CA_HOST:-localhost}`) &&
         PathPrefix(`/api/`)
-      - traefik.http.routers.code-annotation.entrypoints=web
+      - traefik.http.routers.code-annotation.entrypoints=websecure
+      - traefik.http.routers.code-annotation.tls=true
     depends_on:
       - code-annotation-db
 
@@ -52,7 +54,10 @@ services:
     command:
       - '--providers.docker.exposedByDefault=false'
       - '--providers.docker.network=code-annotation'
+      - '--providers.http.tls.cert=/etc/cert/fullchain.pem'
+      - '--providers.http.tls.key=/etc/cert/privkey.pem'
       - '--entryPoints.web.address=:3000'
+      - '--entryPoints.websecure.address=:443'
       - '--providers.file.directory=/etc/traefik/rules'
     # Uncomment to get Traefik dashboard
     #   - "--entryPoints.dashboard.address=:8090"
@@ -64,9 +69,10 @@ services:
     #   - traefik.http.routers.dashboard.rule=Host(`${CA_HOST:-localhost}`)
     ports:
       - 80:3000
-    #  - 8090:8090
+      - 443:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/letsencrypt/live/nutzerstudio.se2.fim.uni-passau.de:/etc/cert:ro
 
 networks:
   default:
