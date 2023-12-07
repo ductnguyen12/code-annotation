@@ -54,11 +54,12 @@ services:
     command:
       - '--providers.docker.exposedByDefault=false'
       - '--providers.docker.network=code-annotation'
-      - '--providers.http.tls.cert=/etc/cert/fullchain.pem'
-      - '--providers.http.tls.key=/etc/cert/privkey.pem'
-      - '--entryPoints.web.address=:3000'
       - '--entryPoints.websecure.address=:443'
+      - '--entryPoints.web.address=:80'
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - '--providers.file.directory=/etc/traefik/rules'
+      - '--providers.file.watch=true'
     # Uncomment to get Traefik dashboard
     #   - "--entryPoints.dashboard.address=:8090"
     #   - "--api.dashboard=true"
@@ -68,11 +69,13 @@ services:
     #   - traefik.http.routers.dashboard.service=api@internal
     #   - traefik.http.routers.dashboard.rule=Host(`${CA_HOST:-localhost}`)
     ports:
-      - 80:3000
+      - 80:80
       - 443:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /etc/letsencrypt/live/nutzerstudio.se2.fim.uni-passau.de:/etc/cert:ro
+      - /mnt/deployment/code-annotation/traefik-rules:/etc/traefik/rules:ro
+      - /etc/letsencrypt/live/nutzerstudio.se2.fim.uni-passau.de:/etc/letsencrypt/live/cert:ro
+      - /etc/letsencrypt/archive/nutzerstudio.se2.fim.uni-passau.de:/etc/letsencrypt/archive/nutzerstudio.se2.fim.uni-passau.de:ro
 
 networks:
   default:

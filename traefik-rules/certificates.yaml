@@ -1,0 +1,6 @@
+# Dynamic configuration
+
+tls:
+  certificates:
+    - certFile: /etc/letsencrypt/live/cert/fullchain.pem
+      keyFile: /etc/letsencrypt/live/cert/privkey.pem
