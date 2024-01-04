@@ -1,0 +1,185 @@
+databaseChangeLog:
+- changeSet:
+    id: 1703675245429-1
+    author: ducnt (generated)
+    changes:
+    - createSequence:
+        incrementBy: 1
+        sequenceName: model_seq
+        startValue: 1
+- changeSet:
+    id: 1703675245429-2
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: modelPK
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: created_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: last_modified_by
+            type: VARCHAR(50)
+        - column:
+            name: last_modified_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: config
+            type: JSONB
+        - column:
+            name: execution_type
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            name: output_format
+            type: VARCHAR(255)
+        - column:
+            name: rating_scale
+            type: FLOAT(53)
+        tableName: model
+- changeSet:
+    id: 1703675245429-3
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: model_executionPK
+            name: id
+            type: UUID
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: created_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: last_modified_by
+            type: VARCHAR(50)
+        - column:
+            name: last_modified_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: error_msg
+            type: text
+        - column:
+            constraints:
+              nullable: false
+            name: model_id
+            type: BIGINT
+        - column:
+            name: state
+            type: VARCHAR(255)
+        - column:
+            name: target_id
+            type: BIGINT
+        - column:
+            name: target_type
+            type: VARCHAR(255)
+        tableName: model_execution
+- changeSet:
+    id: 1703675245429-4
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: created_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: last_modified_by
+            type: VARCHAR(50)
+        - column:
+            name: last_modified_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: metrics
+            type: JSONB
+        - column:
+            constraints:
+              nullable: false
+            name: value
+            type: FLOAT(53)
+        - column:
+            name: execution_id
+            type: uuid
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: predicted_ratingPK
+            name: model_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: predicted_ratingPK
+            name: snippet_id
+            type: BIGINT
+        tableName: predicted_rating
+- changeSet:
+    id: 1703675245429-5
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: model_id
+        baseTableName: predicted_rating
+        constraintName: fk_prating_model
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: model
+        validate: true
+- changeSet:
+    id: 1703675245429-6
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: snippet_id
+        baseTableName: predicted_rating
+        constraintName: fk_prating_snippet
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: snippet
+        validate: true
+- changeSet:
+    id: 1703675245429-7
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: execution_id
+        baseTableName: predicted_rating
+        constraintName: fk_prating_execution
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: model_execution
+        validate: true

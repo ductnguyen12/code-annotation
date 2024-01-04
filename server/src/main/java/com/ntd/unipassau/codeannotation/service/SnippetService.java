@@ -9,6 +9,7 @@ import com.ntd.unipassau.codeannotation.domain.rater.Rater;
 import com.ntd.unipassau.codeannotation.domain.rater.SnippetRate;
 import com.ntd.unipassau.codeannotation.domain.rater.Solution;
 import com.ntd.unipassau.codeannotation.mapper.SnippetMapper;
+import com.ntd.unipassau.codeannotation.repository.PredictedRatingRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRateRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRepository;
 import com.ntd.unipassau.codeannotation.repository.SolutionRepository;
@@ -33,6 +34,7 @@ public class SnippetService {
     final static String RAW_GITHUB_HOST = "raw.githubusercontent.com";
     private final SnippetRepository snippetRepository;
     private final SnippetRateRepository snippetRateRepository;
+    private final PredictedRatingRepository pRatingRepository;
     private final SnippetMapper snippetMapper;
     private final SnippetQuestionService snippetQuestionService;
     private final SolutionService solutionService;
@@ -43,6 +45,7 @@ public class SnippetService {
     public SnippetService(
             SnippetRepository snippetRepository,
             SnippetRateRepository snippetRateRepository,
+            PredictedRatingRepository pRatingRepository,
             SnippetMapper snippetMapper,
             SnippetQuestionService snippetQuestionService,
             SolutionService solutionService,
@@ -50,6 +53,7 @@ public class SnippetService {
             SolutionRepository solutionRepository) {
         this.snippetRepository = snippetRepository;
         this.snippetRateRepository = snippetRateRepository;
+        this.pRatingRepository = pRatingRepository;
         this.solutionService = solutionService;
         this.snippetMapper = snippetMapper;
         this.snippetQuestionService = snippetQuestionService;
@@ -163,6 +167,8 @@ public class SnippetService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
         snippetRateRepository.deleteAllInBatch(rates);
+
+        pRatingRepository.deleteAllBySnippets(snippets.stream().map(Snippet::getId).toList());
 
         snippetRepository.deleteAllInBatch(snippets);
     }

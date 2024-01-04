@@ -36,9 +36,9 @@ public class SolutionService {
     }
 
     @Transactional
-    public void createRaterSolutionsInBatch(Rater rater, Collection<SolutionVM> solutionVMs) {
+    public void createDemographicSolutionsInBatch(Rater rater, Collection<SolutionVM> solutionVMs) {
         // Delete old solution
-        solutionRepository.deleteRaterSolutionsByRaterId(rater.getId());
+        solutionRepository.deleteDemographicSolutionsByRaterId(rater.getId());
         createSolutionsInBatch(rater, solutionVMs, rQuestionRepository);
     }
 

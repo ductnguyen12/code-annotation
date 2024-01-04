@@ -91,7 +91,7 @@ public class DefaultDatasetExporter implements DatasetExporter {
                         if (file.getName().endsWith(metadataExporter.getFilenameExtension())) {
                             metadataFiles.add(file);
                             metadataBaseFilenames.add(ExportFileUtil.getBaseFilename(file.getName()));
-                        } else if (ExportFileUtil.isSourceCodeFile(file.getName())) {
+                        } else {
                             sourceFiles.add(file);
                         }
                     });

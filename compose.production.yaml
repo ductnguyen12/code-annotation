@@ -28,6 +28,8 @@ services:
     environment:
       - ENV=production
       - CORS_ORIGIN_PATTERNS=https://${CA_HOST:-localhost:*}
+    volumes:
+      - /mnt/models:/mnt/models
     labels:
       - traefik.enable=true
       - traefik.http.services.code-annotation.loadbalancer.server.port=8080

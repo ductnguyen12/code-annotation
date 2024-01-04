@@ -1,6 +1,7 @@
 package com.ntd.unipassau.codeannotation.domain.dataset;
 
 import com.ntd.unipassau.codeannotation.domain.AbstractAuditingEntity;
+import com.ntd.unipassau.codeannotation.domain.prediction.PredictedRating;
 import com.ntd.unipassau.codeannotation.domain.rater.SnippetRate;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -42,4 +43,12 @@ public class Snippet extends AbstractAuditingEntity<Long> {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "snippet")
     @ToString.Exclude
     private Set<SnippetRate> rates;
+
+    @OneToMany(
+            mappedBy = "snippet",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @ToString.Exclude
+    private Set<PredictedRating> predictedRatings;
 }
