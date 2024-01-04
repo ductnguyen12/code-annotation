@@ -59,7 +59,7 @@ public class RaterService {
                         })
         );
 
-        solutionService.createRaterSolutionsInBatch(savedRater, raterVM.solutions());
+        solutionService.createDemographicSolutionsInBatch(savedRater, raterVM.solutions());
         Collection<SolutionVM> solutions = solutionService.getSolutionsByRater(savedRater.getId());
 
         return raterMapper.toRaterVM(savedRater, solutions);

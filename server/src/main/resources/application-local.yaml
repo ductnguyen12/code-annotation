@@ -20,6 +20,10 @@ management:
       cors:
         allow-credentials: true
         allowed-origin-patterns: http://localhost:*
+  otlp:
+    metrics:
+      export:
+        enabled: false
 
 springdoc:
   api-docs:

@@ -22,6 +22,8 @@ services:
       - DB_URI=jdbc:postgresql://code-annotation-db:5432/postgres
       - DB_USER=postgres
       - DB_PASSWORD=123456aA@
+    volumes:
+      - ./models:/mnt/models
     depends_on:
       - code-annotation-db
 

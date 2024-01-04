@@ -27,6 +27,12 @@ spring:
     enabled: true
     change-log: classpath:/db/migrations.yaml
 
+org.jobrunr:
+  dashboard.enabled: true
+  background-job-server:
+    enabled: true
+    worker-count: 2
+
 app:
   auth:
     public-endpoints:
