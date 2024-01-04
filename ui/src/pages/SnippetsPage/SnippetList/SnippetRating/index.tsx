@@ -1,15 +1,21 @@
 import * as React from 'react';
 
+import InfoIcon from '@mui/icons-material/Info';
 import StarIcon from '@mui/icons-material/Star';
-import { Grid, styled } from '@mui/material';
+import { styled } from '@mui/material';
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
 import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
 import { useAppDispatch } from '../../../../app/hooks';
 import ProtectedElement from '../../../../components/ProtectedElement';
+import { PredictedRating } from '../../../../interfaces/model.interface';
 import { SnippetQuestion as SQuestion, SnippetRate } from '../../../../interfaces/snippet.interface';
 import { updateCurrentRateByKey } from '../../../../slices/snippetsSlice';
+import MetricsDialog from './MetricsDialog';
 import SnippetQuestion from './SnippetQuestion';
 
 interface SnippetRatingProps {
@@ -19,8 +25,10 @@ interface SnippetRatingProps {
   editable?: boolean;
   hideQuestions?: boolean;
   statistics?: {
-    averageRating: number,
+    averageRating: number;
   };
+  pRating?: PredictedRating;
+  pRatingScale?: number;
 }
 
 interface Labels {
@@ -45,6 +53,12 @@ const AverageRating = styled(Rating)({
   },
 });
 
+const PRating = styled(Rating)({
+  '& .MuiRating-iconFilled': {
+    color: '#19d24d',
+  },
+});
+
 const SnippetRating: React.FC<SnippetRatingProps> = ({
   rate,
   questions,
@@ -52,9 +66,12 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
   editable,
   hideQuestions,
   statistics,
+  pRating,
+  pRatingScale,
 }) => {
   const dispatch = useAppDispatch();
   const [hover, setHover] = React.useState(-1);
+  const [openMetricsDialog, setOpenMetricsDialog] = React.useState(false);
   const {
     value: rateValue,
     comment,
@@ -69,6 +86,15 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
     dispatch(updateCurrentRateByKey({ key, value }));
   }
 
+  const pRatingValue = React.useMemo(
+    () => {
+      if (!pRating?.value || !pRatingScale)
+        return undefined;
+      return pRating.value / pRatingScale * 5;
+    },
+    [pRating, pRatingScale],
+  )
+
   return (
     <Box
       component="form"
@@ -76,6 +102,7 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        gap: 1,
       }}
     >
       <FormControl
@@ -123,6 +150,29 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
             value={Math.floor((statistics?.averageRating || 0) * 4) / 4}
           />
           <Box>({statistics?.averageRating || 0.0} on average)</Box>
+        </>
+      </ProtectedElement>
+      <ProtectedElement hidden>
+        <>
+          <PRating
+            readOnly
+            precision={0.5}
+            emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+            value={Math.floor((pRatingValue || 0) * 4) / 4}
+          />
+          <Box>
+            ({pRating?.value || 0.0} in prediction)
+            <Tooltip title="Metrics">
+              <IconButton onClick={() => setOpenMetricsDialog(true)}>
+                <InfoIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+          <MetricsDialog
+            metrics={pRating?.metrics}
+            open={openMetricsDialog}
+            onClose={() => setOpenMetricsDialog(false)}
+          />
         </>
       </ProtectedElement>
       {!hideQuestions && (

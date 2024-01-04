@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { Dataset, DatasetStatistics } from "../interfaces/dataset.interface";
+import { PredictedRating } from "../interfaces/model.interface";
 import { downloadFile } from "./util";
 
 export const getDatasets = async (): Promise<Dataset[]> => {
@@ -39,5 +40,13 @@ export const exportDatasetSnippets = async (datasetId: number): Promise<void> =>
 export const getDatasetStatistics = async (datasetId: number): Promise<DatasetStatistics> => {
   const response: AxiosResponse<DatasetStatistics> =
     await axios.get<DatasetStatistics>(`/api/v1/datasets/${datasetId}/statistics`);
+  return response.data;
+}
+
+export const getDatasetPrediction = async (datasetId: number): Promise<PredictedRating[]> => {
+  const response: AxiosResponse<PredictedRating[]> =
+    await axios.get<PredictedRating[]>(`/api/v1/datasets/${datasetId}/predicted-ratings`, {
+      params: { sort: 'lastModifiedDate,desc' }
+    });
   return response.data;
 }

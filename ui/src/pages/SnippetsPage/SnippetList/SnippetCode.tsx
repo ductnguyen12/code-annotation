@@ -30,7 +30,8 @@ const SnippetCode = () => {
   }
 
   const handleChangeLanguage = (newLanguege: string) => {
-    setLanguage(newLanguege);
+    if (EXT_LANGUAGE_MAP.has(newLanguege))
+      setLanguage(newLanguege);
   };
 
   const handleChangeStyle = (newHighlighterName: string) => {
@@ -87,14 +88,21 @@ const SnippetCode = () => {
           </Select>
         </FormControl>
       </Box>
-      <SyntaxHighlighter
-        startingLineNumber={snippets[selected].fromLine}
-        showLineNumbers={true}
-        language={language}
-        style={highlighter.hl}
+      <Box
+        sx={{
+          maxWidth: '1251px',
+          minWidth: '1035px',
+        }}
       >
-        {snippets[selected].code}
-      </SyntaxHighlighter>
+        <SyntaxHighlighter
+          startingLineNumber={snippets[selected].fromLine}
+          showLineNumbers={true}
+          language={language}
+          style={highlighter.hl}
+        >
+          {snippets[selected].code}
+        </SyntaxHighlighter>
+      </Box>
     </Box>
   ) : <></>
 }

@@ -1,7 +1,10 @@
 import AddIcon from '@mui/icons-material/Add';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import { IconButton } from "@mui/material";
+import OnlinePredictionIcon from '@mui/icons-material/OnlinePrediction';
+
+import IconButton from "@mui/material/IconButton";
+import Tooltip from '@mui/material/Tooltip';
 import React, { ChangeEvent, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import api from '../../../../api';
@@ -9,6 +12,7 @@ import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import ProtectedElement from '../../../../components/ProtectedElement';
 import { useIdFromPath } from '../../../../hooks/common';
 import { Snippet } from "../../../../interfaces/snippet.interface";
+import { setOpenDialog } from '../../../../slices/modelExecutionSlice';
 import { pushNotification } from '../../../../slices/notificationSlice';
 import { chooseRater, loadDatasetSnippetsAsync, selectSnippetsState, setRaters } from "../../../../slices/snippetsSlice";
 import { defaultAPIErrorHandle } from '../../../../util/error-util';
@@ -81,6 +85,10 @@ const SnippetToolBox = () => {
         });
   }
 
+  const onOpenModelExecution = () => {
+    dispatch(setOpenDialog(true));
+  }
+
   const onRaterChange = (raterId: string | undefined) => {
     dispatch(chooseRater(raterId));
   }
@@ -88,9 +96,11 @@ const SnippetToolBox = () => {
   return (
     <ProtectedElement hidden={true}>
       <>
-        <IconButton aria-label="Add snippet" onClick={() => setOpen(true)}>
-          <AddIcon />
-        </IconButton>
+        <Tooltip title="Add snippet">
+          <IconButton onClick={() => setOpen(true)}>
+            <AddIcon />
+          </IconButton>
+        </Tooltip>
         <input
           id="import-dataset-snippets"
           type="file"
@@ -99,13 +109,22 @@ const SnippetToolBox = () => {
           hidden={true}
         />
         <label htmlFor="import-dataset-snippets">
-          <IconButton aria-label="Import" component="span">
-            <FileUploadIcon />
-          </IconButton>
+          <Tooltip title="Import">
+            <IconButton component="span">
+              <FileUploadIcon />
+            </IconButton>
+          </Tooltip>
         </label>
-        <IconButton aria-label="Export" onClick={onExportSnippets}>
-          <FileDownloadIcon />
-        </IconButton>
+        <Tooltip title="Export">
+          <IconButton onClick={onExportSnippets}>
+            <FileDownloadIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Prediction">
+          <IconButton onClick={onOpenModelExecution}>
+            <OnlinePredictionIcon />
+          </IconButton>
+        </Tooltip>
         <RaterSelector
           rater={selectedRater}
           raters={raters.filter(r => r !== cookies.token)}
