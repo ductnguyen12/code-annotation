@@ -1,3 +1,4 @@
+import BatchPredictionIcon from '@mui/icons-material/BatchPrediction';
 import CategoryIcon from '@mui/icons-material/Category';
 import LoginIcon from '@mui/icons-material/Login';
 import PsychologyAltIcon from '@mui/icons-material/PsychologyAlt';
@@ -7,6 +8,7 @@ import { DatasetOverviewPage } from '../pages/DatasetOverviewPage';
 import DatasetsPage from "../pages/DatasetsPage";
 import DemographicQuestionGroupPage from '../pages/DemographicQuestionGroupPage';
 import DemographicQuestionPage from '../pages/DemographicQuestionPage';
+import ModelManagementPage from '../pages/ModelManagementPage';
 import RaterRegistrationPage from '../pages/RaterRegistrationPage';
 import SignInPage from '../pages/SignInPage';
 import SnippetsPage from '../pages/SnippetsPage';
@@ -58,6 +60,16 @@ const routes = [
     icon: (<PsychologyAltIcon />),
     inDrawer: true,
     drawerPathPrefix: '/demographic-questions',    // Determine whether a drawer is selected
+    protected: true,
+  },
+  {
+    key: 'modelManagement',
+    path: '/model-management',
+    title: 'Model Management',
+    element: (<ModelManagementPage />),
+    icon: (<BatchPredictionIcon />),
+    inDrawer: true,
+    drawerPathPrefix: '/model-management',    // Determine whether a drawer is selected
     protected: true,
   },
   {

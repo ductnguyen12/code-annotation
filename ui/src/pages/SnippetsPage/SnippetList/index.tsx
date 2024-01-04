@@ -12,13 +12,16 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import DatasetDetail from '../../../components/DatasetDetail';
 import LoadingBackdrop from '../../../components/LoadingBackdrop';
 import { useIdFromPath } from '../../../hooks/common';
-import { useDataset, useDatasetStatistics } from '../../../hooks/dataset';
+import { useDataset, useDatasetPRatings, useDatasetStatistics } from '../../../hooks/dataset';
+import { useModels } from '../../../hooks/model';
 import { useDatasetSnippets } from "../../../hooks/snippet";
+import { PredictionTarget } from '../../../interfaces/model.interface';
 import { Solution } from '../../../interfaces/question.interface';
 import { SnippetRate } from "../../../interfaces/snippet.interface";
 import { selectAuthState } from '../../../slices/authSlice';
 import { pushNotification } from '../../../slices/notificationSlice';
 import { chooseSnippet, rateSnippetAsync } from "../../../slices/snippetsSlice";
+import ModelExecutionDialog from '../ModelExecutionDialog';
 import SnippetCode from './SnippetCode';
 import SnippetRating from "./SnippetRating";
 import SnippetToolBox from './SnippetToolBox';
@@ -34,7 +37,13 @@ const SnippetList = () => {
     selectedRater,
   } = useDatasetSnippets(datasetId);
 
+  const {
+    models,
+  } = useModels();
+
   const statistics = useDatasetStatistics(datasetId);
+
+  const pRatings = useDatasetPRatings(datasetId || -1);
 
   const {
     authenticated,
@@ -111,6 +120,13 @@ const SnippetList = () => {
         <span><SnippetToolBox /></span>
       </Typography>
 
+      {datasetId && (
+        <ModelExecutionDialog
+          targetId={datasetId}
+          targetType={PredictionTarget.DATASET}
+        />
+      )}
+
       {snippets.length > 0
         ? (
           <Box
@@ -140,6 +156,11 @@ const SnippetList = () => {
               editable={isEditable()}
               hideQuestions={shouldHideQuestions()}
               statistics={statistics?.snippets[snippets[selected].id]}
+              pRating={pRatings.find(rating => rating.snippetId === snippets[selected].id)}
+              pRatingScale={models.find(model => {
+                const pRating = pRatings.find(rating => rating.snippetId === snippets[selected].id);
+                return pRating && model.id === pRating.modelId;
+              })?.ratingScale}
             />
             <Box
               sx={{

@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { Dataset, DatasetStatistics } from "../interfaces/dataset.interface";
-import { DatasetsState, loadDatasetAsync, loadDatasetStatisticsAsync, loadDatasetsAsync, selectDatasetsState } from "../slices/datasetsSlice";
+import { PredictedRating } from "../interfaces/model.interface";
+import { DatasetsState, loadDatasetAsync, loadDatasetPRatingsAsync, loadDatasetStatisticsAsync, loadDatasetsAsync, selectDatasetsState } from "../slices/datasetsSlice";
 
 export const useDatasets = (): DatasetsState => {
   const dispatch = useAppDispatch()
@@ -33,4 +34,15 @@ export const useDatasetStatistics = (datasetId?: number): DatasetStatistics | un
   }, [dispatch, datasetId])
 
   return useAppSelector(selectDatasetsState).statistics;
+};
+
+export const useDatasetPRatings = (datasetId: number): PredictedRating[] => {
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    if (datasetId)
+      dispatch(loadDatasetPRatingsAsync(datasetId));
+  }, [dispatch, datasetId])
+
+  return useAppSelector(selectDatasetsState).pRatings;
 };
