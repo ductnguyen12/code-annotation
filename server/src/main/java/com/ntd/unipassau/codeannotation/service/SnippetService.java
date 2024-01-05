@@ -75,7 +75,7 @@ public class SnippetService {
                 .ifPresent(rater -> snippetVMs.forEach(s -> {
                     if (!CollectionUtils.isEmpty(s.getRates())) {
                         s.setRates(s.getRates().stream()
-                                .filter(r -> rater.getId().equals(r.getRater().id()))
+                                .filter(r -> rater.getId().equals(r.getRater().getId()))
                                 .collect(Collectors.toList()));
                     }
                     if (!CollectionUtils.isEmpty(s.getQuestions())) {

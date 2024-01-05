@@ -10,14 +10,23 @@ export const registerAsRater = async (raterData: Rater): Promise<Rater> => {
   return rater;
 }
 
-export const getRaterByExternalInfo = async (externalSystem: string, externalId: string): Promise<Rater> => {
-  const response: AxiosResponse<Rater> = await axios.get<Rater>(`/api/v1/raters/${externalSystem}/${externalId}`);
+export const getRaterByExternalInfo = async (externalSystem: string, externalId: string, datasetId: number): Promise<Rater> => {
+  const response: AxiosResponse<Rater> = await axios.get<Rater>(`/api/v1/raters/${externalSystem}/${externalId}`, {
+    params: {
+      datasetId,
+    }
+  });
   const rater: Rater = response.data;
   return rater;
 }
 
-export const getCurrentRater = async (): Promise<Rater> => {
-  const response: AxiosResponse<Rater> = await axios.get<Rater>('/api/v1/raters/me', { withCredentials: true });
+export const getCurrentRater = async (datasetId: number): Promise<Rater> => {
+  const response: AxiosResponse<Rater> = await axios.get<Rater>('/api/v1/raters/me', {
+    params: {
+      datasetId,
+    },
+    withCredentials: true
+  });
   const rater: Rater = response.data;
   return rater;
 }

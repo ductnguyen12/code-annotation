@@ -20,26 +20,30 @@ import java.util.stream.Collectors;
 public class SolutionService {
     private final SolutionMapper solutionMapper;
     private final SolutionRepository solutionRepository;
-    private final DemographicQuestionRepository rQuestionRepository;
+    private final DemographicQuestionRepository demographicQuestionRepository;
     private final SnippetQuestionRepository snippetQuestionRepository;
 
     @Autowired
     public SolutionService(
             SolutionMapper solutionMapper,
             SolutionRepository solutionRepository,
-            DemographicQuestionRepository rQuestionRepository,
+            DemographicQuestionRepository demographicQuestionRepository,
             SnippetQuestionRepository snippetQuestionRepository) {
         this.solutionMapper = solutionMapper;
         this.solutionRepository = solutionRepository;
-        this.rQuestionRepository = rQuestionRepository;
+        this.demographicQuestionRepository = demographicQuestionRepository;
         this.snippetQuestionRepository = snippetQuestionRepository;
     }
 
     @Transactional
-    public void createDemographicSolutionsInBatch(Rater rater, Collection<SolutionVM> solutionVMs) {
+    public void createDemographicSolutionsInBatch(Long datasetId, Rater rater, Collection<SolutionVM> solutionVMs) {
         // Delete old solution
-        solutionRepository.deleteDemographicSolutionsByRaterId(rater.getId());
-        createSolutionsInBatch(rater, solutionVMs, rQuestionRepository);
+        Collection<Long> demographicQuestions =
+                demographicQuestionRepository.findAllFetchGroup(datasetId).stream()
+                        .map(Question::getId)
+                        .collect(Collectors.toSet());
+        solutionRepository.deleteDemographicSolutionsByRaterAndQuestionsId(rater.getId(), demographicQuestions);
+        createSolutionsInBatch(rater, solutionVMs, demographicQuestionRepository);
     }
 
     @Transactional

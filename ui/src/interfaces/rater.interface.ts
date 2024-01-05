@@ -5,4 +5,5 @@ export interface Rater {
   externalId?: string;
   externalSystem?: string;
   solutions?: Array<Solution>;
+  currentDatasetId?: number;
 }

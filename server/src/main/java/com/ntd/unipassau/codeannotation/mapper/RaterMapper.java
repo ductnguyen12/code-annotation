@@ -13,6 +13,7 @@ import java.util.Collection;
 @Mapper(componentModel = "spring", uses = {SolutionMapper.class})
 public interface RaterMapper {
 
+    @Mapping(target = "datasets", ignore = true)
     @Mapping(target = "rates", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "lastModifiedDate", ignore = true)
@@ -22,13 +23,16 @@ public interface RaterMapper {
     @Mapping(target = "solutions", ignore = true)
     Rater toRater(RaterVM rater);
 
+    @Mapping(target = "currentDatasetId", ignore = true)
     @Mapping(target = "solutions", source = "solutions")
     @Mapping(target = ".", source = "rater")
     RaterVM toRaterVM(Rater rater, Collection<SolutionVM> solutions);
 
+    @Mapping(target = "currentDatasetId", ignore = true)
     @Named(value = "toRaterVM")
     RaterVM toRaterVM(Rater rater);
 
+    @Mapping(target = "currentDatasetId", ignore = true)
     @Mapping(target = "solutions", ignore = true)
     RaterVM toSimpleRaterVM(Rater rater);
 

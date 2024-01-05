@@ -62,15 +62,20 @@ public class RaterResource {
     @Operation(summary = "Get current rater")
     @GetMapping("/v1/raters/me")
     @Secured({AuthoritiesConstants.RATER})
-    public RaterVM getCurrentRater() {
-        return raterService.getCurrentRaterVM()
+    public RaterVM getCurrentRater(@RequestParam Long datasetId) {
+        return raterService.getCurrentRaterVM(datasetId)
                 .orElseThrow(() -> new NotFoundException("Unknown rater", "header", "token"));
     }
 
     @Operation(summary = "Get rater by external information")
     @GetMapping("/v1/raters/{externalSystem}/{externalId}")
-    public RaterVM getByExternalInfo(@PathVariable String externalSystem, @PathVariable String externalId) {
-        return raterService.getRaterByExternalInfo(externalSystem, externalId)
-                .orElseThrow(() -> new NotFoundException("Could not find rater by external info", "Rater", "externalId"));
+    public RaterVM getByExternalInfo(
+            @RequestParam Long datasetId,
+            @PathVariable String externalSystem,
+            @PathVariable String externalId
+    ) {
+        return raterService.getRaterByExternalInfo(externalSystem, externalId, datasetId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Could not find rater by external info", "Rater", "externalId, externalSystem, datasetId"));
     }
 }

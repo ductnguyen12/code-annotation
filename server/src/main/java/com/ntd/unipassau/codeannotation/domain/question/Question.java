@@ -23,15 +23,22 @@ public class Question extends AbstractAuditingEntity<Long> {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "question_seq")
     @SequenceGenerator(name = "question_seq", allocationSize = 1)
     private Long id;
+
     private String content;
+
     @Enumerated(EnumType.STRING)
     private QuestionType type;
+
     @Type(JsonType.class)
     @Column(name = "answer_constraint", columnDefinition = "jsonb")
     private AnswerConstraint constraint;
+
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
     private Answer answer;
+
+    @Column(insertable = false, updatable = false)
+    private String dtype;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "question_question_set",
