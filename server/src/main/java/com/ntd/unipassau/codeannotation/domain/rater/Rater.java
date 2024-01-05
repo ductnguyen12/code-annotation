@@ -2,6 +2,7 @@ package com.ntd.unipassau.codeannotation.domain.rater;
 
 import com.ntd.unipassau.codeannotation.domain.AbstractAuditingEntity;
 import com.ntd.unipassau.codeannotation.domain.User;
+import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,4 +39,16 @@ public class Rater extends AbstractAuditingEntity<UUID> {
     @OneToMany(mappedBy = "rater", cascade = {CascadeType.REMOVE})
     @ToString.Exclude
     private Set<SnippetRate> rates;
+
+    @ManyToMany
+    @JoinTable(name = "rater_dataset",
+            joinColumns =
+            @JoinColumn(name = "rater_id", referencedColumnName = "id",
+                    foreignKey = @ForeignKey(name = "fk_dataset_rater")),
+            inverseJoinColumns =
+            @JoinColumn(name = "dataset_id", referencedColumnName = "id",
+                    foreignKey = @ForeignKey(name = "fk_rater_dataset"))
+    )
+    @ToString.Exclude
+    private Set<Dataset> datasets;
 }

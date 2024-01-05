@@ -1,7 +1,9 @@
 package com.ntd.unipassau.codeannotation.service;
 
+import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import com.ntd.unipassau.codeannotation.domain.rater.Rater;
 import com.ntd.unipassau.codeannotation.mapper.RaterMapper;
+import com.ntd.unipassau.codeannotation.repository.DatasetRepository;
 import com.ntd.unipassau.codeannotation.repository.RaterRepository;
 import com.ntd.unipassau.codeannotation.repository.UserRepository;
 import com.ntd.unipassau.codeannotation.security.SecurityUtils;
@@ -16,12 +18,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class RaterService {
     private final UserRepository userRepository;
+    private final DatasetRepository datasetRepository;
     private final RaterRepository raterRepository;
     private final RaterMapper raterMapper;
     private final SolutionService solutionService;
@@ -29,10 +33,12 @@ public class RaterService {
     @Autowired
     public RaterService(
             UserRepository userRepository,
+            DatasetRepository datasetRepository,
             RaterRepository raterRepository,
             RaterMapper raterMapper,
             SolutionService solutionService) {
         this.userRepository = userRepository;
+        this.datasetRepository = datasetRepository;
         this.raterRepository = raterRepository;
         this.raterMapper = raterMapper;
         this.solutionService = solutionService;
@@ -40,29 +46,55 @@ public class RaterService {
 
     @Transactional
     public RaterVM registerRater(RaterVM raterVM) {
+        Dataset dataset = datasetRepository.findById(raterVM.getCurrentDatasetId())
+                .orElseThrow(() -> new RuntimeException(
+                        "currentDatasetId does not exist: " + raterVM.getCurrentDatasetId()));
+
         Rater savedRater = raterRepository.saveAndFlush(
                 SecurityUtils.getCurrentUser()
                         .flatMap(userDetails -> userRepository.findByUsername(userDetails.getUsername()))
                         .map(user -> {
+                            // Login user
                             Rater rater = raterRepository.findByUserId(user.getId())
                                     .orElse(raterMapper.toRater(raterVM));
                             if (rater.getId() == null)
                                 rater.setId(user.getId());
                             BeanUtils.copyProperties(raterVM, rater, "id");
                             rater.setUser(user);
+                            rater.getDatasets().add(dataset);
                             return rater;
                         })
                         .orElseGet(() -> {
-                            Rater rater = raterMapper.toRater(raterVM);
-                            rater.setId(UUID.randomUUID());
+                            // Real rater
+                            Optional<Rater> raterOpt = Optional.empty();
+                            if (raterVM.getExternalId() != null && raterVM.getExternalSystem() != null) {
+                                raterOpt = raterRepository.findByExternalInfo(
+                                        raterVM.getExternalId(), raterVM.getExternalSystem());
+                            }
+                            if (raterOpt.isEmpty() && raterVM.getId() != null) {
+                                raterOpt = raterRepository.findById(raterVM.getId());
+                            }
+                            if (raterOpt.isEmpty()) {
+                                Rater rater = raterMapper.toRater(raterVM);
+                                rater.setId(UUID.randomUUID());
+                                raterOpt = Optional.of(rater);
+                            }
+                            Rater rater = raterOpt.get();
+                            if (rater.getDatasets() == null) {
+                                rater.setDatasets(new LinkedHashSet<>());
+                            }
+                            rater.getDatasets().add(dataset);
                             return rater;
                         })
         );
 
-        solutionService.createDemographicSolutionsInBatch(savedRater, raterVM.solutions());
+        solutionService.createDemographicSolutionsInBatch(
+                raterVM.getCurrentDatasetId(), savedRater, raterVM.getSolutions());
         Collection<SolutionVM> solutions = solutionService.getSolutionsByRater(savedRater.getId());
 
-        return raterMapper.toRaterVM(savedRater, solutions);
+        RaterVM newRaterVM = raterMapper.toRaterVM(savedRater, solutions);
+        newRaterVM.setCurrentDatasetId(dataset.getId());
+        return newRaterVM;
     }
 
     public Collection<RaterVM> listRaters() {
@@ -79,16 +111,26 @@ public class RaterService {
         raterRepository.deleteById(raterId);
     }
 
-    @Transactional
-    public Optional<RaterVM> getRaterByExternalInfo(String externalSystem, String externalId) {
+    @Transactional(readOnly = true)
+    public Optional<RaterVM> getRaterByExternalInfo(String externalSystem, String externalId, Long datasetId) {
         return raterRepository.findByExternalInfo(externalId, externalSystem)
-                .map(raterMapper::toSimpleRaterVM);
+                .filter(rater -> rater.getDatasets().stream().anyMatch(d -> d.getId().equals(datasetId)))
+                .map(raterMapper::toSimpleRaterVM)
+                .map(raterVM -> {
+                    raterVM.setCurrentDatasetId(datasetId);
+                    return raterVM;
+                });
     }
 
     @Transactional
-    public Optional<RaterVM> getCurrentRaterVM() {
+    public Optional<RaterVM> getCurrentRaterVM(Long datasetId) {
         return getCurrentRater()
-                .map(raterMapper::toSimpleRaterVM);
+                .filter(rater -> rater.getDatasets().stream().anyMatch(d -> d.getId().equals(datasetId)))
+                .map(raterMapper::toSimpleRaterVM)
+                .map(raterVM -> {
+                    raterVM.setCurrentDatasetId(datasetId);
+                    return raterVM;
+                });
     }
 
     /**

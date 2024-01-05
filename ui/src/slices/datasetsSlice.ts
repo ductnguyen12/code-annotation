@@ -106,7 +106,7 @@ export const deleteDatasetAsync = createAsyncThunk<number, number, { dispatch: D
       await api.deleteDataset(datasetId);
       return datasetId;
     } catch (error: any) {
-      defaultAPIErrorHandle(error, dispatch, 'Could not fetch list of datasets');
+      defaultAPIErrorHandle(error, dispatch, `Could not delete dataset ${datasetId}`);
       throw error;
     }
   }

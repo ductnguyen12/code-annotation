@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { Dataset, DatasetStatistics } from "../interfaces/dataset.interface";
 import { PredictedRating } from "../interfaces/model.interface";
+import { selectAuthState } from "../slices/authSlice";
 import { DatasetsState, loadDatasetAsync, loadDatasetPRatingsAsync, loadDatasetStatisticsAsync, loadDatasetsAsync, selectDatasetsState } from "../slices/datasetsSlice";
 
 export const useDatasets = (): DatasetsState => {
@@ -26,23 +27,31 @@ export const useDataset = (datasetId?: number): Dataset | undefined => {
 };
 
 export const useDatasetStatistics = (datasetId?: number): DatasetStatistics | undefined => {
+  const {
+    authenticated,
+  } = useAppSelector(selectAuthState);
+
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    if (datasetId)
+    if (datasetId && authenticated)
       dispatch(loadDatasetStatisticsAsync(datasetId));
-  }, [dispatch, datasetId])
+  }, [dispatch, authenticated, datasetId])
 
   return useAppSelector(selectDatasetsState).statistics;
 };
 
 export const useDatasetPRatings = (datasetId: number): PredictedRating[] => {
+  const {
+    authenticated,
+  } = useAppSelector(selectAuthState);
+
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    if (datasetId)
+    if (datasetId && authenticated)
       dispatch(loadDatasetPRatingsAsync(datasetId));
-  }, [dispatch, datasetId])
+  }, [dispatch, authenticated, datasetId])
 
   return useAppSelector(selectDatasetsState).pRatings;
 };
