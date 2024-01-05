@@ -14,12 +14,9 @@ public interface SolutionRepository extends JpaRepository<Solution, Solution.Sol
     @Query("FROM Solution s JOIN FETCH s.rater r JOIN FETCH s.question q WHERE r.id = :raterId")
     Collection<Solution> findSolutionsByRater(UUID raterId);
 
-    @Query("DELETE FROM Solution s WHERE s.id.raterId = :raterId AND s.id.questionId in (" +
-            "SELECT s2.id.questionId FROM Solution s2 " +
-            "INNER JOIN DemographicQuestion dq ON s2.id.questionId = dq.id" +
-            ")")
+    @Query("DELETE FROM Solution s WHERE s.id.raterId = :raterId AND s.id.questionId IN :questionsId")
     @Modifying
-    void deleteDemographicSolutionsByRaterId(UUID raterId);
+    void deleteDemographicSolutionsByRaterAndQuestionsId(UUID raterId, Collection<Long> questionsId);
 
     @Query("DELETE FROM Solution s WHERE s.id.raterId = :raterId AND s.id.questionId in (" +
             "SELECT sq.id FROM SnippetQuestion sq " +

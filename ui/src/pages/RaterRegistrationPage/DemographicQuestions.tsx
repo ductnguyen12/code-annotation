@@ -20,10 +20,12 @@ import { StepData } from './stepper.interface';
 
 const DemographicQuestions = ({
   datasetId,
+  raterId,
   externalId,
   externalSystem,
 }: {
   datasetId?: number,
+  raterId?: string,
   externalId?: string,
   externalSystem?: string,
 }): ReactElement => {
@@ -98,6 +100,8 @@ const DemographicQuestions = ({
 
     const solutions = steps.flatMap(step => step.solutions.filter(s => !!s).map(s => s as Solution));
     dispatch(registerRaterAsync({
+      id: raterId,
+      currentDatasetId: datasetId,
       externalId,
       externalSystem,
       solutions,

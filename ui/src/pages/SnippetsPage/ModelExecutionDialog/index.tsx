@@ -23,14 +23,18 @@ const ModelExecutionDialog = ({
     models,
   } = useModels();
 
+  const defaultExecutionParams = useMemo(() => ({
+    targetId,
+    targetType,
+    pageSize: 10,
+    pageNumber: 0,
+  }), [targetId, targetType])
+
   const {
     status: executionStatus,
     openDialog,
     executions,
-  } = useModelExecutions({
-    targetId, targetType,
-    pageSize: 10, pageNumber: 0,
-  });
+  } = useModelExecutions(defaultExecutionParams);
 
   const dispatch = useAppDispatch();
 

@@ -30,9 +30,9 @@ export const registerRaterAsync = createAsyncThunk(
 
 export const getRaterByExternalInfoAsync = createAsyncThunk(
   'raterReg/getRaterByExternalInfoAsync',
-  async ({ externalSystem, externalId }: { externalSystem: string, externalId: string }) => {
+  async ({ externalSystem, externalId, datasetId }: { externalSystem: string, externalId: string, datasetId: number }) => {
     try {
-      const result = await api.getRaterByExternalInfo(externalSystem, externalId);
+      const result = await api.getRaterByExternalInfo(externalSystem, externalId, datasetId);
       return result;
     } catch (error: any) {
       throw error;
@@ -42,9 +42,9 @@ export const getRaterByExternalInfoAsync = createAsyncThunk(
 
 export const getCurrentRaterAsync = createAsyncThunk(
   'raterReg/getCurrentRaterAsync',
-  async () => {
+  async (datasetId: number) => {
     try {
-      const result = await api.getCurrentRater();
+      const result = await api.getCurrentRater(datasetId);
       return result;
     } catch (error: any) {
       throw error;

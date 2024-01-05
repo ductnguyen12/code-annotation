@@ -11,6 +11,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import DatasetDetail from '../../../components/DatasetDetail';
 import LoadingBackdrop from '../../../components/LoadingBackdrop';
+import ProtectedElement from '../../../components/ProtectedElement';
 import { useIdFromPath } from '../../../hooks/common';
 import { useDataset, useDatasetPRatings, useDatasetStatistics } from '../../../hooks/dataset';
 import { useModels } from '../../../hooks/model';
@@ -121,10 +122,12 @@ const SnippetList = () => {
       </Typography>
 
       {datasetId && (
-        <ModelExecutionDialog
-          targetId={datasetId}
-          targetType={PredictionTarget.DATASET}
-        />
+        <ProtectedElement hidden={true}>
+          <ModelExecutionDialog
+            targetId={datasetId}
+            targetType={PredictionTarget.DATASET}
+          />
+        </ProtectedElement>
       )}
 
       {snippets.length > 0

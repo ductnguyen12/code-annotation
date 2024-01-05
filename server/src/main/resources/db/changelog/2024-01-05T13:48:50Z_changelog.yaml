@@ -1,0 +1,48 @@
+databaseChangeLog:
+- changeSet:
+    id: 1704462539743-1
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: rater_datasetPK
+            name: rater_id
+            type: UUID
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: rater_datasetPK
+            name: dataset_id
+            type: BIGINT
+        tableName: rater_dataset
+- changeSet:
+    id: 1704462539743-2
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: rater_id
+        baseTableName: rater_dataset
+        constraintName: fk_dataset_rater
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: rater
+        validate: true
+- changeSet:
+    id: 1704462539743-3
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: dataset_id
+        baseTableName: rater_dataset
+        constraintName: fk_rater_dataset
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: dataset
+        validate: true
