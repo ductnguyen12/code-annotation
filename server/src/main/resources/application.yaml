@@ -9,6 +9,9 @@ spring:
       - ${ENV:local}
       - openapi
       - management
+  sql:
+    init:
+      mode: always
   jpa:
     open-in-view: false
     hibernate:
@@ -28,6 +31,10 @@ spring:
     change-log: classpath:/db/migrations.yaml
 
 org.jobrunr:
+  database:
+    # Need to import schema of JobRunR tables via schema.sql due to a bug of JobRunR
+    # that is failed to run migration to initialize its tables.
+    skip-create: true
   dashboard.enabled: true
   background-job-server:
     enabled: true
