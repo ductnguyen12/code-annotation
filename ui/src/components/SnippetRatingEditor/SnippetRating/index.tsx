@@ -10,26 +10,12 @@ import IconButton from '@mui/material/IconButton';
 import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
-import { useAppDispatch } from '../../../../app/hooks';
-import ProtectedElement from '../../../../components/ProtectedElement';
-import { PredictedRating } from '../../../../interfaces/model.interface';
-import { SnippetQuestion as SQuestion, SnippetRate } from '../../../../interfaces/snippet.interface';
-import { updateCurrentRateByKey } from '../../../../slices/snippetsSlice';
+import { PredictedRating } from '../../../interfaces/model.interface';
+import { Solution } from '../../../interfaces/question.interface';
+import { SnippetQuestion as SQuestion, SnippetRate } from '../../../interfaces/snippet.interface';
+import ProtectedElement from '../../ProtectedElement';
 import MetricsDialog from './MetricsDialog';
 import SnippetQuestion from './SnippetQuestion';
-
-interface SnippetRatingProps {
-  rate?: SnippetRate;
-  questions?: Array<SQuestion>;
-  rater?: string;                 // For filtering soluton
-  editable?: boolean;
-  hideQuestions?: boolean;
-  statistics?: {
-    averageRating: number;
-  };
-  pRating?: PredictedRating;
-  pRatingScale?: number;
-}
 
 interface Labels {
   [key: number]: string;
@@ -59,32 +45,47 @@ const PRating = styled(Rating)({
   },
 });
 
-const SnippetRating: React.FC<SnippetRatingProps> = ({
-  rate,
+export default function SnippetRating({
+  rating,
   questions,
   rater,
   editable,
-  hideQuestions,
+  shouldHideQuestions,
   statistics,
   pRating,
   pRatingScale,
-}) => {
-  const dispatch = useAppDispatch();
+  onValueChange,
+  onSolutionChange,
+}: {
+  rating?: SnippetRate;
+  questions?: Array<SQuestion>;
+  rater?: string;                 // For filtering soluton
+  editable?: boolean;
+  shouldHideQuestions?: boolean;
+  statistics?: {
+    averageRating: number;
+  };
+  pRating?: PredictedRating;
+  pRatingScale?: number;
+  onValueChange?: (key: string, value: any) => void;
+  onSolutionChange?: (questionIndex: number, solution: Solution) => void;
+}) {
   const [hover, setHover] = React.useState(-1);
   const [openMetricsDialog, setOpenMetricsDialog] = React.useState(false);
   const {
-    value: rateValue,
+    value: ratingValue,
     comment,
-  } = rate || {
+  } = rating || {
     value: 0,
     comment: "",
   }
 
-  const handleChange = (key: string, value: any) => {
+  const handleChange = React.useCallback((key: string, value: any) => {
     if (!editable)
       return;
-    dispatch(updateCurrentRateByKey({ key, value }));
-  }
+    if (onValueChange)
+      onValueChange(key, value);
+  }, [editable, onValueChange]);
 
   const pRatingValue = React.useMemo(
     () => {
@@ -93,7 +94,7 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
       return pRating.value / pRatingScale * 5;
     },
     [pRating, pRatingScale],
-  )
+  );
 
   return (
     <Box
@@ -128,17 +129,17 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
             setHover(newHover);
           }}
           emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
-          value={rateValue}
+          value={ratingValue}
         />
         <Box
-          hidden={!rateValue && hover === -1}
+          hidden={!ratingValue && hover === -1}
           sx={{
             ml: 2,
             minHeight: '24px',
             display: 'block',
           }}
         >
-          {labels[hover !== -1 ? hover : rateValue]}
+          {labels[hover !== -1 ? hover : ratingValue]}
         </Box>
       </FormControl>
       <ProtectedElement hidden>
@@ -175,7 +176,7 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
           />
         </>
       </ProtectedElement>
-      {!hideQuestions && (
+      {!shouldHideQuestions && (
         <Grid container sx={{ m: 1 }} spacing={2}>
           {questions?.map((q, index) => (
             <SnippetQuestion
@@ -184,6 +185,7 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
               question={q}
               rater={rater}
               editable={editable}
+              onSolutionChange={onSolutionChange}
             />
           ))}
         </Grid>
@@ -191,5 +193,3 @@ const SnippetRating: React.FC<SnippetRatingProps> = ({
     </Box>
   );
 }
-
-export default SnippetRating;
