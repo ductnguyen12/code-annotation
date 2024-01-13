@@ -1,21 +1,21 @@
 import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import * as highlighters from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { useAppSelector } from "../../../app/hooks";
-import { selectSnippetsState } from "../../../slices/snippetsSlice";
-import { EXT_LANGUAGE_MAP, PROGRAMMING_LANGUAGES } from "../../../util/programming-languages";
+import { Snippet } from "../../interfaces/snippet.interface";
+import { EXT_LANGUAGE_MAP, PROGRAMMING_LANGUAGES } from "../../util/programming-languages";
 
-const SnippetCode = () => {
-  const {
-    snippets,
-    selected,
-  } = useAppSelector(selectSnippetsState);
+const SnippetCode = ({
+  snippet,
+}: {
+  snippet?: Snippet;
+}) => {
 
   const [language, setLanguage] = useState<string>('');
   const [highlighter, setHighlighter] = useState<{ name: string, hl: { [key: string]: React.CSSProperties; } }>({
@@ -23,38 +23,44 @@ const SnippetCode = () => {
     hl: highlighters.a11yDark
   });
 
-  const getExtension = (snippetPath: string) => {
-    const parts = snippetPath.trim().split('.');
-    const ext = parts[parts.length - 1];
-    return EXT_LANGUAGE_MAP.has(ext) ? EXT_LANGUAGE_MAP.get(ext) : ext;
-  }
+  const getExtension = useCallback(
+    (snippetPath: string) => {
+      const parts = snippetPath.trim().split('.');
+      const ext = parts[parts.length - 1];
+      return EXT_LANGUAGE_MAP.has(ext) ? EXT_LANGUAGE_MAP.get(ext) : ext;
+    }, []
+  );
 
-  const handleChangeLanguage = (newLanguege: string) => {
-    if (EXT_LANGUAGE_MAP.has(newLanguege))
-      setLanguage(newLanguege);
-  };
+  const handleChangeLanguage = useCallback(
+    (newLanguege: string) => {
+      if (EXT_LANGUAGE_MAP.has(newLanguege))
+        setLanguage(newLanguege);
+    }, []
+  );
 
-  const handleChangeStyle = (newHighlighterName: string) => {
-    const newHighlighter = Object.entries(highlighters)
-      .map(entry => ({
-        name: entry[0],
-        hl: entry[1],
-      }))
-      .find(hl => hl.name === newHighlighterName);
-    if (newHighlighter)
-      setHighlighter(newHighlighter);
-  };
+  const handleChangeStyle = useCallback(
+    (newHighlighterName: string) => {
+      const newHighlighter = Object.entries(highlighters)
+        .map(entry => ({
+          name: entry[0],
+          hl: entry[1],
+        }))
+        .find(hl => hl.name === newHighlighterName);
+      if (newHighlighter)
+        setHighlighter(newHighlighter);
+    }, []
+  );
 
   useEffect(() => {
-    if (snippets[selected]) {
-      handleChangeLanguage(getExtension(snippets[selected].path) || '');
+    if (snippet) {
+      handleChangeLanguage(getExtension(snippet.path) || '');
     }
-  }, [snippets, selected]);
+  }, [snippet, handleChangeLanguage, getExtension]);
 
-  return snippets[selected].code ? (
-    <Box marginTop="10px" width="90%">
-      <Typography align="center" variant="body2">
-        {snippets[selected].path}
+  return snippet?.code ? (
+    <Container maxWidth="lg">
+      <Typography align="center" variant="body2" marginBottom={2}>
+        {snippet.path}
       </Typography>
       <Box>
         <FormControl sx={{ minWidth: 120 }}>
@@ -88,22 +94,16 @@ const SnippetCode = () => {
           </Select>
         </FormControl>
       </Box>
-      <Box
-        sx={{
-          maxWidth: '1251px',
-          minWidth: '1035px',
-        }}
+      <SyntaxHighlighter
+        startingLineNumber={snippet.fromLine}
+        showLineNumbers={true}
+        language={language}
+        wrapLines
+        style={highlighter.hl}
       >
-        <SyntaxHighlighter
-          startingLineNumber={snippets[selected].fromLine}
-          showLineNumbers={true}
-          language={language}
-          style={highlighter.hl}
-        >
-          {snippets[selected].code}
-        </SyntaxHighlighter>
-      </Box>
-    </Box>
+        {snippet.code}
+      </SyntaxHighlighter>
+    </Container>
   ) : <></>
 }
 
