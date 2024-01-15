@@ -16,6 +16,31 @@ import { DemographicQuestion } from "../../interfaces/question.interface";
 import { selectDemographicQuestionGroupState } from '../../slices/demographicQuestionGroupSlice';
 import { deleteDemographicQuestionAsync, setOpenDialog, setSelected } from '../../slices/demographicQuestionSlice';
 
+
+
+const headers = [
+  "ID",
+  "ParentID",
+  "Content",
+  "Question type",
+  "Question group",
+  "Actions",
+];
+
+const fields: (keyof DemographicQuestion)[] = [
+  "id",
+  "parentId",
+  "content",
+  "type",
+];
+
+const align: ('inherit' | 'left' | 'center' | 'right' | 'justify')[] = [
+  "center",
+  "center",
+  "left",
+  "center",
+];
+
 const DemographicQuestionTable = () => {
   const {
     questionGroups,
@@ -36,20 +61,6 @@ const DemographicQuestionTable = () => {
     dispatch(deleteDemographicQuestionAsync(question.id as number));
   };
 
-  const headers = [
-    "ID",
-    "Content",
-    "Question type",
-    "Question group",
-    "Actions",
-  ];
-
-  const fields: (keyof DemographicQuestion)[] = [
-    "id",
-    "content",
-    "type",
-  ];
-
   return (
     <Table sx={{ minWidth: 650 }} aria-label="simple table">
       <TableHead>
@@ -63,8 +74,16 @@ const DemographicQuestionTable = () => {
             key={index}
             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
           >
-            {fields.map((field) => (
-              <TableCell key={field}>{question[field] as string}</TableCell>
+            {fields.map((field, i) => (
+              <TableCell key={field} align={align[i]} sx={{
+                maxWidth: '600px',
+                overflowWrap: 'break-word',
+              }}>{
+                  typeof question[field] !== 'string' || (question[field] as string).length < 512
+                    ? (question[field] as string)
+                    : (question[field] as string).substring(0, 512) + '...'
+                }
+              </TableCell>
             ))}
             <TableCell
               key="questionGroups"

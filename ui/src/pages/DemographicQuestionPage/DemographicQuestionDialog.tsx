@@ -1,7 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, IconButton, InputLabel, MenuItem, Select, TextField } from "@mui/material";
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import DemographicQuestionGroupSelector from '../../components/DemographicQuestionGroupSelector';
@@ -9,6 +9,8 @@ import FormDialog from "../../components/FormDialog";
 import { DemographicQuestion, DemographicQuestionGroup, QuestionType } from "../../interfaces/question.interface";
 import { selectDemographicQuestionGroupState } from "../../slices/demographicQuestionGroupSlice";
 import { createDemographicQuestionAsync, selectDemographicQuestionState, setOpenDialog, setSelected, updateDemographicQuestionAsync } from "../../slices/demographicQuestionSlice";
+import { selectSnippetsState } from '../../slices/snippetsSlice';
+import SnippetSelectorContainer from './SnippetSelectorContainer';
 
 interface OptionData {
   option: string;
@@ -29,6 +31,8 @@ const DemographicQuestionDialog = (): ReactElement => {
     questionGroups,
   } = useAppSelector(selectDemographicQuestionGroupState);
 
+  const snippets = useAppSelector(selectSnippetsState).snippets;
+
   const dispatch = useAppDispatch();
 
   const [options, setOptions] = useState<OptionData[]>([]);
@@ -37,6 +41,8 @@ const DemographicQuestionDialog = (): ReactElement => {
   const [newAttribute, setNewAttribute] = useState<string | undefined>(undefined);
   const [questionType, setQuestionType] = useState<QuestionType>(DEFAULT_TYPE);
   const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
+  const [datasetIndex, setDatasetIndex] = useState(0);
+  const [snippetIndex, setSnippetIndex] = useState(0);
 
   useEffect(() => {
     setOptions(
@@ -77,6 +83,16 @@ const DemographicQuestionDialog = (): ReactElement => {
         .filter(pair => (pair[0] as OptionData).isInput)
         .map(pair => pair[1] as number),
     }
+    if (QuestionType.SNIPPET === question.type) {
+      question.content = JSON.stringify({
+        id: snippets[snippetIndex].id,
+        code: snippets[snippetIndex].code,
+        path: snippets[snippetIndex].path,
+        fromLine: snippets[snippetIndex].fromLine,
+        toLine: snippets[snippetIndex].toLine,
+        datasetId: snippets[snippetIndex].id,
+      });
+    }
     if (!!selected) {
       dispatch(updateDemographicQuestionAsync({ questionId: selected.id as number, question }));
     } else {
@@ -94,6 +110,7 @@ const DemographicQuestionDialog = (): ReactElement => {
     setNewAttribute(undefined);
     setQuestionType(DEFAULT_TYPE);
     setSelectedGroups([]);
+    setDatasetIndex(0);
     reset();
   }
 
@@ -121,7 +138,13 @@ const DemographicQuestionDialog = (): ReactElement => {
     setAttributes([...attributes.slice(0, index), ...attributes.slice(index + 1)]);
   }
 
-  const title = !!selected ? `Edit Demographic Question ID ${selected.id}` : "Create Demographic Question";
+  const handleDatasetChange = useCallback((index: number) => setDatasetIndex(index), []);
+  const handleSnippetChange = useCallback((index: number) => setSnippetIndex(index), []);
+
+  const title = useMemo(
+    () => !!selected ? `Edit Demographic Question ID ${selected.id}` : "Create Demographic Question",
+    [selected],
+  );
 
   return (
     <FormDialog<DemographicQuestion>
@@ -133,13 +156,23 @@ const DemographicQuestionDialog = (): ReactElement => {
       onClose={resetForm}
       handleSubmit={handleSubmit}
     >
-      <TextField
+      {QuestionType.SNIPPET !== questionType && (<TextField
         id="content"
         label="Content"
         variant="outlined"
         size="small"
         {...register('content')}
-      />
+      />)}
+
+      {/* ===== Snippet selector ===== */}
+      {QuestionType.SNIPPET === questionType && (
+        <SnippetSelectorContainer
+          datasetIndex={datasetIndex}
+          snippetIndex={snippetIndex}
+          onDatasetChange={handleDatasetChange}
+          onSnippetChange={handleSnippetChange}
+        />
+      )}
 
       {/* ===== Question type ===== */}
       <FormControl fullWidth>
@@ -185,90 +218,94 @@ const DemographicQuestionDialog = (): ReactElement => {
       />
 
       {/* ===== Options ===== */}
-      {QuestionType.INPUT !== questionType && (
-        <FormControl component="fieldset" variant="standard">
-          <FormLabel component="legend">Options</FormLabel>
-          <FormGroup
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              mt: 1,
-              mb: 2,
-            }}
-          >
-            <TextField
-              variant="outlined"
-              size="small"
-              placeholder="Please input new option"
-              sx={{ width: '90%' }}
-              onChange={(e) => setNewOption(e.target.value)}
-            />
-            <IconButton
-              color="primary"
-              sx={{ width: '10%' }}
-              aria-label="Add this option"
-              onClick={handleAddOption}
+      {[
+        QuestionType.SINGLE_CHOICE,
+        QuestionType.MULTIPLE_CHOICE,
+        QuestionType.RATING,
+      ].includes(questionType) && (
+          <FormControl component="fieldset" variant="standard">
+            <FormLabel component="legend">Options</FormLabel>
+            <FormGroup
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                mt: 1,
+                mb: 2,
+              }}
             >
-              <AddIcon />
-            </IconButton>
-          </FormGroup>
-          <FormGroup>
-            {options.map((option, i) => (
-              <Box key={i} sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
-                <Box
-                  sx={{ display: 'flex', flexDirection: 'column', width: '90%', mb: 1 }}
-                >
-                  <TextField
-                    key={i}
-                    variant="outlined"
-                    size="small"
-                    value={option.option}
-                    onChange={(e) => {
-                      options[i].option = e.target.value;
-                      setOptions([...options]);
-                    }}
-                  />
-                  <span>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={!!option.correct}
-                          onChange={(_, checked) => {
-                            options[i].correct = checked;
-                            setOptions([...options]);
-                          }}
-                        />
-                      }
-                      label="Correct"
+              <TextField
+                variant="outlined"
+                size="small"
+                placeholder="Please input new option"
+                sx={{ width: '90%' }}
+                onChange={(e) => setNewOption(e.target.value)}
+              />
+              <IconButton
+                color="primary"
+                sx={{ width: '10%' }}
+                aria-label="Add this option"
+                onClick={handleAddOption}
+              >
+                <AddIcon />
+              </IconButton>
+            </FormGroup>
+            <FormGroup>
+              {options.map((option, i) => (
+                <Box key={i} sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
+                  <Box
+                    sx={{ display: 'flex', flexDirection: 'column', width: '90%', mb: 1 }}
+                  >
+                    <TextField
+                      key={i}
+                      variant="outlined"
+                      size="small"
+                      value={option.option}
+                      onChange={(e) => {
+                        options[i].option = e.target.value;
+                        setOptions([...options]);
+                      }}
                     />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={!!option.isInput}
-                          onChange={(_, checked) => {
-                            options[i].isInput = checked;
-                            setOptions([...options]);
-                          }}
-                        />
-                      }
-                      label="Is input"
-                    />
-                  </span>
+                    <span>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={!!option.correct}
+                            onChange={(_, checked) => {
+                              options[i].correct = checked;
+                              setOptions([...options]);
+                            }}
+                          />
+                        }
+                        label="Correct"
+                      />
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={!!option.isInput}
+                            onChange={(_, checked) => {
+                              options[i].isInput = checked;
+                              setOptions([...options]);
+                            }}
+                          />
+                        }
+                        label="Is input"
+                      />
+                    </span>
+                  </Box>
+                  <IconButton
+                    color="error"
+                    sx={{ width: '10%', height: 'fit-content' }}
+                    aria-label="Remove this option"
+                    onClick={() => handleRemoveOption(i)}
+                  >
+                    <RemoveIcon />
+                  </IconButton>
                 </Box>
-                <IconButton
-                  color="error"
-                  sx={{ width: '10%', height: 'fit-content' }}
-                  aria-label="Remove this option"
-                  onClick={() => handleRemoveOption(i)}
-                >
-                  <RemoveIcon />
-                </IconButton>
-              </Box>
-            ))}
-          </FormGroup>
-        </FormControl>
-      )}
+              ))}
+            </FormGroup>
+          </FormControl>
+        )}
 
       {/* ===== Attributes ===== */}
       {QuestionType.RATING === questionType && (

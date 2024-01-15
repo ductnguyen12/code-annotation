@@ -20,6 +20,7 @@ export interface Solution {
   value: SolutionValue;
   raterId?: string;
   question?: Question;
+  solutions?: Solution[];   // For nested questions
 }
 
 export interface SolutionValue {
@@ -37,6 +38,7 @@ export enum QuestionType {
   MULTIPLE_CHOICE = "MULTIPLE_CHOICE",
   RATING = "RATING",
   INPUT = "INPUT",
+  SNIPPET = "SNIPPET",
 }
 
 export interface QuestionSet {
@@ -47,8 +49,10 @@ export interface QuestionSet {
 }
 
 export interface DemographicQuestion extends Question {
+  parentId?: number;
   groupIds?: Array<number>;
   solutions?: Array<Solution>;
+  subQuestions?: Array<DemographicQuestion>;
 }
 
 export interface DemographicQuestionGroup extends QuestionSet {
