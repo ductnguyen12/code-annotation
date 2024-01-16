@@ -5,7 +5,6 @@ import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestion;
 import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestionGroup;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DemographicQuestionVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.QuestionSetVM;
-import com.ntd.unipassau.codeannotation.web.rest.vm.QuestionVM;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -29,17 +28,21 @@ public interface DemographicQuestionMapper {
 
     Collection<QuestionSetVM> toDQuestionGroupVMs(Collection<DemographicQuestionGroup> groups);
 
+    @Mapping(target = "parentId", source = "parentQuestionId")
     @Mapping(target = "questionSetIds", ignore = true)
     @Mapping(target = "groupIds", ignore = true)
     DemographicQuestionVM toQuestionVM(DemographicQuestion question);
 
+    @Mapping(target = "parentQuestionId", ignore = true)
+    @Mapping(target = "parentQuestion", ignore = true)
+    @Mapping(target = "dtype", ignore = true)
     @Mapping(target = "solutions", ignore = true)
     @Mapping(target = "questionSets", ignore = true)
     @Mapping(target = "lastModifiedDate", ignore = true)
     @Mapping(target = "lastModifiedBy", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
-    DemographicQuestion toQuestion(QuestionVM questionVM);
+    DemographicQuestion toQuestion(DemographicQuestionVM questionVM);
 
     Collection<DemographicQuestionVM> toQuestionVMs(Collection<DemographicQuestion> questions);
 

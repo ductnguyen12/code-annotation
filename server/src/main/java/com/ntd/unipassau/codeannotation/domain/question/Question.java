@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Type;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
@@ -24,6 +25,7 @@ public class Question extends AbstractAuditingEntity<Long> {
     @SequenceGenerator(name = "question_seq", allocationSize = 1)
     private Long id;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -50,7 +52,7 @@ public class Question extends AbstractAuditingEntity<Long> {
                     foreignKey = @ForeignKey(name = "fk_questionset_question"))
     )
     @ToString.Exclude
-    private Set<QuestionSet> questionSets;
+    private Set<QuestionSet> questionSets = new LinkedHashSet<>();
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "question")
     @ToString.Exclude

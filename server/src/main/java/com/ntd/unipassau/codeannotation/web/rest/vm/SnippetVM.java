@@ -11,7 +11,6 @@ import java.util.Collection;
 
 @Data
 public class SnippetVM {
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
     @NotBlank(message = "Path is required")
     private String path;

@@ -20,7 +20,7 @@ public abstract class SolutionValueValidator {
     public static SolutionValueValidator createValidator(
             ConstraintValidatorContext context, QuestionType questionType) {
         return switch (questionType) {
-            case SINGLE_CHOICE, MULTIPLE_CHOICE -> new SolutionChoiceValidator(context);
+            case SINGLE_CHOICE, MULTIPLE_CHOICE, SNIPPET -> new SolutionChoiceValidator(context);
             case RATING -> new SolutionRatingValidator(context);
             case INPUT -> new SolutionInputValidator(context);
             case NON_QUESTION -> new SolutionValueValidator(context) {
