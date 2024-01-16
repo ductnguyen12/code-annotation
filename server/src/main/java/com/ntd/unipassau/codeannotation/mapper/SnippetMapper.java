@@ -14,11 +14,11 @@ import java.util.Collection;
 @Mapper(componentModel = "spring", uses = {SolutionMapper.class})
 public interface SnippetMapper {
     @Mapping(target = "rate", ignore = true)
-    @Mapping(target = "datasetId", source = "dataset.id")
     SnippetVM toSnippetVM(Snippet snippet);
 
     Collection<SnippetVM> toSnippetVMs(Collection<Snippet> snippets);
 
+    @Mapping(target = "predictedRatings", ignore = true)
     @Mapping(target = "rates", ignore = true)
     @Mapping(target = "dataset", ignore = true)
     @Mapping(target = "lastModifiedDate", ignore = true)

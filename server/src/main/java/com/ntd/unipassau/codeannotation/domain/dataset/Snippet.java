@@ -30,6 +30,9 @@ public class Snippet extends AbstractAuditingEntity<Long> {
     @ToString.Exclude
     private String code;
 
+    @Column(name = "dataset_id", insertable = false, updatable = false)
+    private Long datasetId;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "dataset_id", nullable = false, updatable = false,
             foreignKey = @ForeignKey(name = "fk_snippet_dataset"))

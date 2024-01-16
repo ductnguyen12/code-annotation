@@ -10,6 +10,8 @@ import java.util.Collection;
 @Repository
 public interface DemographicQuestionRepository extends JpaRepository<DemographicQuestion, Long> {
     @Query("FROM DemographicQuestion q " +
+            "LEFT JOIN FETCH q.subQuestions " +
+            "LEFT JOIN FETCH q.parentQuestion " +
             "LEFT JOIN FETCH q.questionSets qs " +
             "WHERE :datasetId IS NULL OR qs.id in (" +
             "SELECT dqg.id FROM DemographicQuestionGroup dqg " +

@@ -1,0 +1,32 @@
+databaseChangeLog:
+- changeSet:
+    id: 1705279945357-1
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: parent_question_id
+            type: bigint
+        tableName: demographic_question
+- changeSet:
+    id: 1705279945357-2
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: parent_question_id
+        baseTableName: demographic_question
+        constraintName: FK3tn5exswk93ivjqbbtie8wa6e
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: demographic_question
+        validate: true
+- changeSet:
+    id: 1705279945357-3
+    author:  ducnt (generated)
+    changes:
+    - modifyDataType:
+        columnName: content
+        newDataType: text
+        tableName: question

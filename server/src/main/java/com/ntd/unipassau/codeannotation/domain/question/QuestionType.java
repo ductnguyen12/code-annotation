@@ -6,4 +6,5 @@ public enum QuestionType {
     MULTIPLE_CHOICE,
     RATING,
     INPUT,
+    SNIPPET,
 }

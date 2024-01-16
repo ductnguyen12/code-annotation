@@ -6,12 +6,14 @@ import com.ntd.unipassau.codeannotation.repository.DemographicQuestionRepository
 import com.ntd.unipassau.codeannotation.web.rest.constraint.RaterConstraint;
 import com.ntd.unipassau.codeannotation.web.rest.vm.RaterVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SolutionVM;
+import io.jsonwebtoken.lang.Collections;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,7 +41,17 @@ public class RaterValidator implements ConstraintValidator<RaterConstraint, Rate
             return false;
         }
         final Collection<DemographicQuestion> allQuestions = demographicQuestionRepository
-                .findAllFetchGroup(rater.getCurrentDatasetId());
+                .findAllFetchGroup(rater.getCurrentDatasetId()).stream()
+                // unfold the first-level sub-questions
+                .flatMap(dq -> {
+                    if (Collections.isEmpty(dq.getSubQuestions()))
+                        return Set.of(dq).stream();
+                    Collection<DemographicQuestion> questions = new LinkedHashSet<>();
+                    questions.add(dq);
+                    questions.addAll(dq.getSubQuestions());
+                    return questions.stream();
+                })
+                .collect(Collectors.toSet());
         return checkRequiredQuestions(context, allQuestions, rSolutionVMs);
     }
 
