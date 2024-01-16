@@ -21,6 +21,4 @@ export interface SnippetRate {
 }
 
 export interface SnippetQuestion extends Question {
-  solution?: Solution;            // Current user's solution
-  solutions?: Array<Solution>;    // All solutions
 }

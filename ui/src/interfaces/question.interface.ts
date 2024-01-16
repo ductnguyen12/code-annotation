@@ -6,6 +6,8 @@ export interface Question {
   type: QuestionType;
   constraint?: QuestionConstraint;
   answer?: Answer;
+  solution?: Solution;            // Current user's solution
+  solutions?: Array<Solution>;    // All solutions
 }
 
 export interface Answer {
@@ -20,7 +22,6 @@ export interface Solution {
   value: SolutionValue;
   raterId?: string;
   question?: Question;
-  solutions?: Solution[];   // For nested questions
 }
 
 export interface SolutionValue {
@@ -51,7 +52,6 @@ export interface QuestionSet {
 export interface DemographicQuestion extends Question {
   parentId?: number;
   groupIds?: Array<number>;
-  solutions?: Array<Solution>;
   subQuestions?: Array<DemographicQuestion>;
 }
 

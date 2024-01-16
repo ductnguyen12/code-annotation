@@ -8,11 +8,11 @@ import Paper from '@mui/material/Paper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
-import { ReactElement, useCallback, useEffect, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import QuestionComponent from '../../components/QuestionComponent';
 import { useDemographicQuestionGroups, useDemographicQuestions } from '../../hooks/demographicQuestion';
-import { Solution } from "../../interfaces/question.interface";
+import { DemographicQuestion, Solution } from "../../interfaces/question.interface";
 import { Rater } from '../../interfaces/rater.interface';
 import { registerRaterAsync } from '../../slices/raterRegSlice';
 import { StepData } from './stepper.interface';
@@ -44,25 +44,20 @@ const DemographicQuestions = ({
   const [validities, setValidities] = useState<boolean[]>([]);
   const [showErrors, setShowErrors] = useState<boolean[]>([]);
 
-  const getStepData = useCallback(() => {
-    return questionGroups.map(group => {
+  useEffect(() => {
+    const newStepData = questionGroups.map(group => {
       return {
         questionGroup: group,
         questions: questions.filter(question => question.groupIds?.includes(group.id as number)),
-        solutions: questions.filter(question => question.groupIds?.includes(group.id as number)).map(_ => undefined),
       } as StepData;
-    })
-  }, [questions, questionGroups]);
-
-  useEffect(() => {
-    const stepData = getStepData();
-    setSteps(stepData);
+    });
+    setSteps(newStepData);
     setActiveStep(0);
-    if (stepData.length > 0) {
-      setShowErrors(stepData[0].questions?.map(_ => false) || []);
-      setValidities(stepData[0].questions?.map(_ => true) || []);
+    if (newStepData.length > 0) {
+      setShowErrors(newStepData[0].questions?.map(_ => false) || []);
+      setValidities(newStepData[0].questions?.map(_ => true) || []);
     }
-  }, [questions, questionGroups, getStepData]);
+  }, [questionGroups, questions]);
 
   useEffect(() => {
     if (!steps[activeStep] || !steps[activeStep].questions) {
@@ -92,13 +87,71 @@ const DemographicQuestions = ({
     setValidities([...validities]);
   }
 
+  const handleValueChange = (questionIndex: number, solution: Solution, subQuestionIndex?: number) => {
+    // Get the new solution for the current parent question
+    const newSolution = subQuestionIndex === undefined
+      ? solution
+      : steps[activeStep].questions[questionIndex].solution;
+
+    // Insert a new sub-question that was cloned from the current one with the new solution
+    const subQuestions = subQuestionIndex === undefined
+      ? steps[activeStep].questions[questionIndex].subQuestions
+      : [
+        ...(steps[activeStep].questions[questionIndex].subQuestions as Array<DemographicQuestion>)
+          .slice(0, subQuestionIndex),
+        {
+          ...(steps[activeStep].questions[questionIndex].subQuestions as Array<DemographicQuestion>)[subQuestionIndex as number],
+          solution,
+        },
+        ...(steps[activeStep].questions[questionIndex].subQuestions as Array<DemographicQuestion>)
+          .slice((subQuestionIndex as number) + 1),
+      ];
+
+    const newActiveStep = {
+      ...steps[activeStep],
+      questions: [
+        ...steps[activeStep].questions.slice(0, questionIndex),
+        {
+          ...steps[activeStep].questions[questionIndex],
+          solution: newSolution,
+          subQuestions,
+        } as DemographicQuestion,
+        ...steps[activeStep].questions.slice(questionIndex + 1),
+      ],
+    } as StepData;
+
+    // Insert new step
+    const newSteps = [
+      ...steps.slice(0, activeStep),
+      newActiveStep,
+      ...steps.slice(activeStep + 1),
+    ];
+
+    setSteps(newSteps);
+  };
+
   const hanldeSubmission = () => {
     if (!validities.every(Boolean)) {
       setShowErrors([...showErrors.fill(true)]);
       return;
     }
 
-    const solutions = steps.flatMap(step => step.solutions.filter(s => !!s).map(s => s as Solution));
+    const solutions = steps.flatMap(step => step.questions
+      .flatMap(q => {
+        if (q.solution) {
+          return [
+            q.solution,
+            ...(q.subQuestions || []).map(sq => sq.solution).filter(s => !!s)
+          ] as Array<Solution>;
+        }
+        return [];
+      })
+      .map(s => {
+        s.raterId = raterId;
+        return s;
+      })
+    );
+
     dispatch(registerRaterAsync({
       id: raterId,
       currentDatasetId: datasetId,
@@ -131,7 +184,6 @@ const DemographicQuestions = ({
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            width: '75%',
             margin: 'auto',
           }}
         >
@@ -160,7 +212,7 @@ const DemographicQuestions = ({
               <QuestionComponent
                 questionIndex={index}
                 question={question}
-                solution={steps[activeStep].solutions[index]}
+                solution={steps[activeStep].questions[index].solution}
                 showError={showErrors.length > index && showErrors[index]}
                 setShowError={(showError: boolean) => {
                   if (showErrors.length > index) {
@@ -168,10 +220,7 @@ const DemographicQuestions = ({
                     setShowErrors([...showErrors]);
                   }
                 }}
-                onValueChange={(questionIndex: number, solution: Solution) => {
-                  steps[activeStep].solutions[questionIndex] = solution;
-                  setSteps([...steps]);
-                }}
+                onValueChange={handleValueChange}
                 onValidityChange={handleValidityChange}
               />
             </Paper>

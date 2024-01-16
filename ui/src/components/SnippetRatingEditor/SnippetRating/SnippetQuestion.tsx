@@ -9,13 +9,19 @@ export default function SnippetQuestion({
   index,
   question,
   rater,
+  invalid,
   editable,
+  onFocus,
+  onBlur,
   onSolutionChange,
 }: {
   index: number;
   question: SQuestion;
   rater?: string;         // For filtering soluton
+  invalid?: boolean;
   editable?: boolean;
+  onFocus?: () => void,
+  onBlur?: () => void,
   onSolutionChange?: (questionIndex: number, solution: Solution) => void;
 }) {
   const handleChange = React.useCallback(
@@ -36,6 +42,10 @@ export default function SnippetQuestion({
           ? question.solution
           : question.solutions?.find(s => s.raterId === rater)
         }
+        invalid={invalid}
+        showError={!!invalid}
+        onFocus={onFocus}
+        onBlur={onBlur}
         onValueChange={handleChange}
       />
     </Grid>
