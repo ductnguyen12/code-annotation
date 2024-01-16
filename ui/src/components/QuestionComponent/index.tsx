@@ -1,9 +1,10 @@
-import { useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { Question, QuestionType, Solution } from "../../interfaces/question.interface"
 import InputQuestion from "./InputQuestion"
 import MultipleChoice from "./MultipleChoice"
 import RatingQuestion from "./RatingQuestion"
 import SingleChoice from "./SingleChoice"
+import SnippetPreview from "./SnippetPreview"
 
 const getQuestionComponents = (questionType: QuestionType) => {
   switch (questionType) {
@@ -15,6 +16,8 @@ const getQuestionComponents = (questionType: QuestionType) => {
       return RatingQuestion;
     case QuestionType.INPUT:
       return InputQuestion;
+    case QuestionType.SNIPPET:
+      return SnippetPreview;
   }
 }
 
@@ -22,58 +25,73 @@ const QuestionComponent = ({
   questionIndex,
   question,
   solution,
+  invalid,
   showError,
   setShowError,
+  onFocus,
+  onBlur,
   onValueChange,
   onValidityChange,
 }: {
   questionIndex: number;
   question: Question;
   solution?: Solution;
+  invalid?: boolean;    // Force invalid from outside
   showError?: boolean;
   setShowError?: (value: boolean) => void;
-  onValueChange: (questionIndex: number, solution: Solution) => void;
+  onFocus?: () => void,
+  onBlur?: () => void,
+  onValueChange: (questionIndex: number, solution: Solution, subQuestionIndex?: number) => void;
   onValidityChange?: (questionIndex: number, validity: boolean) => void;
 }) => {
   const [validity, setValidity] = useState(true);
 
-  const notifyValidityChange = (valid: boolean) => {
+  const notifyValidityChange = useCallback((valid: boolean) => {
     if (onValidityChange)
       onValidityChange(questionIndex, valid);
-  }
+  }, [questionIndex, onValidityChange]);
 
-  const handleInit = (valid: boolean) => {
+  const handleInit = useCallback((valid: boolean) => {
     setValidity(valid);
     notifyValidityChange(valid);
-  }
+  }, [notifyValidityChange]);
 
-  const handleFocus = () => {
+  const handleFocus = useCallback(() => {
+    if (onFocus)
+      onFocus();
     if (showError && setShowError) {
       setShowError(false);
     }
-  }
+  }, [onFocus, setShowError, showError]);
 
-  const handleBlur = (valid: boolean) => {
+  const handleBlur = useCallback((valid: boolean) => {
+    if (onBlur)
+      onBlur();
     if (setShowError)
       setShowError(true);
     if (valid !== validity) {
       setValidity(valid);
       notifyValidityChange(valid);
     }
-  }
+  }, [notifyValidityChange, onBlur, setShowError, validity]);
 
-  const Component = getQuestionComponents(question.type);
+  const handleValueChange = useCallback((questionIndex: number, solution: Solution, subQuestionIndex?: number) => {
+    onValueChange(questionIndex, solution, subQuestionIndex);
+  }, [onValueChange]);
+
+  const Component = useMemo(() => getQuestionComponents(question.type), [question]);
+
   return (
     <Component
       questionIndex={questionIndex}
       question={question}
       solution={solution}
-      validity={validity}
+      validity={validity && !invalid}
       showError={showError}
       onInit={handleInit}
       onFocus={handleFocus}
       onBlur={handleBlur}
-      onValueChange={onValueChange}
+      onValueChange={handleValueChange}
     />
   )
 }

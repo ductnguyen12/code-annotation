@@ -49,24 +49,32 @@ export default function SnippetRating({
   rating,
   questions,
   rater,
+  invalid,
   editable,
   shouldHideQuestions,
+  disableComment,
   statistics,
   pRating,
   pRatingScale,
+  onFocus,
+  onBlur,
   onValueChange,
   onSolutionChange,
 }: {
   rating?: SnippetRate;
   questions?: Array<SQuestion>;
   rater?: string;                 // For filtering soluton
+  invalid?: boolean;
   editable?: boolean;
   shouldHideQuestions?: boolean;
+  disableComment?: boolean;
   statistics?: {
     averageRating: number;
   };
   pRating?: PredictedRating;
   pRatingScale?: number;
+  onFocus?: () => void,
+  onBlur?: () => void,
   onValueChange?: (key: string, value: any) => void;
   onSolutionChange?: (questionIndex: number, solution: Solution) => void;
 }) {
@@ -106,7 +114,7 @@ export default function SnippetRating({
         gap: 1,
       }}
     >
-      <FormControl
+      {!disableComment && (<FormControl
         sx={{
           width: '300px',
         }}
@@ -118,14 +126,24 @@ export default function SnippetRating({
           fullWidth
           rows={3}
           value={comment || ""}
+          error={invalid}
+          onFocus={onFocus}
+          onBlur={onBlur}
           onChange={(event) => handleChange('comment', event.target.value)}
         />
-      </FormControl>
-      <FormControl>
+      </FormControl>)}
+      <FormControl error={invalid}>
         <Rating
           getLabelText={getLabelText}
-          onChange={(event, newValue) => handleChange('rate', newValue ? newValue : 0)}
+          onChange={(event, newValue) => {
+            onFocus && onFocus();
+            handleChange('rate', newValue ? newValue : 0);
+          }}
           onChangeActive={(event, newHover) => {
+            if (newHover > -1)
+              onFocus && onFocus();
+            else
+              onBlur && onBlur();
             setHover(newHover);
           }}
           emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
@@ -184,7 +202,10 @@ export default function SnippetRating({
               index={index}
               question={q}
               rater={rater}
+              invalid={invalid}
               editable={editable}
+              onFocus={onFocus}
+              onBlur={onBlur}
               onSolutionChange={onSolutionChange}
             />
           ))}

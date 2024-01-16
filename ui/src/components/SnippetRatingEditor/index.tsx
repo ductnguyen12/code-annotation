@@ -23,11 +23,15 @@ export default function SnippetRatingEditor({
   statistics,
   pRatings,
   models,
+  invalid,
   editable,
   shouldHideQuestions,
   disablePagination,
   disableNavigation,
   disableSubmission,
+  disableComment,
+  onFocus,
+  onBlur,
   onSnippetChange,
   onRatingUpdate,
   onRatingSubmit,
@@ -39,11 +43,15 @@ export default function SnippetRatingEditor({
   statistics?: DatasetStatistics;
   pRatings?: PredictedRating[];
   models?: Model[];
+  invalid?: boolean;
   editable?: boolean;
   shouldHideQuestions?: boolean;
   disablePagination?: boolean;
   disableNavigation?: boolean;
   disableSubmission?: boolean;
+  disableComment?: boolean;
+  onFocus?: () => void,
+  onBlur?: () => void,
   onSnippetChange: (index: number) => void;
   onRatingUpdate: (key: string, value: any) => void;
   onRatingSubmit: (rating: SnippetRate, next?: number) => void;
@@ -130,14 +138,18 @@ export default function SnippetRatingEditor({
           }
           questions={snippets[selected].questions}
           rater={selectedRater}
+          invalid={invalid}
           editable={editable}
           shouldHideQuestions={!showQuestions}
+          disableComment={disableComment}
           statistics={statistics?.snippets[snippets[selected].id]}
           pRating={pRatings?.find(rating => rating.snippetId === snippets[selected].id)}
           pRatingScale={models?.find(model => {
             const pRating = pRatings?.find(rating => rating.snippetId === snippets[selected].id);
             return pRating && model.id === pRating.modelId;
           })?.ratingScale}
+          onFocus={onFocus}
+          onBlur={onBlur}
           onValueChange={onRatingUpdate}
           onSolutionChange={onSolutionChange}
         />
