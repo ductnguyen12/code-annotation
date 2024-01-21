@@ -1,11 +1,11 @@
-import { FC, ReactElement, useEffect } from "react";
+import { useEffect } from "react";
 import {
   Navigate,
   Route,
   Routes, useLocation
 } from "react-router-dom";
 
-import { Theme, styled, useTheme } from "@mui/material";
+import { Container } from "@mui/material";
 
 import { useAppDispatch } from "../app/hooks";
 import routes from "../app/routes";
@@ -14,41 +14,7 @@ import DrawerHeader from "../components/AppDrawer/DrawerHeader";
 import ProtectedElement from "../components/ProtectedElement";
 import { useAuthentication } from "../hooks/auth";
 
-
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' && prop !== 'drawerWidth' })(
-  ({ theme, open, drawerWidth }: {
-    theme: Theme,
-    open: boolean,
-    drawerWidth: number,
-  }) => ({
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: `-${drawerWidth}px`,
-    ...(open && {
-      transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-      marginLeft: 0,
-    }),
-    height: '100%',
-  }),
-);
-
-type PagesProps = {
-  open: boolean,
-  drawerWidth: number,
-}
-
-const Pages: FC<PagesProps> = ({
-  open,
-  drawerWidth,
-}): ReactElement => {
-  const theme: Theme = useTheme();
+export default function Pages() {
   const location = useLocation();
   const dispatch = useAppDispatch();
 
@@ -68,10 +34,11 @@ const Pages: FC<PagesProps> = ({
   })
 
   return (
-    <Main
-      theme={theme}
-      open={open}
-      drawerWidth={drawerWidth}
+    <Container
+      maxWidth="lg"
+      sx={{
+        padding: 3,
+      }}
     >
       <DrawerHeader />
       <Routes>
@@ -87,8 +54,6 @@ const Pages: FC<PagesProps> = ({
         )}
         <Route path="*" element={<Navigate to="/sign-in" replace />} />
       </Routes>
-    </Main>
+    </Container>
   )
 }
-
-export default Pages;
