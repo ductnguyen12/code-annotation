@@ -40,20 +40,20 @@ export const rateSnippetAsync = createAsyncThunk(
     rate,
     nextSnippet,
     successfulMsg,
-    completeDatasetId,
+    onSuccess,
   }: {
     snippetId: number,
     rate: SnippetRate,
     nextSnippet?: number,
     successfulMsg?: string,
-    completeDatasetId?: number,
+    onSuccess?: () => void,
   }, { dispatch }) => {
     try {
       await api.rateSnippet(snippetId, rate);
-      if (successfulMsg)
+      if (!nextSnippet && successfulMsg)
         defaultAPISuccessHandle(successfulMsg, dispatch);
-      if (completeDatasetId)
-        await api.completeRatingInProlific(completeDatasetId);
+      if (onSuccess)
+        onSuccess();
     } catch (error: any) {
       defaultAPIErrorHandle(error, dispatch);
       throw error;

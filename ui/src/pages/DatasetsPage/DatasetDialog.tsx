@@ -147,6 +147,16 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
         selectedIds={selectedGroups}
         onValuesChange={handleDQuestionGroupsChange}
       />
+      <TextField
+        id="completeText"
+        label="Complete text"
+        variant="outlined"
+        size="small"
+        multiline
+        rows={3}
+        placeholder="Thank you for participating in our survey!"
+        {...register('completeText')}
+      />
     </FormDialog>
   );
 }

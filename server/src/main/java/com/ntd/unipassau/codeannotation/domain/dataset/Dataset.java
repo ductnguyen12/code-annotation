@@ -28,6 +28,8 @@ public class Dataset extends AbstractAuditingEntity<Long> {
     private String name;
     private String description;
     private String pLanguage;
+    @Column(length = 2048)
+    private String completeText;
 
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")

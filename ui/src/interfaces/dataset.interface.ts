@@ -5,6 +5,7 @@ export interface Dataset {
   pLanguage?: string;
   demographicQuestionGroupIds?: number[];
   configuration?: any;
+  completeText?: string;
 }
 
 export interface DatasetStatistics {

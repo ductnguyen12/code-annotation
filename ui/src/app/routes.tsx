@@ -12,6 +12,7 @@ import ModelManagementPage from '../pages/ModelManagementPage';
 import RaterRegistrationPage from '../pages/RaterRegistrationPage';
 import SignInPage from '../pages/SignInPage';
 import SnippetsPage from '../pages/SnippetsPage';
+import SurveyCompletePage from '../pages/SurveyCompletePage';
 
 const routes = [
   {
@@ -41,6 +42,13 @@ const routes = [
     inDrawer: false,
     drawerPathPrefix: '/datasets',
     protected: false,
+  },
+  {
+    key: 'surveyComplete',
+    path: '/datasets/:id/survey-complete',
+    title: 'Survey Complete',
+    element: (<SurveyCompletePage />),
+    drawerPathPrefix: '/survey-complete',
   },
   {
     key: 'demographicQuestionGroups',
