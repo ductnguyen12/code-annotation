@@ -30,3 +30,13 @@ databaseChangeLog:
         columnName: content
         newDataType: text
         tableName: question
+- changeSet:
+    id: 1705279945357-4
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: complete_text
+            type: varchar(2048)
+        tableName: dataset

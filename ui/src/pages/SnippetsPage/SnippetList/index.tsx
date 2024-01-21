@@ -2,7 +2,8 @@ import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useCallback, useMemo } from 'react';
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import api from "../../../api";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import DatasetDetail from '../../../components/DatasetDetail';
 import LoadingBackdrop from '../../../components/LoadingBackdrop';
@@ -50,6 +51,7 @@ const SnippetList = () => {
   )
 
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const handleSelectSnippet = useCallback((index: number) => {
     dispatch(chooseSnippet(index));
@@ -63,17 +65,25 @@ const SnippetList = () => {
   );
 
   const handleRatingChange = useCallback((
-    rating: SnippetRate, nextSnippet?: number,
-    successfulMsg?: string, completeDatasetId?: number,
+    rating: SnippetRate,
+    nextSnippet?: number,
+    successfulMsg?: string,
   ): void => {
     dispatch(rateSnippetAsync({
       snippetId: snippets[selected].id,
       rate: rating,
       nextSnippet,
       successfulMsg,
-      completeDatasetId,
+      onSuccess: () => {
+        if (nextSnippet)
+          return;
+        if (dataset?.configuration?.prolificId)
+          api.completeRatingInProlific(dataset?.id as number);
+        else
+          navigate(`/datasets/${dataset?.id as number}/survey-complete`);
+      },
     }));
-  }, [snippets, selected, dispatch]);
+  }, [dispatch, snippets, selected, dataset, navigate]);
 
   const handleSolutionChange = (questionIndex: number, solution: Solution) => {
     dispatch(updateQuestionSolution({ questionIndex, solution }));
@@ -120,7 +130,6 @@ const SnippetList = () => {
         onRatingSubmit={(rating: SnippetRate, next?: number) => handleRatingChange(
           rating, next,
           'Submit rating successfully',
-          dataset?.configuration?.prolificId ? dataset.id : undefined,
         )}
         onSolutionChange={handleSolutionChange}
       />
