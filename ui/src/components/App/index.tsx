@@ -1,4 +1,4 @@
-import React, { FC, ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,20 +12,27 @@ import { selectTitle } from './appSlice';
 
 const drawerWidth = 240;
 
-const App: FC = (): ReactElement => {
+export default function App() {
   useNotifier();
   const [open, setOpen] = React.useState(false);
   const title = useAppSelector(selectTitle);
 
-  const handleDrawerOpen = () => {
+  const handleDrawerOpen = useCallback(() => {
     setOpen(true);
-  };
+  }, []);
 
-  const handleDrawerClose = () => {
+  const handleDrawerClose = useCallback(() => {
     setOpen(false);
-  };
+  }, []);
+
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box
+      sx={{ display: 'flex' }}
+      onClick={() => {
+        if (open)
+          handleDrawerClose();
+      }}
+    >
       <CssBaseline />
       <AppHeader
         title={title}
@@ -39,11 +46,7 @@ const App: FC = (): ReactElement => {
         handleDrawerClose={handleDrawerClose}
       />
       <Pages
-        open={open}
-        drawerWidth={drawerWidth}
       />
     </Box>
   );
 }
-
-export default App;
