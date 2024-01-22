@@ -118,7 +118,7 @@ public class DemographicQuestionService {
     private void enrichSnippetContent(DemographicQuestion question, Long snippetId) {
         Snippet snippet = snippetRepository.findFetchQuestionsById(snippetId)
                 .orElseThrow(() -> new RuntimeException("Could not find snippet by id: " + snippetId));
-        SnippetVM simpleSnippet = snippetMapper.toSnippetVM(snippet);
+        SnippetVM simpleSnippet = snippetMapper.toSimpleSnippetVM(snippet);
         try {
             String content = objectMapper.writeValueAsString(simpleSnippet);
             question.setContent(content);

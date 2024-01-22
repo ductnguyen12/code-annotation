@@ -10,13 +10,13 @@ import {
   TableRow
 } from "@mui/material";
 
+import { useCallback, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import ConfirmationDialog from '../../components/ConfirmationDialog';
 import { useDemographicQuestions } from '../../hooks/demographicQuestion';
 import { DemographicQuestion } from "../../interfaces/question.interface";
 import { selectDemographicQuestionGroupState } from '../../slices/demographicQuestionGroupSlice';
 import { deleteDemographicQuestionAsync, setOpenDialog, setSelected } from '../../slices/demographicQuestionSlice';
-
-
 
 const headers = [
   "ID",
@@ -48,7 +48,10 @@ const DemographicQuestionTable = () => {
 
   const {
     questions,
+    selected,
   } = useDemographicQuestions();
+
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -57,9 +60,18 @@ const DemographicQuestionTable = () => {
     dispatch(setOpenDialog(true));
   };
 
-  const handleDelete = (question: DemographicQuestion) => {
-    dispatch(deleteDemographicQuestionAsync(question.id as number));
-  };
+  const handleStartDeleting = useCallback((question: DemographicQuestion) => {
+    dispatch(setSelected(question));
+    setOpenDeleteDialog(true);
+  }, [dispatch]);
+
+  const handleDeleting = useCallback(() => {
+    dispatch(deleteDemographicQuestionAsync(selected?.id as number));
+  }, [dispatch, selected]);
+
+  const handleCancelDeleting = useCallback(() => {
+    dispatch(setSelected(undefined));
+  }, [dispatch]);
 
   return (
     <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -111,13 +123,22 @@ const DemographicQuestionTable = () => {
               <IconButton aria-label="Edit question" onClick={() => handleEdit(question)}>
                 <EditIcon />
               </IconButton>
-              <IconButton aria-label="Delete question" onClick={() => handleDelete(question)}>
+              <IconButton aria-label="Delete question" onClick={() => handleStartDeleting(question)}>
                 <DeleteIcon />
               </IconButton>
             </TableCell>
           </TableRow>
         ))}
       </TableBody>
+      <ConfirmationDialog
+        title="Are you sure to delete this question?"
+        content="Deleting a question will lead to deleting answers on this question."
+        confirmColor="error"
+        open={openDeleteDialog}
+        setOpen={(open: boolean) => setOpenDeleteDialog(open)}
+        onConfirm={handleDeleting}
+        onCancel={handleCancelDeleting}
+      />
     </Table>
   );
 }

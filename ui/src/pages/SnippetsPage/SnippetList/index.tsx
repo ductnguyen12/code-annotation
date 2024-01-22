@@ -75,7 +75,7 @@ const SnippetList = () => {
       nextSnippet,
       successfulMsg,
       onSuccess: () => {
-        if (nextSnippet)
+        if (nextSnippet !== undefined)
           return;
         if (dataset?.configuration?.prolificId)
           api.completeRatingInProlific(dataset?.id as number);

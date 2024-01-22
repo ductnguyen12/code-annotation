@@ -9,7 +9,9 @@ import {
   TableRow
 } from "@mui/material";
 
+import { useCallback, useState } from 'react';
 import { useAppDispatch } from '../../app/hooks';
+import ConfirmationDialog from '../../components/ConfirmationDialog';
 import { useModels } from '../../hooks/model';
 import { Model } from "../../interfaces/model.interface";
 import { deleteModelAsync, setOpenDialog, setSelected } from '../../slices/modelSlice';
@@ -34,18 +36,30 @@ const fields: (keyof Model)[] = [
 const ModelManagementTable = () => {
   const {
     models,
+    selected,
   } = useModels();
 
   const dispatch = useAppDispatch();
 
-  const handleEdit = (model: Model) => {
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const handleEdit = useCallback((model: Model) => {
     dispatch(setSelected(model));
     dispatch(setOpenDialog(true));
-  };
+  }, [dispatch]);
 
-  const handleDelete = (model: Model) => {
-    dispatch(deleteModelAsync(model.id as number));
-  };
+  const handleStartDeleting = useCallback((model: Model) => {
+    dispatch(setSelected(model));
+    setOpenDeleteDialog(true);
+  }, [dispatch]);
+
+  const handleDeleting = useCallback(() => {
+    dispatch(deleteModelAsync(selected?.id as number));
+  }, [dispatch, selected]);
+
+  const handleCancelDeleting = useCallback(() => {
+    dispatch(setSelected(undefined));
+  }, [dispatch]);
 
   return (
     <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -67,13 +81,22 @@ const ModelManagementTable = () => {
               <IconButton aria-label="Edit model" onClick={() => handleEdit(model)}>
                 <EditIcon />
               </IconButton>
-              <IconButton aria-label="Delete model" onClick={() => handleDelete(model)}>
+              <IconButton aria-label="Delete model" onClick={() => handleStartDeleting(model)}>
                 <DeleteIcon />
               </IconButton>
             </TableCell>
           </TableRow>
         ))}
       </TableBody>
+      <ConfirmationDialog
+        title="Are you sure to delete this model?"
+        content="Deleting this model will cascade deleting predictions that this model produced."
+        confirmColor="error"
+        open={openDeleteDialog}
+        setOpen={(open: boolean) => setOpenDeleteDialog(open)}
+        onConfirm={handleDeleting}
+        onCancel={handleCancelDeleting}
+      />
     </Table>
   );
 }

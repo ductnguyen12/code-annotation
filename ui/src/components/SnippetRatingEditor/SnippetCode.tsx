@@ -4,6 +4,7 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { useCallback, useEffect, useState } from "react";
 import SyntaxHighlighter from "react-syntax-highlighter";
@@ -63,36 +64,48 @@ const SnippetCode = ({
         {snippet.path}
       </Typography>
       <Box>
-        <FormControl sx={{ minWidth: 120 }}>
-          <InputLabel id="programming-language" size="small">Language</InputLabel>
-          <Select
-            labelId="programming-language"
-            id="programming-language-select"
-            label="Language"
-            size="small"
-            value={language}
-            onChange={e => handleChangeLanguage(e.target.value as string)}
-          >
-            {PROGRAMMING_LANGUAGES.map(pl => (
-              <MenuItem key={pl} value={pl}>{pl}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ ml: 1, minWidth: 230 }}>
-          <InputLabel id="highlighter" size="small">Highlighter</InputLabel>
-          <Select
-            labelId="highlighter"
-            id="highlighter-select"
-            label="Highlighter"
-            size="small"
-            value={highlighter.name}
-            onChange={e => handleChangeStyle(e.target.value as string)}
-          >
-            {Object.keys(highlighters).map(hl => (
-              <MenuItem key={hl} value={hl}>{hl}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Tooltip
+          title="Choose another programming language code editor"
+          placement="right-end"
+          arrow
+        >
+          <FormControl sx={{ minWidth: 120 }}>
+            <InputLabel id="programming-language" size="small">Language</InputLabel>
+            <Select
+              labelId="programming-language"
+              id="programming-language-select"
+              label="Language"
+              size="small"
+              value={language}
+              onChange={e => handleChangeLanguage(e.target.value as string)}
+            >
+              {PROGRAMMING_LANGUAGES.map(pl => (
+                <MenuItem key={pl} value={pl}>{pl}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Tooltip>
+        <Tooltip
+          title="Choose another theme for the code editor"
+          placement="left-end"
+          arrow
+        >
+          <FormControl sx={{ ml: 1, minWidth: 230 }}>
+            <InputLabel id="highlighter" size="small">Highlighter</InputLabel>
+            <Select
+              labelId="highlighter"
+              id="highlighter-select"
+              label="Highlighter"
+              size="small"
+              value={highlighter.name}
+              onChange={e => handleChangeStyle(e.target.value as string)}
+            >
+              {Object.keys(highlighters).map(hl => (
+                <MenuItem key={hl} value={hl}>{hl}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Tooltip>
       </Box>
       <SyntaxHighlighter
         startingLineNumber={snippet.fromLine}
