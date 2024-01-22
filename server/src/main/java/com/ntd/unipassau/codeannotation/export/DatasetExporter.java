@@ -2,6 +2,7 @@ package com.ntd.unipassau.codeannotation.export;
 
 import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
+import com.ntd.unipassau.codeannotation.domain.rater.Solution;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
@@ -28,8 +29,18 @@ public interface DatasetExporter {
     void exportSnippets(Path dir, Collection<Snippet> snippets) throws IOException;
 
     /**
+     * Export solutions and questions to specified directory.
+     *
+     * @param dir       Destination directory that contains result.
+     * @param solutions Solutions that are need to be exported.
+     * @throws IOException when there is any error occurs during saving.
+     */
+    void exportDemographicSolutions(Path dir, Collection<Solution> solutions) throws IOException;
+
+    /**
      * Parse the content of file to extract snippets and annotation
-     * @param dataset Dataset that snippets will be imported to
+     *
+     * @param dataset  Dataset that snippets will be imported to
      * @param resource Reference to file
      * @return Dataset with imported snippets
      * @throws IOException when there is any error occurs during metadata de-serialization or source code file reading.

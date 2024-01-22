@@ -1,8 +1,10 @@
 package com.ntd.unipassau.codeannotation.export;
 
 import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
+import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestion;
 import com.ntd.unipassau.codeannotation.domain.rater.SnippetRate;
 import com.ntd.unipassau.codeannotation.domain.rater.Solution;
+import com.ntd.unipassau.codeannotation.export.model.DemographicQuestionDoc;
 import com.ntd.unipassau.codeannotation.export.model.RateDoc;
 import com.ntd.unipassau.codeannotation.export.model.SnippetDoc;
 import com.ntd.unipassau.codeannotation.export.model.SolutionDoc;
@@ -29,6 +31,10 @@ public interface ExportModelMapper {
     @Mapping(target = "rater", source = "id.raterId")
     SolutionDoc toSolutionDoc(Solution solution);
 
+    DemographicQuestionDoc toDQuestionDoc(DemographicQuestion question);
+
+    @Mapping(target = "predictedRatings", ignore = true)
+    @Mapping(target = "datasetId", ignore = true)
     @Mapping(target = "lastModifiedDate", ignore = true)
     @Mapping(target = "lastModifiedBy", ignore = true)
     @Mapping(target = "id", ignore = true)

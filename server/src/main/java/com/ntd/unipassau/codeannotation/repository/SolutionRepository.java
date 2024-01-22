@@ -14,6 +14,19 @@ public interface SolutionRepository extends JpaRepository<Solution, Solution.Sol
     @Query("FROM Solution s JOIN FETCH s.rater r JOIN FETCH s.question q WHERE r.id = :raterId")
     Collection<Solution> findSolutionsByRater(UUID raterId);
 
+    @Query("FROM Solution s JOIN FETCH s.rater r " +
+            "JOIN FETCH r.datasets d " +
+            "JOIN FETCH s.question q " +
+            "LEFT JOIN FETCH q.questionSets qs " +
+            "JOIN FETCH qs.datasets ds " +
+            "WHERE d.id = :datasetId AND ds.id = :datasetId AND q.dtype = 'demographic'")
+    Collection<Solution> findDemographicSolutionsByDataset(Long datasetId);
+
+    @Query("FROM Solution s " +
+            "JOIN FETCH s.question q " +
+            "WHERE q.dtype = 'demographic' AND q.parentQuestionId in :questionIds")
+    Collection<Solution> findAllFetchQuestion(Collection<Long> questionIds);
+
     @Query("DELETE FROM Solution s WHERE s.id.raterId = :raterId AND s.id.questionId IN :questionsId")
     @Modifying
     void deleteDemographicSolutionsByRaterAndQuestionsId(UUID raterId, Collection<Long> questionsId);
