@@ -9,6 +9,7 @@ import lombok.ToString;
 import org.hibernate.annotations.Type;
 
 import java.util.Map;
+import java.util.Set;
 
 @Entity
 @Table(name = "model")
@@ -36,4 +37,8 @@ public class Model extends AbstractAuditingEntity<Long> {
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> config;
+
+    @OneToMany(mappedBy = "model", orphanRemoval = true)
+    @ToString.Exclude
+    private Set<PredictedRating> predictedRatings;
 }

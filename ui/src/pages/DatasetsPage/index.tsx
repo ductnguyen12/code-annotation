@@ -8,20 +8,32 @@ import CardHeader from "@mui/material/CardHeader";
 import Grid from "@mui/material/Grid";
 import IconButton from '@mui/material/IconButton';
 
-import React from "react";
+import React, { useCallback } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
+import ConfirmationDialog from '../../components/ConfirmationDialog';
 import LoadingBackdrop from "../../components/LoadingBackdrop";
 import { useDatasets } from "../../hooks/dataset";
-import { chooseDataset } from '../../slices/datasetsSlice';
+import { chooseDataset, deleteDatasetAsync } from '../../slices/datasetsSlice';
 import DatasetDialog from "./DatasetDialog";
-import DeleteDatasetDialog from "./DeleteDatasetDialog";
 
 const DatasetsPage = () => {
-  const { status, datasets } = useDatasets();
+  const {
+    status,
+    datasets,
+    dataset,
+  } = useDatasets();
   const dispatch = useAppDispatch();
   const [open, setOpen] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
+
+  const handleDeleting = useCallback(() => {
+    dispatch(deleteDatasetAsync(dataset?.id as number));
+  }, [dataset?.id, dispatch]);
+
+  const handleCancelDeleting = useCallback(() => {
+    dispatch(chooseDataset(-1));
+  }, [dispatch]);
 
   return (
     <Box
@@ -44,9 +56,14 @@ const DatasetsPage = () => {
           open={open}
           setOpen={setOpen}
         />
-        <DeleteDatasetDialog
+        <ConfirmationDialog
+          title="Are you sure to delete this dataset?"
+          content="Deleting will cascade deleting all data related to this dataset (ratings, snippets, answers)."
+          confirmColor="error"
           open={openDelete}
           setOpen={setOpenDelete}
+          onConfirm={handleDeleting}
+          onCancel={handleCancelDeleting}
         />
         {datasets.map(d => (
           <Grid key={d.id} item xs={3}>

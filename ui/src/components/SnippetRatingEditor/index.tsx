@@ -2,6 +2,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import SendIcon from '@mui/icons-material/Send';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { Tooltip } from '@mui/material';
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Pagination from "@mui/material/Pagination";
@@ -161,14 +162,26 @@ export default function SnippetRatingEditor({
           }}
         >
           {!disableNavigation && selected > 0 ? (
-            <IconButton aria-label="Back" onClick={() => handleSnippetChange(selected - 1)}>
-              <ArrowBackIcon fontSize="large" />
-            </IconButton>
+            <Tooltip
+              title="Previous snippet"
+              placement="right-end"
+              arrow
+            >
+              <IconButton aria-label="Back" onClick={() => handleSnippetChange(selected - 1)}>
+                <ArrowBackIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
           ) : <div />}
           {!disableNavigation && (selected < snippets.length - 1 || !showQuestions) && (
-            <IconButton aria-label="Next" size="large" onClick={() => handleSnippetChange(selected + 1)}>
-              <ArrowForwardIcon fontSize="large" />
-            </IconButton>
+            <Tooltip
+              title="Next snippet"
+              placement="left-end"
+              arrow
+            >
+              <IconButton aria-label="Next" size="large" onClick={() => handleSnippetChange(selected + 1)}>
+                <ArrowForwardIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
           )}
           {selected === snippets.length - 1
             && !disableSubmission

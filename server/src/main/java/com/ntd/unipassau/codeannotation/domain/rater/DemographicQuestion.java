@@ -28,11 +28,15 @@ public class DemographicQuestion extends Question {
     private Set<DemographicQuestion> subQuestions = new LinkedHashSet<>();
 
     public void addSubQuestion(DemographicQuestion question) {
+        if (this.subQuestions == null)
+            this.subQuestions = new LinkedHashSet<>();
         this.subQuestions.add(question);
         question.setParentQuestion(this);
     }
 
     public void removeSubQuestion(DemographicQuestion question) {
+        if (this.subQuestions == null)
+            return;
         this.subQuestions.remove(question);
         question.setParentQuestion(null);
     }

@@ -9,7 +9,9 @@ import {
   TableRow
 } from "@mui/material";
 
+import { useCallback, useState } from 'react';
 import { useAppDispatch } from '../../app/hooks';
+import ConfirmationDialog from '../../components/ConfirmationDialog';
 import { useDemographicQuestionGroups } from '../../hooks/demographicQuestion';
 import { DemographicQuestionGroup } from "../../interfaces/question.interface";
 import { deleteDemographicQuestionGroupAsync, setOpenDialog, setSelected } from '../../slices/demographicQuestionGroupSlice';
@@ -17,18 +19,30 @@ import { deleteDemographicQuestionGroupAsync, setOpenDialog, setSelected } from 
 const DemographicQuestionGroupTable = () => {
   const {
     questionGroups,
+    selected,
   } = useDemographicQuestionGroups();
+
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const dispatch = useAppDispatch();
 
-  const handleEdit = (group: DemographicQuestionGroup) => {
+  const handleEdit = useCallback((group: DemographicQuestionGroup) => {
     dispatch(setSelected(group));
     dispatch(setOpenDialog(true));
-  };
+  }, [dispatch]);
 
-  const handleDelete = (group: DemographicQuestionGroup) => {
-    dispatch(deleteDemographicQuestionGroupAsync(group.id as number));
-  };
+  const handleStartDeleting = useCallback((group: DemographicQuestionGroup) => {
+    dispatch(setSelected(group));
+    setOpenDeleteDialog(true);
+  }, [dispatch]);
+
+  const handleDeleting = useCallback(() => {
+    dispatch(deleteDemographicQuestionGroupAsync(selected?.id as number));
+  }, [dispatch, selected]);
+
+  const handleCancelDeleting = useCallback(() => {
+    dispatch(setSelected(undefined));
+  }, [dispatch]);
 
   const headers = [
     "ID",
@@ -65,13 +79,21 @@ const DemographicQuestionGroupTable = () => {
               <IconButton aria-label="Edit question group" onClick={() => handleEdit(group)}>
                 <EditIcon />
               </IconButton>
-              <IconButton aria-label="Delete question group" onClick={() => handleDelete(group)}>
+              <IconButton aria-label="Delete question group" onClick={() => handleStartDeleting(group)}>
                 <DeleteIcon />
               </IconButton>
             </TableCell>
           </TableRow>
         ))}
       </TableBody>
+      <ConfirmationDialog
+        title="Are you sure to delete this question group?"
+        confirmColor="error"
+        open={openDeleteDialog}
+        setOpen={(open: boolean) => setOpenDeleteDialog(open)}
+        onConfirm={handleDeleting}
+        onCancel={handleCancelDeleting}
+      />
     </Table>
   );
 }

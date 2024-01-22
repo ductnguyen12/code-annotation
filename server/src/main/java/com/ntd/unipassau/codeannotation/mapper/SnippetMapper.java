@@ -9,14 +9,14 @@ import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetVM;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.Collection;
-
 @Mapper(componentModel = "spring", uses = {SolutionMapper.class})
 public interface SnippetMapper {
     @Mapping(target = "rate", ignore = true)
-    SnippetVM toSnippetVM(Snippet snippet);
+    @Mapping(target = "rates", ignore = true)
+    SnippetVM toSimpleSnippetVM(Snippet snippet);
 
-    Collection<SnippetVM> toSnippetVMs(Collection<Snippet> snippets);
+    @Mapping(target = "rate", ignore = true)
+    SnippetVM toSnippetVM(Snippet snippet);
 
     @Mapping(target = "predictedRatings", ignore = true)
     @Mapping(target = "rates", ignore = true)
