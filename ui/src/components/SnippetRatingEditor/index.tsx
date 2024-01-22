@@ -70,7 +70,7 @@ export default function SnippetRatingEditor({
     (nextSnippet?: number): void => {
       if (!editable)
         return;
-      if (snippets[selected].rate === undefined
+      if (snippets[selected].rate?.value === undefined
         || (snippets[selected].rate?.value as number) < 1) {
         dispatch(pushNotification({
           message: 'Rating is required',

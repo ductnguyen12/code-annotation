@@ -5,7 +5,7 @@ import InputLabel from "@mui/material/InputLabel"
 import MenuItem from "@mui/material/MenuItem"
 import Select from "@mui/material/Select"
 import TextField from "@mui/material/TextField"
-import { FC, ReactElement, useEffect, useState } from "react"
+import { FC, ReactElement, useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import DemographicQuestionGroupSelector from "../../components/DemographicQuestionGroupSelector"
@@ -62,24 +62,28 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
     setPLanguage(dataset?.pLanguage || '');
   }, [dataset, setValue, reset]);
 
-  const handleSetHiddenQuestions = (checked: boolean) => {
-    dispatch(updateConfiguration({ key: "hiddenQuestions", value: { value: checked } }));
-  }
+  const handleSetHidingComment = useCallback((checked: boolean) => {
+    dispatch(updateConfiguration({ key: "hideComment", value: { value: checked } }));
+  }, [dispatch]);
 
-  const handleChangeLanguage = (newLanguage: string) => {
+  const handleSetHiddenQuestions = useCallback((checked: boolean) => {
+    dispatch(updateConfiguration({ key: "hiddenQuestions", value: { value: checked } }));
+  }, [dispatch]);
+
+  const handleChangeLanguage = useCallback((newLanguage: string) => {
     if (newLanguage) {
       setValue('pLanguage', newLanguage);
       setPLanguage(newLanguage);
     }
-  };
+  }, [setValue]);
 
-  const handleDQuestionGroupsChange = (newGroups: DemographicQuestionGroup[]) => {
+  const handleDQuestionGroupsChange = useCallback((newGroups: DemographicQuestionGroup[]) => {
     setSelectedGroups(newGroups.map(group => group.id as number));
-  }
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     dispatch(chooseDataset(-1));
-  }
+  }, [dispatch]);
 
   const onSubmission = async (newDataset: Dataset) => {
     newDataset.demographicQuestionGroupIds = selectedGroups;
@@ -117,6 +121,12 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
         multiline
         rows={3}
         {...register('description')}
+      />
+      <FormControlLabel
+        control={<Checkbox />}
+        checked={!!configuration?.hideComment}
+        onChange={(_, checked) => handleSetHidingComment(checked)}
+        label="Hide comment box"
       />
       <FormControlLabel
         control={<Checkbox />}
