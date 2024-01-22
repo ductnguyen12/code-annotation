@@ -77,7 +77,7 @@ const SnippetList = () => {
       onSuccess: () => {
         if (nextSnippet !== undefined)
           return;
-        if (dataset?.configuration?.prolificId)
+        if (dataset?.configuration?.prolific)
           api.completeRatingInProlific(dataset?.id as number);
         else
           navigate(`/datasets/${dataset?.id as number}/survey-complete`);
