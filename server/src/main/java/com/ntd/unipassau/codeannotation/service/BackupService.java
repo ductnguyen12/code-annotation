@@ -32,6 +32,7 @@ public class BackupService {
         this.snippetService = snippetService;
     }
 
+    @Transactional(readOnly = true)
     public Resource exportSnippets(Long datasetId) throws IOException {
         Dataset dataset = datasetRepository.findFetchAllById(datasetId)
                 .orElseThrow(() -> new RuntimeException("Could not find dataset by id to export snippets: " + datasetId));
