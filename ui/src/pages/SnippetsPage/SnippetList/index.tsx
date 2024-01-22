@@ -125,6 +125,7 @@ const SnippetList = () => {
         models={models}
         editable={editable}
         shouldHideQuestions={shouldHideQuestions}
+        disableComment={dataset?.configuration?.hideComment}
         onSnippetChange={handleSelectSnippet}
         onRatingUpdate={handleRatingValueUpdate}
         onRatingSubmit={(rating: SnippetRate, next?: number) => handleRatingChange(
