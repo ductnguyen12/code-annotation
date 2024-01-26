@@ -140,10 +140,6 @@ export default function SnippetRating({
             handleChange('rate', newValue ? newValue : 0);
           }}
           onChangeActive={(event, newHover) => {
-            if (newHover > -1)
-              onFocus && onFocus();
-            else
-              onBlur && onBlur();
             setHover(newHover);
           }}
           emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}

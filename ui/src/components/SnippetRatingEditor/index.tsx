@@ -21,12 +21,15 @@ export default function SnippetRatingEditor({
   snippets,
   selected,
   selectedRater,
+  defaultPLanguage,
   statistics,
   pRatings,
   models,
   invalid,
   editable,
   shouldHideQuestions,
+  showSnippetPath,
+  disableLanguageSelector,
   disablePagination,
   disableNavigation,
   disableSubmission,
@@ -41,12 +44,15 @@ export default function SnippetRatingEditor({
   snippets: Snippet[];
   selected: number;
   selectedRater?: string;
+  defaultPLanguage?: string;
   statistics?: DatasetStatistics;
   pRatings?: PredictedRating[];
   models?: Model[];
   invalid?: boolean;
   editable?: boolean;
   shouldHideQuestions?: boolean;
+  showSnippetPath?: boolean;
+  disableLanguageSelector?: boolean;
   disablePagination?: boolean;
   disableNavigation?: boolean;
   disableSubmission?: boolean;
@@ -129,6 +135,9 @@ export default function SnippetRatingEditor({
         />)}
         <SnippetCode
           snippet={snippets[selected]}
+          defaultPLanguage={defaultPLanguage}
+          showSnippetPath={showSnippetPath}
+          disableLanguageSelector={disableLanguageSelector}
         />
         <SnippetRating
           rating={

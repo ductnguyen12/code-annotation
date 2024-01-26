@@ -120,11 +120,14 @@ const SnippetList = () => {
         snippets={snippets}
         selected={selected}
         selectedRater={selectedRater}
+        defaultPLanguage={dataset?.pLanguage}
         statistics={statistics}
         pRatings={pRatings}
         models={models}
         editable={editable}
         shouldHideQuestions={shouldHideQuestions}
+        showSnippetPath={authenticated}
+        disableLanguageSelector={!authenticated}
         disableComment={dataset?.configuration?.hideComment}
         onSnippetChange={handleSelectSnippet}
         onRatingUpdate={handleRatingValueUpdate}
