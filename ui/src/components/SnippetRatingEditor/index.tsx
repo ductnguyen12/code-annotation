@@ -69,7 +69,8 @@ export default function SnippetRatingEditor({
   const [hiddenQuestion, setHiddenQuestion] = useState(false);
 
   const showQuestions = useMemo(
-    () => !shouldHideQuestions || !hiddenQuestion || (snippets[selected].questions?.length || 0) < 1,
+    () => !shouldHideQuestions || !hiddenQuestion
+      || (snippets[selected] && (snippets[selected].questions?.length || 0) < 1),
     [selected, snippets, shouldHideQuestions, hiddenQuestion]
   );
 
