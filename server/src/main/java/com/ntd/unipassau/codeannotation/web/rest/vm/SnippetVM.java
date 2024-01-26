@@ -21,6 +21,9 @@ public class SnippetVM {
     @NotNull(message = "Dataset ID is required")
     private Long datasetId;
     private Collection<@NotNull(message = "A question can not be null") SnippetQuestionVM> questions;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String pLanguage;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String code;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

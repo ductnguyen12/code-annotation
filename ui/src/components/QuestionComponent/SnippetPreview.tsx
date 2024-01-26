@@ -42,6 +42,11 @@ export default function SnippetPreview({
     return [_snippet];
   }, [demographicQuestion, solution]);
 
+  const defaultPLanguage = useMemo(
+    () => snippets && snippets.length > 0 ? snippets[0].pLanguage : undefined,
+    [snippets]
+  );
+
   const required = useMemo(() => !!question.constraint?.required, [question]);
 
   const validate = useCallback(() => {
@@ -98,8 +103,10 @@ export default function SnippetPreview({
     <SnippetRatingEditor
       snippets={snippets}
       selected={0}
+      defaultPLanguage={defaultPLanguage}
       invalid={showError && !validity}
       editable
+      disableLanguageSelector={true}
       disablePagination
       disableNavigation
       disableSubmission

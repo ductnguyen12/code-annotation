@@ -11,6 +11,7 @@ export interface Snippet {
   rate?: SnippetRate;           // Current user's ratings
   rates?: Array<SnippetRate>;   // All ratings
   questions?: Array<SnippetQuestion>;
+  pLanguage?: string;
 }
 
 export interface SnippetRate {

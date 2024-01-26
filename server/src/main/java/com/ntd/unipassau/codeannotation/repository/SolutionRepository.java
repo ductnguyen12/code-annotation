@@ -31,6 +31,10 @@ public interface SolutionRepository extends JpaRepository<Solution, Solution.Sol
     @Modifying
     void deleteDemographicSolutionsByRaterAndQuestionsId(UUID raterId, Collection<Long> questionsId);
 
+    @Query("DELETE FROM Solution s WHERE s.id.questionId IN :questionsId")
+    @Modifying
+    void deleteDemographicSolutionsByQuestionsId(Collection<Long> questionsId);
+
     @Query("DELETE FROM Solution s WHERE s.id.raterId = :raterId AND s.id.questionId in (" +
             "SELECT sq.id FROM SnippetQuestion sq " +
             "WHERE sq.snippet.id = :snippetId" +

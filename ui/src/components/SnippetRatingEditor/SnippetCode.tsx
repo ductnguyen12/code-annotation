@@ -14,8 +14,14 @@ import { EXT_LANGUAGE_MAP, PROGRAMMING_LANGUAGES } from "../../util/programming-
 
 const SnippetCode = ({
   snippet,
+  defaultPLanguage,
+  showSnippetPath,
+  disableLanguageSelector,
 }: {
   snippet?: Snippet;
+  defaultPLanguage?: string;
+  showSnippetPath?: boolean;
+  disableLanguageSelector?: boolean;
 }) => {
 
   const [language, setLanguage] = useState<string>('');
@@ -34,7 +40,7 @@ const SnippetCode = ({
 
   const handleChangeLanguage = useCallback(
     (newLanguege: string) => {
-      if (EXT_LANGUAGE_MAP.has(newLanguege))
+      if (PROGRAMMING_LANGUAGES.includes(newLanguege))
         setLanguage(newLanguege);
     }, []
   );
@@ -58,13 +64,19 @@ const SnippetCode = ({
     }
   }, [snippet, handleChangeLanguage, getExtension]);
 
+  useEffect(() => {
+    if (defaultPLanguage && PROGRAMMING_LANGUAGES.includes(defaultPLanguage)) {
+      handleChangeLanguage(defaultPLanguage);
+    }
+  }, [defaultPLanguage, handleChangeLanguage]);
+
   return snippet?.code ? (
     <Container maxWidth="lg">
       <Typography align="center" variant="body2" marginBottom={2}>
-        {snippet.path}
+        {showSnippetPath ? snippet.path : ''}
       </Typography>
       <Box>
-        <Tooltip
+        {!disableLanguageSelector && (<Tooltip
           title="Choose another programming language code editor"
           placement="right-end"
           arrow
@@ -84,7 +96,7 @@ const SnippetCode = ({
               ))}
             </Select>
           </FormControl>
-        </Tooltip>
+        </Tooltip>)}
         <Tooltip
           title="Choose another theme for the code editor"
           placement="left-end"

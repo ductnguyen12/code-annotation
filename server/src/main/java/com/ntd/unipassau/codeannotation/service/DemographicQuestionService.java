@@ -2,8 +2,10 @@ package com.ntd.unipassau.codeannotation.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
 import com.ntd.unipassau.codeannotation.domain.question.Answer;
+import com.ntd.unipassau.codeannotation.domain.question.Question;
 import com.ntd.unipassau.codeannotation.domain.question.QuestionType;
 import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestion;
 import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestionGroup;
@@ -12,6 +14,7 @@ import com.ntd.unipassau.codeannotation.mapper.SnippetMapper;
 import com.ntd.unipassau.codeannotation.repository.DemographicQuestionGroupRepository;
 import com.ntd.unipassau.codeannotation.repository.DemographicQuestionRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRepository;
+import com.ntd.unipassau.codeannotation.repository.SolutionRepository;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DQuestionParams;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DemographicQuestionVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetVM;
@@ -31,6 +34,7 @@ public class DemographicQuestionService {
     private final SnippetRepository snippetRepository;
     private final DemographicQuestionRepository dQuestionRepository;
     private final DemographicQuestionGroupRepository dqgRepository;
+    private final SolutionRepository solutionRepository;
     private final SnippetMapper snippetMapper;
     private final DemographicQuestionMapper dQuestionMapper;
     private final ObjectMapper objectMapper;
@@ -40,6 +44,7 @@ public class DemographicQuestionService {
             SnippetRepository snippetRepository,
             DemographicQuestionRepository dQuestionRepository,
             DemographicQuestionGroupRepository dqgRepository,
+            SolutionRepository solutionRepository,
             SnippetMapper snippetMapper,
             DemographicQuestionMapper dQuestionMapper,
             ObjectMapper objectMapper) {
@@ -49,6 +54,7 @@ public class DemographicQuestionService {
         this.dQuestionRepository = dQuestionRepository;
         this.dQuestionMapper = dQuestionMapper;
         this.dqgRepository = dqgRepository;
+        this.solutionRepository = solutionRepository;
     }
 
     @Transactional
@@ -84,6 +90,8 @@ public class DemographicQuestionService {
             SnippetVM currentSnippet = objectMapper.readValue(question.getContent(), SnippetVM.class);
             SnippetVM snippetVM = objectMapper.readValue(questionVM.getContent(), SnippetVM.class);
             if (!currentSnippet.getId().equals(snippetVM.getId())) {
+                solutionRepository.deleteDemographicSolutionsByQuestionsId(
+                        question.getSubQuestions().stream().map(Question::getId).toList());
                 dQuestionRepository.deleteAllInBatch(question.getSubQuestions());
 
                 enrichSnippetContent(question, snippetVM.getId());
@@ -118,7 +126,9 @@ public class DemographicQuestionService {
     private void enrichSnippetContent(DemographicQuestion question, Long snippetId) {
         Snippet snippet = snippetRepository.findFetchQuestionsById(snippetId)
                 .orElseThrow(() -> new RuntimeException("Could not find snippet by id: " + snippetId));
+        Dataset dataset = snippet.getDataset();
         SnippetVM simpleSnippet = snippetMapper.toSimpleSnippetVM(snippet);
+        simpleSnippet.setPLanguage(dataset.getPLanguage());
         try {
             String content = objectMapper.writeValueAsString(simpleSnippet);
             question.setContent(content);
