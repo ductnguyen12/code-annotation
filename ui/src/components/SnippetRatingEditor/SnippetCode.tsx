@@ -12,6 +12,16 @@ import * as highlighters from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { Snippet } from "../../interfaces/snippet.interface";
 import { EXT_LANGUAGE_MAP, PROGRAMMING_LANGUAGES } from "../../util/programming-languages";
 
+const SUPPORTED_HIGHLIGHTERS = {
+  androidstudio: highlighters.androidstudio,
+  arduinoLight: highlighters.arduinoLight,
+  atomOneDark: highlighters.atomOneDark,
+  atomOneLight: highlighters.atomOneLight,
+  atomOneDarkReasonable: highlighters.atomOneDarkReasonable,
+  stackoverflowLight: highlighters.stackoverflowLight,
+  stackoverflowDark: highlighters.stackoverflowDark,
+}
+
 const SnippetCode = ({
   snippet,
   defaultPLanguage,
@@ -26,8 +36,8 @@ const SnippetCode = ({
 
   const [language, setLanguage] = useState<string>('');
   const [highlighter, setHighlighter] = useState<{ name: string, hl: { [key: string]: React.CSSProperties; } }>({
-    name: 'a11yDark',
-    hl: highlighters.a11yDark
+    name: 'atomOneDark',
+    hl: highlighters.atomOneDark
   });
 
   const getExtension = useCallback(
@@ -112,7 +122,7 @@ const SnippetCode = ({
               value={highlighter.name}
               onChange={e => handleChangeStyle(e.target.value as string)}
             >
-              {Object.keys(highlighters).map(hl => (
+              {Object.keys(SUPPORTED_HIGHLIGHTERS).map(hl => (
                 <MenuItem key={hl} value={hl}>{hl}</MenuItem>
               ))}
             </Select>

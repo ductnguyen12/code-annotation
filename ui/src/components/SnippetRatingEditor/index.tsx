@@ -2,9 +2,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import SendIcon from '@mui/icons-material/Send';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Tooltip } from '@mui/material';
 import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
 import Pagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -14,6 +12,7 @@ import { Model, PredictedRating } from '../../interfaces/model.interface';
 import { Solution } from '../../interfaces/question.interface';
 import { Snippet, SnippetRate } from "../../interfaces/snippet.interface";
 import { pushNotification } from '../../slices/notificationSlice';
+import NavigationButton from './NavigationButton';
 import SnippetCode from "./SnippetCode";
 import SnippetRating from "./SnippetRating";
 
@@ -130,10 +129,36 @@ export default function SnippetRatingEditor({
         {!disablePagination && (<Pagination
           count={snippets.length}
           page={selected ? selected + 1 : 1}
-          onChange={(event, page: number) => handleSnippetChange(page - 1)}
+          // HOTFIX: Disable navigating by pagination to prevent raters from skipping snippets
+          // Should consider better solution later.
+          // onChange={(event, page: number) => handleSnippetChange(page - 1)}
           hideNextButton
           hidePrevButton
         />)}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            width: '100%',
+          }}
+        >
+          {!disableNavigation && selected > 0 ? (
+            <NavigationButton
+              title="Previous snippet"
+              placement="right-end"
+              icon={<ArrowBackIcon fontSize="large" />}
+              onClick={() => handleSnippetChange(selected - 1)}
+            />
+          ) : <div />}
+          {!disableNavigation && (selected < snippets.length - 1 || !showQuestions) && (
+            <NavigationButton
+              title="Next snippet"
+              placement="left-end"
+              icon={<ArrowForwardIcon fontSize="large" />}
+              onClick={() => handleSnippetChange(selected + 1)}
+            />
+          )}
+        </Box>
         <SnippetCode
           snippet={snippets[selected]}
           defaultPLanguage={defaultPLanguage}
@@ -172,26 +197,20 @@ export default function SnippetRatingEditor({
           }}
         >
           {!disableNavigation && selected > 0 ? (
-            <Tooltip
+            <NavigationButton
               title="Previous snippet"
               placement="right-end"
-              arrow
-            >
-              <IconButton aria-label="Back" onClick={() => handleSnippetChange(selected - 1)}>
-                <ArrowBackIcon fontSize="large" />
-              </IconButton>
-            </Tooltip>
+              icon={<ArrowBackIcon fontSize="large" />}
+              onClick={() => handleSnippetChange(selected - 1)}
+            />
           ) : <div />}
           {!disableNavigation && (selected < snippets.length - 1 || !showQuestions) && (
-            <Tooltip
+            <NavigationButton
               title="Next snippet"
               placement="left-end"
-              arrow
-            >
-              <IconButton aria-label="Next" size="large" onClick={() => handleSnippetChange(selected + 1)}>
-                <ArrowForwardIcon fontSize="large" />
-              </IconButton>
-            </Tooltip>
+              icon={<ArrowForwardIcon fontSize="large" />}
+              onClick={() => handleSnippetChange(selected + 1)}
+            />
           )}
           {selected === snippets.length - 1
             && !disableSubmission

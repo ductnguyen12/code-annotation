@@ -93,15 +93,17 @@ const SnippetList = () => {
     <Box>
       <LoadingBackdrop open={'loading' === status} />
       {dataset && (<DatasetDetail dataset={dataset} />)}
-      <Button
-        component={RouterLink}
-        to={`/datasets/${datasetId}/overview`}
-        sx={{
-          mb: 3,
-        }}
-      >
-        Detail
-      </Button>
+      <ProtectedElement hidden={true}>
+        <Button
+          component={RouterLink}
+          to={`/datasets/${datasetId}/overview`}
+          sx={{
+            mb: 3,
+          }}
+        >
+          Detail
+        </Button>
+      </ProtectedElement>
       <Typography sx={{ mb: 2 }} variant="h5">
         Snippets
         <span><SnippetToolBox /></span>

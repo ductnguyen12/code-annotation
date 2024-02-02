@@ -61,7 +61,7 @@ const AppDrawer: FC<AppDrawerProps> = ({
               disablePadding
             >
               <ListItemButton
-                selected={location.pathname.startsWith(r.drawerPathPrefix || 'null')}
+                selected={r.pattern.test(location.pathname)}
                 component={RouterLink}
                 to={r.path}
               >
