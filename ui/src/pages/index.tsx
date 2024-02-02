@@ -26,7 +26,7 @@ export default function Pages() {
       const routePathTokens = r.path.split('/');
       const currentTokens = location.pathname.split('/');
       return currentTokens.length === routePathTokens.length
-        && location.pathname.startsWith(r.drawerPathPrefix || 'null');
+        && r.pattern.test(location.pathname);
     });
     if (foundRoute) {
       dispatch(changeTitle(foundRoute.title));

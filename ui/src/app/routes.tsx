@@ -22,8 +22,8 @@ const routes = [
     element: (<DatasetsPage />),
     icon: (<TextSnippetIcon />),
     inDrawer: true,
-    drawerPathPrefix: '/datasets',    // Determine whether a drawer is selected
     protected: true,
+    pattern: /\/datasets/,
   },
   {
     key: 'dataset',
@@ -31,16 +31,16 @@ const routes = [
     title: 'Dataset',
     element: (<DatasetOverviewPage />),
     inDrawer: false,
-    drawerPathPrefix: '/datasets',
+    pattern: /\/datasets\/\d\/overview/,
     protected: true,
   },
   {
     key: 'datasetSnippets',
     path: '/datasets/:id/snippets',
-    title: 'Dataset Snippets',
+    title: 'Dataset Annotation',
     element: (<SnippetsPage />),
     inDrawer: false,
-    drawerPathPrefix: '/datasets',
+    pattern: /\/datasets\/\d\/snippets/,
     protected: false,
   },
   {
@@ -48,7 +48,7 @@ const routes = [
     path: '/datasets/:id/survey-complete',
     title: 'Survey Complete',
     element: (<SurveyCompletePage />),
-    drawerPathPrefix: '/survey-complete',
+    pattern: /\/datasets\/\d\/survey-complete/,
   },
   {
     key: 'demographicQuestionGroups',
@@ -57,7 +57,7 @@ const routes = [
     element: (<DemographicQuestionGroupPage />),
     icon: (<CategoryIcon />),
     inDrawer: true,
-    drawerPathPrefix: '/demographic-question-groups',    // Determine whether a drawer is selected
+    pattern: /\/demographic-question-groups/,
     protected: true,
   },
   {
@@ -67,7 +67,7 @@ const routes = [
     element: (<DemographicQuestionPage />),
     icon: (<PsychologyAltIcon />),
     inDrawer: true,
-    drawerPathPrefix: '/demographic-questions',    // Determine whether a drawer is selected
+    pattern: /\/demographic-questions/,
     protected: true,
   },
   {
@@ -77,7 +77,7 @@ const routes = [
     element: (<ModelManagementPage />),
     icon: (<BatchPredictionIcon />),
     inDrawer: true,
-    drawerPathPrefix: '/model-management',    // Determine whether a drawer is selected
+    pattern: /\/model-management/,
     protected: true,
   },
   {
@@ -86,14 +86,14 @@ const routes = [
     title: 'Sign In',
     element: (<SignInPage />),
     icon: (<LoginIcon />),
-    drawerPathPrefix: '/sign-in',
+    pattern: /\/sign-in/,
   },
   {
     key: 'raterRegistration',
     path: '/rater-registration',
     title: 'Rater Registration',
     element: (<RaterRegistrationPage />),
-    drawerPathPrefix: '/rater-registration',
+    pattern: /\/rater-registration/,
   },
 ];
 
