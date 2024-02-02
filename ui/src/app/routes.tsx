@@ -31,7 +31,7 @@ const routes = [
     title: 'Dataset',
     element: (<DatasetOverviewPage />),
     inDrawer: false,
-    pattern: /\/datasets\/\d\/overview/,
+    pattern: /\/datasets\/\d+\/overview/,
     protected: true,
   },
   {
@@ -40,7 +40,7 @@ const routes = [
     title: 'Dataset Annotation',
     element: (<SnippetsPage />),
     inDrawer: false,
-    pattern: /\/datasets\/\d\/snippets/,
+    pattern: /\/datasets\/\d+\/snippets/,
     protected: false,
   },
   {
@@ -48,7 +48,7 @@ const routes = [
     path: '/datasets/:id/survey-complete',
     title: 'Survey Complete',
     element: (<SurveyCompletePage />),
-    pattern: /\/datasets\/\d\/survey-complete/,
+    pattern: /\/datasets\/\d+\/survey-complete/,
   },
   {
     key: 'demographicQuestionGroups',
