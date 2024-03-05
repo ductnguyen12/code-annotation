@@ -23,6 +23,7 @@ public interface SolutionRepository extends JpaRepository<Solution, Solution.Sol
     Collection<Solution> findDemographicSolutionsByDataset(Long datasetId);
 
     @Query("FROM Solution s " +
+            "JOIN FETCH s.rater r " +
             "JOIN FETCH s.question q " +
             "WHERE q.dtype = 'demographic' AND q.parentQuestionId in :questionIds")
     Collection<Solution> findAllFetchQuestion(Collection<Long> questionIds);
