@@ -124,7 +124,7 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
       />
       <FormControlLabel
         control={<Checkbox />}
-        checked={!!configuration?.hideComment}
+        checked={!!configuration?.hideComment?.value}
         onChange={(_, checked) => handleSetHidingComment(checked)}
         label="Hide comment box"
       />
