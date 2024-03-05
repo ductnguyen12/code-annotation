@@ -29,6 +29,7 @@ public interface ExportModelMapper {
 
     Collection<RateDoc> toRateDoc(Collection<SnippetRate> rates);
 
+    @Mapping(target = "raterExternalId", source = "rater.externalId")
     @Mapping(target = "questionId", source = "id.questionId")
     @Mapping(target = "rater", source = "id.raterId")
     SolutionDoc toSolutionDoc(Solution solution);

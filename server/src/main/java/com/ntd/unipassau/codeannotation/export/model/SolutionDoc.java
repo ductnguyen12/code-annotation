@@ -7,5 +7,6 @@ import lombok.Data;
 public class SolutionDoc {
     private Long questionId;
     private String rater;
+    private String raterExternalId;
     private SolutionValue solution;
 }
