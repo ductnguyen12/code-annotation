@@ -2,7 +2,6 @@ package com.ntd.unipassau.codeannotation.export;
 
 import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
-import com.ntd.unipassau.codeannotation.domain.question.Question;
 import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestion;
 import com.ntd.unipassau.codeannotation.domain.rater.Rater;
 import com.ntd.unipassau.codeannotation.domain.rater.Solution;
@@ -11,10 +10,7 @@ import com.ntd.unipassau.codeannotation.export.model.RateDoc;
 import com.ntd.unipassau.codeannotation.export.model.SnippetDoc;
 import com.ntd.unipassau.codeannotation.export.model.SolutionDoc;
 import com.ntd.unipassau.codeannotation.repository.RaterRepository;
-import com.ntd.unipassau.codeannotation.repository.SolutionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -31,47 +27,21 @@ import java.util.stream.Stream;
 
 @Component
 public class DefaultDatasetExporter implements DatasetExporter {
-    private final static String DIR_DATASET_SNIPPETS = "dataset-{0}-snippets";
     private final static String SOURCE_CODE_FILENAME = "{0}_{1}";
     private final static String METADATA_FILENAME = "{0}.{1}";
-    private final static String DEMOGRAPHIC_SOLUTIONS_FILENAME = "demographics.json";
 
     private final ExportModelMapper exportModelMapper;
     private final RaterRepository raterRepository;
-    private final SolutionRepository solutionRepository;
     private final MetadataExporter metadataExporter;
 
     @Autowired
     public DefaultDatasetExporter(
             ExportModelMapper exportModelMapper,
             RaterRepository raterRepository,
-            SolutionRepository solutionRepository,
             MetadataExporter metadataExporter) {
         this.exportModelMapper = exportModelMapper;
         this.raterRepository = raterRepository;
-        this.solutionRepository = solutionRepository;
         this.metadataExporter = metadataExporter;
-    }
-
-    @Override
-    public Resource exportSnippets(Dataset dataset) throws IOException {
-        Path tmpDir = Files.createTempDirectory(MessageFormat.format(DIR_DATASET_SNIPPETS, dataset.getId()));
-        tmpDir.toFile().deleteOnExit();
-
-        exportSnippets(tmpDir, dataset.getSnippets());
-        Collection<Solution> dSolutions = solutionRepository.findDemographicSolutionsByDataset(dataset.getId());
-        Collection<Solution> subSolutions = solutionRepository.findAllFetchQuestion(dSolutions.stream()
-                .map(Solution::getQuestion)
-                .map(Question::getId)
-                .collect(Collectors.toSet()));
-        dSolutions.addAll(subSolutions);
-
-        exportDemographicSolutions(tmpDir, dSolutions);
-
-        Path outPath = Files.createTempFile(MessageFormat.format(DIR_DATASET_SNIPPETS, dataset.getId()), ".zip");
-        ZipUtil.zipDirectory(tmpDir, outPath);
-
-        return new UrlResource(outPath.toUri());
     }
 
     @Override
@@ -94,7 +64,7 @@ public class DefaultDatasetExporter implements DatasetExporter {
     }
 
     @Override
-    public void exportDemographicSolutions(Path dir, Collection<Solution> solutions) throws IOException {
+    public void exportDemographicSolutions(Path path, Collection<Solution> solutions) throws IOException {
         Set<DemographicQuestionDoc> questionDocs = solutions.stream()
                 .map(Solution::getQuestion)
                 .filter(q -> q instanceof DemographicQuestion)
@@ -106,20 +76,16 @@ public class DefaultDatasetExporter implements DatasetExporter {
                 .map(exportModelMapper::toSolutionDoc)
                 .collect(Collectors.toSet());
 
-        metadataExporter.exportDemographicSolutions(
-                dir.resolve(DEMOGRAPHIC_SOLUTIONS_FILENAME), questionDocs, solutionDocs);
+        metadataExporter.exportDemographicSolutions(path, questionDocs, solutionDocs);
     }
 
     @Override
-    public Dataset importSnippets(Dataset dataset, Resource resource) throws IOException {
-        Path tmpDir = Files.createTempDirectory(MessageFormat.format(DIR_DATASET_SNIPPETS, dataset.getId()));
-        ZipUtil.unzip(resource.getInputStream(), tmpDir);
-
+    public Dataset importSnippets(Dataset dataset, Path dir) throws IOException {
         Collection<File> sourceFiles = new ArrayList<>();
         Collection<File> metadataFiles = new ArrayList<>();
         // Use this one to ignore source files that were already imported from metadata files!
         Set<String> metadataBaseFilenames = new LinkedHashSet<>();
-        try (Stream<Path> pathStream = Files.walk(tmpDir)) {
+        try (Stream<Path> pathStream = Files.walk(dir)) {
             pathStream.map(Path::toFile)
                     .filter(File::isFile)
                     .forEach(file -> {

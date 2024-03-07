@@ -21,4 +21,7 @@ public interface RaterRepository extends JpaRepository<Rater, UUID> {
 
     @Query("FROM Rater r LEFT JOIN FETCH r.solutions s JOIN FETCH s.question q WHERE r.id = :raterId")
     Optional<Rater> findByIdFetchSolutions(UUID raterId);
+
+    @Query("FROM Rater r JOIN r.rates rt JOIN rt.snippet s WHERE s.datasetId = :datasetId")
+    Collection<Rater> findAllRatersByDatasetId(Long datasetId);
 }
