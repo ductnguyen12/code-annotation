@@ -4,10 +4,7 @@ import com.ntd.unipassau.codeannotation.domain.AbstractAuditingEntity;
 import com.ntd.unipassau.codeannotation.domain.question.Question;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.Type;
 
 import java.io.Serializable;
@@ -36,6 +33,7 @@ public class Solution extends AbstractAuditingEntity<Solution.SolutionId> {
 
     @Embeddable
     @Data
+    @EqualsAndHashCode
     public static class SolutionId implements Serializable {
         private Long questionId;
         private UUID raterId;

@@ -6,6 +6,7 @@ import { selectDatasetsState } from "../../../slices/datasetsSlice";
 
 const DEFAULT_PROLIFIC_CONFIG = {
   completeCode: '',
+  'secrets.apyKey': undefined,
 };
 
 const ProlificForm = ({
@@ -35,16 +36,28 @@ const ProlificForm = ({
   }
 
   return (
-    <TextField
-      id="complete-code"
-      label="Complete code"
-      variant="outlined"
-      placeholder="Complete code"
-      size="small"
-      required
-      value={config.completeCode}
-      onChange={e => handleChange('completeCode', e.target.value)}
-    />
+    <>
+      <TextField
+        id="complete-code"
+        label="Complete code"
+        variant="outlined"
+        placeholder="Complete code"
+        size="small"
+        required
+        value={config.completeCode}
+        onChange={e => handleChange('completeCode', e.target.value)}
+      />
+      <TextField
+        id="api-key"
+        label="API key"
+        variant="outlined"
+        placeholder="API key"
+        size="small"
+        required
+        value={config['secrets.apyKey']}
+        onChange={e => handleChange('secrets.apyKey', e.target.value)}
+      />
+    </>
   )
 }
 
