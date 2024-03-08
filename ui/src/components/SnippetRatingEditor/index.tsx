@@ -129,9 +129,8 @@ export default function SnippetRatingEditor({
         {!disablePagination && (<Pagination
           count={snippets.length}
           page={selected ? selected + 1 : 1}
-          // HOTFIX: Disable navigating by pagination to prevent raters from skipping snippets
-          // Should consider better solution later.
-          // onChange={(event, page: number) => handleSnippetChange(page - 1)}
+          onChange={(event, page: number) => !editable && handleSnippetChange(page - 1)}
+          className={editable ? 'pointer-events-none' : undefined}
           hideNextButton
           hidePrevButton
         />)}
