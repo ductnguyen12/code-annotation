@@ -7,6 +7,7 @@ import * as modelAPI from './modelAPI';
 import * as prolificAPI from './prolificAPI';
 import * as raterAPI from './raterAPI';
 import * as snippetAPI from './snippetAPI';
+import * as submissionAPI from './submissionAPI';
 
 axios.defaults.baseURL = env.REACT_APP_BACKEND;
 
@@ -18,6 +19,7 @@ const api = {
   ...prolificAPI,
   ...raterAPI,
   ...snippetAPI,
+  ...submissionAPI,
 }
 
 export default api;

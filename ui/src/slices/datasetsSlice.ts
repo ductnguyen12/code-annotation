@@ -3,6 +3,7 @@ import api from '../api';
 import { RootState } from '../app/store';
 import { Dataset, DatasetStatistics } from '../interfaces/dataset.interface';
 import { PredictedRating } from '../interfaces/model.interface';
+import { Submission } from '../interfaces/submission.interface';
 import { defaultAPIErrorHandle, defaultAPISuccessHandle } from '../util/error-util';
 
 export interface DatasetsState {
@@ -12,6 +13,7 @@ export interface DatasetsState {
   configuration: any;
   statistics?: DatasetStatistics;
   pRatings: PredictedRating[];
+  submissions: Submission[];
 }
 
 const initialState: DatasetsState = {
@@ -21,6 +23,7 @@ const initialState: DatasetsState = {
   configuration: {},
   statistics: undefined,
   pRatings: [],
+  submissions: [],
 };
 
 export const loadDatasetsAsync = createAsyncThunk<Dataset[], void, { dispatch: Dispatch }>(
@@ -64,6 +67,18 @@ export const loadDatasetPRatingsAsync = createAsyncThunk(
   async (datasetId: number, { dispatch }) => {
     try {
       return await api.getDatasetPrediction(datasetId);
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
+export const loadDatasetSubmissionsAsync = createAsyncThunk(
+  'datasets/loadDatasetSubmissions',
+  async (datasetId: number, { dispatch }) => {
+    try {
+      return await api.getSubmissions(datasetId);
     } catch (error: any) {
       defaultAPIErrorHandle(error, dispatch);
       throw error;
@@ -177,6 +192,17 @@ export const datasetsSlice = createSlice({
         state.pRatings = action.payload;
       })
       .addCase(loadDatasetPRatingsAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(loadDatasetSubmissionsAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(loadDatasetSubmissionsAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.submissions = action.payload;
+      })
+      .addCase(loadDatasetSubmissionsAsync.rejected, (state) => {
         state.status = 'failed';
       })
 
