@@ -8,6 +8,7 @@ import modelExecutionReducer from '../slices/modelExecutionSlice';
 import modelReducer from '../slices/modelSlice';
 import notificationReducer from '../slices/notificationSlice';
 import raterRegReducer from '../slices/raterRegSlice';
+import raterReducer from '../slices/raterSlice';
 import snippetsReducer from '../slices/snippetsSlice';
 
 export const store = configureStore({
@@ -21,6 +22,7 @@ export const store = configureStore({
     model: modelReducer,
     notification: notificationReducer,
     raterReg: raterRegReducer,
+    rater: raterReducer,
     snippets: snippetsReducer,
   },
 });

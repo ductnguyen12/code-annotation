@@ -9,7 +9,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 import { DatasetStatistics } from "../../interfaces/dataset.interface";
 
-export function DatasetStatisticsTable({
+export default function DatasetStatisticsTable({
   statistics,
 }: {
   statistics: DatasetStatistics,
