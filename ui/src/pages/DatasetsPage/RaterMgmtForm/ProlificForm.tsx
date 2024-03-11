@@ -6,7 +6,7 @@ import { selectDatasetsState } from "../../../slices/datasetsSlice";
 
 const DEFAULT_PROLIFIC_CONFIG = {
   completeCode: '',
-  'secrets.apyKey': undefined,
+  'secrets.apiKey': undefined,
 };
 
 const ProlificForm = ({
@@ -54,8 +54,8 @@ const ProlificForm = ({
         placeholder="API key"
         size="small"
         required
-        value={config['secrets.apyKey']}
-        onChange={e => handleChange('secrets.apyKey', e.target.value)}
+        value={config['secrets.apiKey']}
+        onChange={e => handleChange('secrets.apiKey', e.target.value)}
       />
     </>
   )
