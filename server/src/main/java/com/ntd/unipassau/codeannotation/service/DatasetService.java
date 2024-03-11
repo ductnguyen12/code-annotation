@@ -97,19 +97,22 @@ public class DatasetService {
 
     @Transactional
     public DatasetVM updateDataset(Dataset dataset, DatasetVM newDataset) {
-        dataset.getConfiguration().forEach((key, subConfig) -> {
-            if (!newDataset.getConfiguration().containsKey(key))
-                return;
-            Map<String, Object> newSubConfig = newDataset.getConfiguration().get(key);
-            subConfig.forEach((subKey, value) -> {
-                // B.c. secrets will not be exposed to FE, this will prevent setting
-                // null value to secrets in case that users did not re-specify secrets.
-                if (subKey.startsWith("secrets")
-                        && newSubConfig.getOrDefault(subKey, null) == null) {
-                    newSubConfig.put(subKey, value);
-                }
+        if (dataset.getConfiguration() != null
+                && newDataset.getConfiguration() != null) {
+            dataset.getConfiguration().forEach((key, subConfig) -> {
+                if (!newDataset.getConfiguration().containsKey(key))
+                    return;
+                Map<String, Object> newSubConfig = newDataset.getConfiguration().get(key);
+                subConfig.forEach((subKey, value) -> {
+                    // B.c. secrets will not be exposed to FE, this will prevent setting
+                    // null value to secrets in case that users did not re-specify secrets.
+                    if (subKey.startsWith("secrets")
+                            && newSubConfig.getOrDefault(subKey, null) == null) {
+                        newSubConfig.put(subKey, value);
+                    }
+                });
             });
-        });
+        }
         BeanUtils.copyProperties(newDataset, dataset, "id");
 
         // Remove old connections
