@@ -8,12 +8,21 @@ import { RaterMgmtSystem } from "../../interfaces/dataset.interface"
 import { selectDatasetsState } from "../../slices/datasetsSlice"
 import RaterMgmtForm from "./RaterMgmtForm"
 
-const RaterMgmtSelector = () => {
+const RaterMgmtSelector = ({
+  onSystemChange,
+}: {
+  onSystemChange?: (oldValue: RaterMgmtSystem, newValue: RaterMgmtSystem) => void;
+}) => {
   const [system, setSystem] = useState<RaterMgmtSystem>(RaterMgmtSystem.LOCAL);
 
   const {
     dataset,
   } = useAppSelector(selectDatasetsState);
+
+  const handleSystemChange = (newValue: RaterMgmtSystem) => {
+    setSystem(newValue);
+    onSystemChange && onSystemChange(system, newValue);
+  }
 
   useEffect(() => {
     if (!!dataset?.configuration?.prolific) {
@@ -31,7 +40,7 @@ const RaterMgmtSelector = () => {
           label="Rater management"
           size="small"
           value={system}
-          onChange={e => setSystem(e.target.value as RaterMgmtSystem)}
+          onChange={e => handleSystemChange(e.target.value as RaterMgmtSystem)}
         >
           {Object.keys(RaterMgmtSystem).map(system => (
             <MenuItem key={system as string} value={system as string}>{system as string}</MenuItem>

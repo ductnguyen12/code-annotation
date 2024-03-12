@@ -146,6 +146,12 @@ export const datasetsSlice = createSlice({
       }
       state.configuration[action.payload.key] = action.payload.value;
     },
+
+    deleteConfiguration: (state, action: PayloadAction<{ key: string }>) => {
+      if (state.configuration && action.payload.key in state.configuration) {
+        delete state.configuration[action.payload.key];
+      }
+    },
   },
 
   extraReducers: (builder) => {
@@ -253,6 +259,7 @@ export const datasetsSlice = createSlice({
 export const {
   chooseDataset,
   updateConfiguration,
+  deleteConfiguration,
 } = datasetsSlice.actions;
 
 export const selectDatasets = (state: RootState) => state.datasets.datasets;

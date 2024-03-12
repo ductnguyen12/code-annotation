@@ -11,11 +11,12 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import DemographicQuestionGroupSelector from "../../components/DemographicQuestionGroupSelector"
 import FormDialog from "../../components/FormDialog"
 import { useDemographicQuestionGroups } from "../../hooks/demographicQuestion"
-import { Dataset } from "../../interfaces/dataset.interface"
+import { Dataset, RaterMgmtSystem } from "../../interfaces/dataset.interface"
 import { DemographicQuestionGroup } from "../../interfaces/question.interface"
 import {
   chooseDataset,
   createDatasetAsync,
+  deleteConfiguration,
   selectDatasetsState,
   updateConfiguration,
   updateDatasetAsync
@@ -68,6 +69,10 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
 
   const handleSetHiddenQuestions = useCallback((checked: boolean) => {
     dispatch(updateConfiguration({ key: "hiddenQuestions", value: { value: checked } }));
+  }, [dispatch]);
+
+  const handleSystemChange = useCallback((oldValue: RaterMgmtSystem, newValue: RaterMgmtSystem) => {
+    dispatch(deleteConfiguration({ key: oldValue.toLowerCase() }));
   }, [dispatch]);
 
   const handleChangeLanguage = useCallback((newLanguage: string) => {
@@ -151,7 +156,9 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
           ))}
         </Select>
       </FormControl>
-      <RaterMgmtSelector />
+      <RaterMgmtSelector
+        onSystemChange={handleSystemChange}
+      />
       <DemographicQuestionGroupSelector
         questionGroups={questionGroups}
         selectedIds={selectedGroups}
