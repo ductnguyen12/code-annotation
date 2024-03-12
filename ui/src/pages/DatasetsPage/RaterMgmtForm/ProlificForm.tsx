@@ -23,16 +23,22 @@ const ProlificForm = ({
   useEffect(() => {
     if (!!dataset?.configuration?.prolific) {
       const prolific = dataset?.configuration?.prolific;
-      (Object.keys(config) as (keyof ProlificConfig)[]).forEach(key => config[key] = prolific[key]);
-      setConfig({ ...config });
+      const newConfig = { ...config };
+      (Object.keys(config) as (keyof ProlificConfig)[]).forEach(key => newConfig[key] = prolific[key]);
+      setConfig(newConfig);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataset?.configuration?.prolific]);
 
-  const handleChange = (key: keyof ProlificConfig, value: any) => {
-    config[key] = value;
-    setConfig({ ...config });
+  useEffect(() => {
     onChange(config);
+  }, [onChange, config]);
+
+  const handleChange = (key: keyof ProlificConfig, value: any) => {
+    const newConfig = { ...config };
+    newConfig[key] = value;
+    setConfig(newConfig);
+    onChange(newConfig);
   }
 
   return (
@@ -44,7 +50,7 @@ const ProlificForm = ({
         placeholder="Complete code"
         size="small"
         required
-        value={config.completeCode}
+        value={config?.completeCode}
         onChange={e => handleChange('completeCode', e.target.value)}
       />
       <TextField
@@ -54,7 +60,7 @@ const ProlificForm = ({
         placeholder="API key"
         size="small"
         required
-        value={config['secrets.apiKey']}
+        value={config ? config['secrets.apiKey'] : undefined}
         onChange={e => handleChange('secrets.apiKey', e.target.value)}
       />
     </>
