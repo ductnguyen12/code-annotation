@@ -9,6 +9,9 @@ spring:
       - ${ENV:local}
       - openapi
       - management
+  threads:
+    virtual:
+      enabled: true
   sql:
     init:
       mode: always

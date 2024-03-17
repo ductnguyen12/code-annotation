@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collection;
 
 @Tag(name = "Dataset Resource")
 @RestController
@@ -37,10 +38,10 @@ public class DatasetResource {
         this.datasetService = datasetService;
     }
 
-    @Operation(summary = "Get all datasets")
+    @Operation(summary = "Get dataset page")
     @GetMapping("/v1/datasets")
-    public Collection<DatasetVM> getDatasets() {
-        return datasetService.getAllDatasets();
+    public Page<DatasetVM> getDatasets(Pageable pageable) {
+        return datasetService.getDatasetPage(pageable);
     }
 
     @Operation(summary = "Create a dataset")

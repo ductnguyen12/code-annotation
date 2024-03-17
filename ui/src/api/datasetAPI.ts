@@ -1,10 +1,18 @@
 import axios, { AxiosResponse } from "axios";
+import { Page, PageParams } from "../interfaces/common.interface";
 import { Dataset, DatasetStatistics } from "../interfaces/dataset.interface";
 import { PredictedRating } from "../interfaces/model.interface";
 import { downloadFile } from "./util";
 
 export const getDatasets = async (): Promise<Dataset[]> => {
   const response: AxiosResponse<Dataset[]> = await axios.get<Dataset[]>('/api/v1/datasets');
+  return response.data;
+}
+
+export const getDatasetPage = async (params: PageParams): Promise<Page<Dataset>> => {
+  const response: AxiosResponse<Page<Dataset>> = await axios.get<Page<Dataset>>('/api/v1/datasets', {
+    params: params,
+  });
   return response.data;
 }
 

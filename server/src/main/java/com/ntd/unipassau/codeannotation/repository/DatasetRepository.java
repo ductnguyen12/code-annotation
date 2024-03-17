@@ -1,12 +1,14 @@
 package com.ntd.unipassau.codeannotation.repository;
 
 import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface DatasetRepository extends JpaRepository<Dataset, Long> {
@@ -24,8 +26,11 @@ public interface DatasetRepository extends JpaRepository<Dataset, Long> {
             "WHERE d.id = :datasetId")
     Optional<Dataset> findFetchSnippetsById(Long datasetId);
 
-    @Query("FROM Dataset d " +
+    @Query("SELECT d FROM Dataset d " +
             "LEFT JOIN FETCH d.dQuestionGroups g " +
-            "ORDER BY d.id")
-    Set<Dataset> findAllFetchDQGroups();
+            "WHERE d.id in :ids")
+    Collection<Dataset> findAllFetchDQGroups(Collection<Long> ids);
+
+    @Query("SELECT d.id FROM Dataset d")
+    Page<Long> findDatasetIdPage(Pageable pageable);
 }
