@@ -6,6 +6,7 @@ import DialogTitle from "@mui/material/DialogTitle"
 import { ReactElement, useMemo } from "react"
 import { useAppDispatch } from "../../../app/hooks"
 import { useModelExecutions, useModels } from "../../../hooks/model"
+import { PageParams } from "../../../interfaces/common.interface"
 import { PredictionTarget } from "../../../interfaces/model.interface"
 import { createModelExecutionAsync, setOpenDialog } from "../../../slices/modelExecutionSlice"
 import ModelExecutionForm from "./ModelExecutionForm"
@@ -26,9 +27,9 @@ const ModelExecutionDialog = ({
   const defaultExecutionParams = useMemo(() => ({
     targetId,
     targetType,
-    pageSize: 10,
-    pageNumber: 0,
-  }), [targetId, targetType])
+    size: 10,
+    page: 0,
+  } as PageParams), [targetId, targetType])
 
   const {
     status: executionStatus,

@@ -14,8 +14,8 @@ export interface ModelExecutionState {
 }
 
 const DEFAULT_PAGE_PARAMS: PageParams = {
-  pageNumber: 0,
-  pageSize: 10,
+  page: 0,
+  size: 10,
   sort: 'lastModifiedDate,desc',
 }
 

@@ -8,21 +8,30 @@ import CardHeader from "@mui/material/CardHeader";
 import Grid from "@mui/material/Grid";
 import IconButton from '@mui/material/IconButton';
 
+import Pagination from '@mui/material/Pagination';
 import React, { useCallback } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import LoadingBackdrop from "../../components/LoadingBackdrop";
 import { useDatasets } from "../../hooks/dataset";
+import { PageParams } from '../../interfaces/common.interface';
 import { chooseDataset, deleteDatasetAsync } from '../../slices/datasetsSlice';
 import DatasetDialog from "./DatasetDialog";
 
+const DEFAULT_PAGE_SIZE = 12;
+
 const DatasetsPage = () => {
+  const [pageParams, setPageParams] = React.useState<PageParams>({
+    page: 0,
+    size: DEFAULT_PAGE_SIZE,
+  });
   const {
     status,
+    totalPages: totalDatasets,
     datasets,
     dataset,
-  } = useDatasets();
+  } = useDatasets(pageParams);
   const dispatch = useAppDispatch();
   const [open, setOpen] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
@@ -34,6 +43,13 @@ const DatasetsPage = () => {
   const handleCancelDeleting = useCallback(() => {
     dispatch(chooseDataset(-1));
   }, [dispatch]);
+
+  const handlePageChange = useCallback((page: number) => {
+    setPageParams({
+      page,
+      size: DEFAULT_PAGE_SIZE,
+    });
+  }, []);
 
   return (
     <Box
@@ -65,6 +81,14 @@ const DatasetsPage = () => {
           onConfirm={handleDeleting}
           onCancel={handleCancelDeleting}
         />
+        <Grid key="pagination" item xs={12}>
+          <Pagination
+            className="flex justify-center"
+            count={totalDatasets}
+            page={pageParams.page + 1}
+            onChange={(event, page: number) => handlePageChange(page - 1)}
+          />
+        </Grid>
         {datasets.map(d => (
           <Grid key={d.id} item xs={3}>
             <Card>

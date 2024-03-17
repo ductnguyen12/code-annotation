@@ -7,7 +7,7 @@ export interface Page<Type> {
 }
 
 export interface PageParams {
-  pageSize: number,
-  pageNumber: number,
+  size: number,
+  page: number,
   sort?: string,
 }

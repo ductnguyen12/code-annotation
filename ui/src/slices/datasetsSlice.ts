@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 import api from '../api';
 import { RootState } from '../app/store';
+import { Page, PageParams } from '../interfaces/common.interface';
 import { Dataset, DatasetStatistics } from '../interfaces/dataset.interface';
 import { PredictedRating } from '../interfaces/model.interface';
 import { Submission } from '../interfaces/submission.interface';
@@ -8,6 +9,7 @@ import { defaultAPIErrorHandle, defaultAPISuccessHandle } from '../util/error-ut
 
 export interface DatasetsState {
   status: 'idle' | 'loading' | 'failed';
+  totalPages: number;
   datasets: Dataset[];
   dataset?: Dataset;
   configuration: any;
@@ -18,6 +20,7 @@ export interface DatasetsState {
 
 const initialState: DatasetsState = {
   status: 'idle',
+  totalPages: 0,
   datasets: [],
   dataset: undefined,
   configuration: {},
@@ -26,11 +29,11 @@ const initialState: DatasetsState = {
   submissions: [],
 };
 
-export const loadDatasetsAsync = createAsyncThunk<Dataset[], void, { dispatch: Dispatch }>(
+export const loadDatasetsAsync = createAsyncThunk<Page<Dataset>, PageParams, { dispatch: Dispatch }>(
   'datasets/loadDatasets',
-  async (_, { dispatch }) => {
+  async (params: PageParams, { dispatch }) => {
     try {
-      return await api.getDatasets();
+      return await api.getDatasetPage(params);
     } catch (error: any) {
       defaultAPIErrorHandle(error, dispatch, 'Could not fetch list of datasets');
       throw error;
@@ -161,7 +164,8 @@ export const datasetsSlice = createSlice({
       })
       .addCase(loadDatasetsAsync.fulfilled, (state, action) => {
         state.status = 'idle';
-        state.datasets = action.payload;
+        state.datasets = action.payload.content;
+        state.totalPages = action.payload.totalPages;
       })
       .addCase(loadDatasetsAsync.rejected, (state) => {
         state.status = 'failed';

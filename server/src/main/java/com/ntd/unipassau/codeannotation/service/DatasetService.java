@@ -13,6 +13,9 @@ import com.ntd.unipassau.codeannotation.web.rest.vm.DatasetStatistics;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DatasetVM;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,17 +42,22 @@ public class DatasetService {
     }
 
     @Transactional(readOnly = true)
-    public Collection<DatasetVM> getAllDatasets() {
-        return datasetRepository.findAllFetchDQGroups().stream()
-                .map(dataset -> {
-                    Set<Long> demographicQuestionIds = dataset.getDQuestionGroups().stream()
-                            .map(QuestionSet::getId)
-                            .collect(Collectors.toSet());
-                    DatasetVM datasetVM = datasetMapper.toDatasetVM(dataset);
-                    datasetVM.setDemographicQuestionGroupIds(demographicQuestionIds);
-                    return datasetVM;
-                })
-                .collect(Collectors.toList());
+    public Page<DatasetVM> getDatasetPage(Pageable pageable) {
+        Page<Long> idPage = datasetRepository.findDatasetIdPage(pageable);
+        return new PageImpl<>(
+                datasetRepository.findAllFetchDQGroups(idPage.getContent())
+                        .stream()
+                        .map(dataset -> {
+                            Set<Long> demographicQuestionIds = dataset.getDQuestionGroups().stream()
+                                    .map(QuestionSet::getId)
+                                    .collect(Collectors.toSet());
+                            DatasetVM datasetVM = datasetMapper.toDatasetVM(dataset);
+                            datasetVM.setDemographicQuestionGroupIds(demographicQuestionIds);
+                            return datasetVM;
+                        })
+                        .collect(Collectors.toList()),
+                pageable,
+                idPage.getTotalElements());
     }
 
     @Transactional(readOnly = true)
