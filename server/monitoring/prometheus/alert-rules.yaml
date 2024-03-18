@@ -1,0 +1,20 @@
+groups:
+  - name: monitoring-rules
+    rules:
+      # Triggers a critical alert if a service is down.
+      - alert: ServiceDown
+        expr: up == 0
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.job }} service has been down"
+          description: "{{ $labels.job }} has been down."
+          color: "danger"
+
+      # Triggers an alert if a service is up again.
+      - alert: ServiceUp
+        expr: up == 1
+        annotations:
+          summary: "{{ $labels.job }} service is up"
+          description: "{{ $labels.job }} is up (again)."
+          color: "good"

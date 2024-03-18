@@ -1,0 +1,14 @@
+global:
+  resolve_timeout: 1m
+  slack_api_url_file: /config/slack_url
+route:
+  receiver: slack-notifications
+receivers:
+  - name: 'slack-notifications'
+    slack_configs:
+      - channel: '#code-annotation-bot'
+        send_resolved: false
+        color: "{{ .CommonAnnotations.color }}"
+        username: 'pepe'
+        title: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ end }}"
+        text: "{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}"

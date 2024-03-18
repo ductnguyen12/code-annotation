@@ -5,6 +5,8 @@ management:
         max-age: 3600s
         allowed-methods: 'GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD'
         allowed-headers: '*'
+      exposure:
+        include: health,prometheus
   otlp:
     metrics:
       export:
