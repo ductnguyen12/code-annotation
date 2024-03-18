@@ -28,7 +28,7 @@ public interface DatasetRepository extends JpaRepository<Dataset, Long> {
 
     @Query("SELECT d FROM Dataset d " +
             "LEFT JOIN FETCH d.dQuestionGroups g " +
-            "WHERE d.id in :ids")
+            "WHERE d.id in :ids ORDER BY d.id DESC")
     Collection<Dataset> findAllFetchDQGroups(Collection<Long> ids);
 
     @Query("SELECT d.id FROM Dataset d")
