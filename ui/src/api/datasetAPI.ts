@@ -11,7 +11,7 @@ export const getDatasets = async (): Promise<Dataset[]> => {
 
 export const getDatasetPage = async (params: PageParams): Promise<Page<Dataset>> => {
   const response: AxiosResponse<Page<Dataset>> = await axios.get<Page<Dataset>>('/api/v1/datasets', {
-    params: params,
+    params,
   });
   return response.data;
 }

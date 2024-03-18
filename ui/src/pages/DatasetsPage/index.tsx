@@ -20,11 +20,13 @@ import { chooseDataset, deleteDatasetAsync } from '../../slices/datasetsSlice';
 import DatasetDialog from "./DatasetDialog";
 
 const DEFAULT_PAGE_SIZE = 12;
+const DEFAULT_SORT = 'id,desc';
 
 const DatasetsPage = () => {
   const [pageParams, setPageParams] = React.useState<PageParams>({
     page: 0,
     size: DEFAULT_PAGE_SIZE,
+    sort: DEFAULT_SORT,
   });
   const {
     status,
@@ -48,6 +50,7 @@ const DatasetsPage = () => {
     setPageParams({
       page,
       size: DEFAULT_PAGE_SIZE,
+      sort: DEFAULT_SORT,
     });
   }, []);
 
