@@ -19,7 +19,7 @@ services:
       - '9093:9093'
     volumes:
       - ./alert-manager:/config
-      - /mnt/secrets:/config/slack_url
+      - /mnt/secrets/slack_url:/config/slack_url
     command: --config.file=/config/alertmanager.yaml --log.level=debug
 
 #  otel-collector:
