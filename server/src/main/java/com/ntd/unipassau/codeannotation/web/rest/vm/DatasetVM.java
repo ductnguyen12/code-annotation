@@ -18,6 +18,7 @@ public class DatasetVM {
     @JsonProperty("pLanguage")
     private String pLanguage;
     private String completeText;
+    private Boolean archived;
     private Collection<@NotNull Long> demographicQuestionGroupIds;
     private Map<String, Map<String, Object>> configuration;
 }

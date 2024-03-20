@@ -8,6 +8,10 @@ export interface Dataset {
   completeText?: string;
 }
 
+export interface DatasetParams {
+  archived?: boolean,
+}
+
 export interface DatasetStatistics {
   numberOfSnippets: number;
   numberOfParticipants: number;

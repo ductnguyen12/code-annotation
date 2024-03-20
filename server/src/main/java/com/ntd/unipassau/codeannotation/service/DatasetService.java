@@ -42,8 +42,8 @@ public class DatasetService {
     }
 
     @Transactional(readOnly = true)
-    public Page<DatasetVM> getDatasetPage(Pageable pageable) {
-        Page<Long> idPage = datasetRepository.findDatasetIdPage(pageable);
+    public Page<DatasetVM> getDatasetPage(DatasetVM params, Pageable pageable) {
+        Page<Long> idPage = datasetRepository.findDatasetIdPage(params, pageable);
         return new PageImpl<>(
                 datasetRepository.findAllFetchDQGroups(idPage.getContent())
                         .stream()
@@ -101,6 +101,15 @@ public class DatasetService {
     public Optional<DatasetVM> updateDataset(Long datasetId, DatasetVM newDataset) {
         return datasetRepository.findById(datasetId)
                 .map(dataset -> updateDataset(dataset, newDataset));
+    }
+
+    @Transactional
+    public Optional<DatasetVM> patchDataset(Long datasetId, DatasetVM newDataset) {
+        return datasetRepository.findById(datasetId)
+                .map(dataset -> {
+                    dataset.setArchived(newDataset.getArchived());
+                    return datasetMapper.toDatasetVM(dataset);
+                });
     }
 
     @Transactional

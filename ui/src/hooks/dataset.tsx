@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { PageParams } from "../interfaces/common.interface";
-import { Dataset, DatasetStatistics } from "../interfaces/dataset.interface";
+import { Dataset, DatasetParams, DatasetStatistics } from "../interfaces/dataset.interface";
 import { PredictedRating } from "../interfaces/model.interface";
 import { Submission } from "../interfaces/submission.interface";
 import { selectAuthState } from "../slices/authSlice";
@@ -15,17 +15,19 @@ import {
   selectDatasetsState,
 } from "../slices/datasetsSlice";
 
-export const useDatasets = (params?: PageParams): DatasetsState => {
+export const useDatasets = (pParams?: PageParams, dParams?: DatasetParams): DatasetsState => {
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    dispatch(loadDatasetsAsync(params || {
-      page: 0,
-      size: 100000,
-      sort: 'id,desc',
-    } as PageParams));
-  }, [dispatch, params])
-
+    dispatch(loadDatasetsAsync({
+      dParams,
+      pParams: pParams || {
+        page: 0,
+        size: 100000,
+        sort: 'id,desc',
+      } as PageParams,
+    }));
+  }, [dispatch, pParams, dParams])
   return useAppSelector(selectDatasetsState);
 };
 

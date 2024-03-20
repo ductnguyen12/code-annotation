@@ -1,3 +1,4 @@
+import ArchiveIcon from '@mui/icons-material/Archive';
 import BatchPredictionIcon from '@mui/icons-material/BatchPrediction';
 import CategoryIcon from '@mui/icons-material/Category';
 import LoginIcon from '@mui/icons-material/Login';
@@ -24,6 +25,16 @@ const routes = [
     inDrawer: true,
     protected: true,
     pattern: /\/datasets/,
+  },
+  {
+    key: 'archives',
+    path: '/archives',
+    title: 'Archives',
+    element: (<DatasetsPage archived={true} />),
+    icon: (<ArchiveIcon />),
+    inDrawer: true,
+    protected: true,
+    pattern: /\/archives/,
   },
   {
     key: 'dataset',

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { Page, PageParams } from "../interfaces/common.interface";
-import { Dataset, DatasetStatistics } from "../interfaces/dataset.interface";
+import { Dataset, DatasetParams, DatasetStatistics } from "../interfaces/dataset.interface";
 import { PredictedRating } from "../interfaces/model.interface";
 import { downloadFile } from "./util";
 
@@ -9,9 +9,12 @@ export const getDatasets = async (): Promise<Dataset[]> => {
   return response.data;
 }
 
-export const getDatasetPage = async (params: PageParams): Promise<Page<Dataset>> => {
+export const getDatasetPage = async (pParams: PageParams, dParams?: DatasetParams): Promise<Page<Dataset>> => {
   const response: AxiosResponse<Page<Dataset>> = await axios.get<Page<Dataset>>('/api/v1/datasets', {
-    params,
+    params: {
+      ...pParams,
+      ...(dParams || {}),
+    },
   });
   return response.data;
 }
@@ -28,6 +31,11 @@ export const createDataset = async (dataset: Dataset): Promise<Dataset> => {
 
 export const updateDataset = async (datasetId: number, dataset: Dataset): Promise<Dataset> => {
   const response: AxiosResponse<Dataset> = await axios.put<Dataset>(`/api/v1/datasets/${datasetId}`, dataset);
+  return response.data;
+}
+
+export const patchDataset = async (datasetId: number, dataset: DatasetParams): Promise<Dataset> => {
+  const response: AxiosResponse<Dataset> = await axios.patch<Dataset>(`/api/v1/datasets/${datasetId}`, dataset);
   return response.data;
 }
 
