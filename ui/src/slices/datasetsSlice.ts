@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, Dispatch, PayloadAction } from '@reduxjs
 import api from '../api';
 import { RootState } from '../app/store';
 import { Page, PageParams } from '../interfaces/common.interface';
-import { Dataset, DatasetStatistics } from '../interfaces/dataset.interface';
+import { Dataset, DatasetParams, DatasetStatistics } from '../interfaces/dataset.interface';
 import { PredictedRating } from '../interfaces/model.interface';
 import { Submission } from '../interfaces/submission.interface';
 import { defaultAPIErrorHandle, defaultAPISuccessHandle } from '../util/error-util';
@@ -29,11 +29,15 @@ const initialState: DatasetsState = {
   submissions: [],
 };
 
-export const loadDatasetsAsync = createAsyncThunk<Page<Dataset>, PageParams, { dispatch: Dispatch }>(
+export const loadDatasetsAsync = createAsyncThunk<
+  Page<Dataset>,
+  { pParams: PageParams, dParams?: DatasetParams },
+  { dispatch: Dispatch }
+>(
   'datasets/loadDatasets',
-  async (params: PageParams, { dispatch }) => {
+  async ({ pParams, dParams }, { dispatch }) => {
     try {
-      return await api.getDatasetPage(params);
+      return await api.getDatasetPage(pParams, dParams);
     } catch (error: any) {
       defaultAPIErrorHandle(error, dispatch, 'Could not fetch list of datasets');
       throw error;
@@ -109,6 +113,31 @@ export const updateDatasetAsync = createAsyncThunk(
     try {
       const updatedDataset = await api.updateDataset(datasetId, dataset);
       defaultAPISuccessHandle(`Dataset '${datasetId}' was updated successfully`, dispatch);
+      return updatedDataset;
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
+export const patchDatasetThenReloadAsync = createAsyncThunk(
+  'datasets/patchDatasetThenReloadAsync',
+  async ({
+    datasetId,
+    dataset,
+    pParams,
+    dParams,
+  }: {
+    datasetId: number,
+    dataset: DatasetParams,
+    pParams: PageParams,
+    dParams?: DatasetParams
+  }, { dispatch }) => {
+    try {
+      const updatedDataset = await api.patchDataset(datasetId, dataset);
+      defaultAPISuccessHandle(`Dataset '${datasetId}' was updated successfully`, dispatch);
+      dispatch(loadDatasetsAsync({ pParams, dParams }));
       return updatedDataset;
     } catch (error: any) {
       defaultAPIErrorHandle(error, dispatch);
@@ -241,6 +270,16 @@ export const datasetsSlice = createSlice({
           state.datasets[index] = action.payload;
       })
       .addCase(updateDatasetAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(patchDatasetThenReloadAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(patchDatasetThenReloadAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+      })
+      .addCase(patchDatasetThenReloadAsync.rejected, (state) => {
         state.status = 'failed';
       })
 

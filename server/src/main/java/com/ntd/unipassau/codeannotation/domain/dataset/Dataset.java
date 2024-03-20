@@ -30,6 +30,7 @@ public class Dataset extends AbstractAuditingEntity<Long> {
     private String pLanguage;
     @Column(length = 2048)
     private String completeText;
+    private Boolean archived;
 
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")

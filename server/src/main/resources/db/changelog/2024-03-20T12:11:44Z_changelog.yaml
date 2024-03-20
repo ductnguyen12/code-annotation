@@ -1,0 +1,11 @@
+databaseChangeLog:
+- changeSet:
+    id: 1710936719122-1
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: archived
+            type: boolean
+        tableName: dataset

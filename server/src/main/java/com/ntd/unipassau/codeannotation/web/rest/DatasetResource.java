@@ -40,8 +40,10 @@ public class DatasetResource {
 
     @Operation(summary = "Get dataset page")
     @GetMapping("/v1/datasets")
-    public Page<DatasetVM> getDatasets(Pageable pageable) {
-        return datasetService.getDatasetPage(pageable);
+    public Page<DatasetVM> getDatasets(
+            DatasetVM params,
+            Pageable pageable) {
+        return datasetService.getDatasetPage(params, pageable);
     }
 
     @Operation(summary = "Create a dataset")
@@ -56,6 +58,15 @@ public class DatasetResource {
     @Secured({AuthoritiesConstants.USER})
     public DatasetVM updateDataset(@PathVariable Long datasetId, @RequestBody @Valid DatasetVM dataset) {
         return datasetService.updateDataset(datasetId, dataset)
+                .orElseThrow(() -> new NotFoundException(
+                        "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
+    }
+
+    @Operation(summary = "Partially update a dataset")
+    @PatchMapping("/v1/datasets/{datasetId}")
+    @Secured({AuthoritiesConstants.USER})
+    public DatasetVM patchDataset(@PathVariable Long datasetId, @RequestBody DatasetVM dataset) {
+        return datasetService.patchDataset(datasetId, dataset)
                 .orElseThrow(() -> new NotFoundException(
                         "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
     }

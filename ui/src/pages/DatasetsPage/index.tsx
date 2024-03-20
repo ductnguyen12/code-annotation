@@ -1,5 +1,7 @@
+import ArchiveIcon from '@mui/icons-material/Archive';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
+import UnarchiveIcon from '@mui/icons-material/Unarchive';
 import Box from "@mui/material/Box";
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -9,34 +11,58 @@ import Grid from "@mui/material/Grid";
 import IconButton from '@mui/material/IconButton';
 
 import Pagination from '@mui/material/Pagination';
+import Tooltip from '@mui/material/Tooltip';
 import React, { useCallback } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import LoadingBackdrop from "../../components/LoadingBackdrop";
+import { usePage } from '../../hooks/common';
 import { useDatasets } from "../../hooks/dataset";
 import { PageParams } from '../../interfaces/common.interface';
-import { chooseDataset, deleteDatasetAsync } from '../../slices/datasetsSlice';
+import { DatasetParams } from '../../interfaces/dataset.interface';
+import { chooseDataset, deleteDatasetAsync, patchDatasetThenReloadAsync } from '../../slices/datasetsSlice';
 import DatasetDialog from "./DatasetDialog";
 
 const DEFAULT_PAGE_SIZE = 12;
 const DEFAULT_SORT = 'id,desc';
 
-const DatasetsPage = () => {
-  const [pageParams, setPageParams] = React.useState<PageParams>({
-    page: 0,
+const DatasetsPage = ({
+  archived,
+}: {
+  archived?: boolean,
+}) => {
+  const [currentPage, setPage] = usePage();
+
+  const pageParams = React.useMemo<PageParams>(() => ({
+    page: currentPage,
     size: DEFAULT_PAGE_SIZE,
     sort: DEFAULT_SORT,
-  });
+  }), [currentPage]);
+
+  const datasetParams = React.useMemo<DatasetParams>(() => ({
+    archived: !!archived,
+  }), [archived]);
+
   const {
     status,
     totalPages: totalDatasets,
     datasets,
     dataset,
-  } = useDatasets(pageParams);
+  } = useDatasets(pageParams, datasetParams);
+
   const dispatch = useAppDispatch();
   const [open, setOpen] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
+
+  const handleArchivedChange = useCallback((datasetId: number) => {
+    dispatch(patchDatasetThenReloadAsync({
+      datasetId,
+      dataset: { archived: !archived },
+      pParams: pageParams,
+      dParams: datasetParams,
+    }));
+  }, [archived, datasetParams, dispatch, pageParams]);
 
   const handleDeleting = useCallback(() => {
     dispatch(deleteDatasetAsync(dataset?.id as number));
@@ -47,12 +73,8 @@ const DatasetsPage = () => {
   }, [dispatch]);
 
   const handlePageChange = useCallback((page: number) => {
-    setPageParams({
-      page,
-      size: DEFAULT_PAGE_SIZE,
-      sort: DEFAULT_SORT,
-    });
-  }, []);
+    setPage(page);
+  }, [setPage]);
 
   return (
     <Box
@@ -63,14 +85,14 @@ const DatasetsPage = () => {
     >
       <LoadingBackdrop open={'loading' === status} />
       <Grid marginLeft={0} container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        <Grid key="actions" item xs={12}>
+        {!archived && <Grid key="actions" item xs={12}>
           <Button
             variant="contained"
             onClick={() => setOpen(true)}
           >
             Create
           </Button>
-        </Grid>
+        </Grid>}
         <DatasetDialog
           open={open}
           setOpen={setOpen}
@@ -104,32 +126,63 @@ const DatasetsPage = () => {
                   justifyContent: 'space-between',
                 }}
               >
-                <Button
-                  size="small"
-                  component={RouterLink}
-                  to={`/datasets/${d.id}/snippets`}
+                <Tooltip
+                  title="To rating editor"
+                  placement="bottom"
+                  arrow
                 >
-                  Snippets
-                </Button>
+                  <Button
+                    size="small"
+                    component={RouterLink}
+                    to={`/datasets/${d.id}/snippets`}
+                  >
+                    Snippets
+                  </Button>
+                </Tooltip>
                 <span>
-                  <IconButton
-                    aria-label="edit"
-                    onClick={() => {
-                      dispatch(chooseDataset(d.id as number));
-                      setOpen(true);
-                    }}
+                  <Tooltip
+                    title="Edit"
+                    placement="bottom"
+                    arrow
                   >
-                    <EditIcon color="inherit" />
-                  </IconButton>
-                  <IconButton
-                    aria-label="delete"
-                    onClick={() => {
-                      dispatch(chooseDataset(d.id as number));
-                      setOpenDelete(true);
-                    }}
+                    <IconButton
+                      aria-label="edit"
+                      onClick={() => {
+                        dispatch(chooseDataset(d.id as number));
+                        setOpen(true);
+                      }}
+                    >
+                      <EditIcon color="inherit" />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip
+                    title="Archive"
+                    placement="bottom"
+                    arrow
                   >
-                    <DeleteForeverIcon color="error" />
-                  </IconButton>
+                    <IconButton
+                      aria-label="archive"
+                      onClick={() => handleArchivedChange(d.id as number)}
+                    >
+                      {archived ? <UnarchiveIcon color="inherit" /> : <ArchiveIcon color="inherit" />}
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip
+                    title="Delete"
+                    placement="bottom"
+                    arrow
+                  >
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => {
+                        dispatch(chooseDataset(d.id as number));
+                        setOpenDelete(true);
+                      }}
+                    >
+                      <DeleteForeverIcon color="error" />
+                    </IconButton>
+                  </Tooltip>
                 </span>
               </CardActions>
             </Card>
