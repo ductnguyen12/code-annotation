@@ -59,6 +59,9 @@ public class SnippetResource {
         Dataset dataset = datasetService.getById(snippetVM.getDatasetId())
                 .orElseThrow(() -> new BadRequestException(
                         "Could not find dataset by id: " + snippetVM.getDatasetId(), "snippet", "datasetId"));
+        if (dataset.isArchived()) {
+            throw new BadRequestException("Could not add a snippet to an archived dataset", null, null);
+        }
         Snippet snippet = snippetMapper.toSnippet(snippetVM);
         snippet.setDataset(dataset);
         return snippetMapper.toSnippetVM(snippetService.createSnippet(snippet));
@@ -69,9 +72,14 @@ public class SnippetResource {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Secured({AuthoritiesConstants.USER})
     public void deleteSnippet(@PathVariable Long snippetId) {
-        snippetService.getById(snippetId)
+        Snippet snippet = snippetService.getById(snippetId)
                 .orElseThrow(() -> new NotFoundException(
                         "Could not find snippet by id: " + snippetId, "pathVars", "snippetId"));
+        datasetService.getById(snippet.getDatasetId())
+                .ifPresent(d -> {
+                    if (d.isArchived())
+                        throw new BadRequestException("Could not delete a snippet of an archived dataset", null, null);
+                });
         snippetService.deleteById(snippetId);
     }
 
@@ -83,6 +91,11 @@ public class SnippetResource {
         Snippet snippet = snippetService.getById(snippetId)
                 .orElseThrow(() -> new NotFoundException(
                         "Could not find snippet by id: " + snippetId, "pathVars", "snippetId"));
+        datasetService.getById(snippet.getDatasetId())
+                .ifPresent(d -> {
+                    if (d.isArchived())
+                        throw new BadRequestException("Could not rate a snippet of an archived dataset", null, null);
+                });
         validateSnippetSolutions(snippet, rate.getSolutions());
         snippetService.rateSnippet(rate, snippet);
     }

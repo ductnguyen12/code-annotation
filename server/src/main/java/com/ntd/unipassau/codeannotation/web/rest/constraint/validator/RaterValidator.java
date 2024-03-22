@@ -1,5 +1,6 @@
 package com.ntd.unipassau.codeannotation.web.rest.constraint.validator;
 
+import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestion;
 import com.ntd.unipassau.codeannotation.repository.DatasetRepository;
 import com.ntd.unipassau.codeannotation.repository.DemographicQuestionRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,9 +36,17 @@ public class RaterValidator implements ConstraintValidator<RaterConstraint, Rate
     public boolean isValid(RaterVM rater, ConstraintValidatorContext context) {
         context.disableDefaultConstraintViolation();
         Collection<SolutionVM> rSolutionVMs = rater.getSolutions();
-        if (datasetRepository.findById(rater.getCurrentDatasetId()).isEmpty()) {
+        Optional<Dataset> optDataset = datasetRepository.findById(rater.getCurrentDatasetId());
+        if (optDataset.isEmpty()) {
             context.buildConstraintViolationWithTemplate(
                             "currentDatasetId does not exist: " + rater.getCurrentDatasetId())
+                    .addPropertyNode("currentDatasetId")
+                    .addConstraintViolation();
+            return false;
+        } else if (optDataset.get().isArchived()) {
+            context.buildConstraintViolationWithTemplate(
+                            "Could not register to an archived dataset: " + rater.getCurrentDatasetId())
+                    .addPropertyNode("currentDatasetId")
                     .addConstraintViolation();
             return false;
         }
