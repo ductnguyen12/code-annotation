@@ -1,5 +1,6 @@
 package com.ntd.unipassau.codeannotation.web.rest;
 
+import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import com.ntd.unipassau.codeannotation.security.AuthoritiesConstants;
 import com.ntd.unipassau.codeannotation.service.BackupService;
 import com.ntd.unipassau.codeannotation.service.DatasetService;
@@ -110,9 +111,12 @@ public class DatasetResource {
     public void importSnippets(
             @PathVariable Long datasetId,
             @RequestParam("file") MultipartFile file) throws IOException {
-        datasetService.getById(datasetId)
+        Dataset dataset = datasetService.getById(datasetId)
                 .orElseThrow(() -> new NotFoundException(
                         "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
+        if (dataset.isArchived()) {
+            throw new BadRequestException("Could not import to an archived dataset", null, null);
+        }
         if (!"application/zip".equals(file.getContentType())) {
             throw new BadRequestException(
                     "File content type must be \"application/zip\" instead of " + file.getContentType(), null, null);

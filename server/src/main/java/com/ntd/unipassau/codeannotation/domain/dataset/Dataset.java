@@ -56,6 +56,10 @@ public class Dataset extends AbstractAuditingEntity<Long> {
         }
     }
 
+    public boolean isArchived() {
+        return Boolean.TRUE.equals(archived);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
