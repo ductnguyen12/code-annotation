@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import api from '../api';
 import { RootState } from '../app/store';
 import { Solution } from '../interfaces/question.interface';
+import { Rater } from '../interfaces/rater.interface';
 import { Snippet, SnippetRate } from '../interfaces/snippet.interface';
 import { defaultAPIErrorHandle, defaultAPISuccessHandle } from '../util/error-util';
 
@@ -9,8 +10,8 @@ export interface SnippetsState {
   status: 'idle' | 'loading' | 'failed';
   snippets: Snippet[];
   selected: number;
-  selectedRater?: string;
-  raters: string[];
+  selectedRater?: Rater;
+  raters: Rater[];
 }
 
 const initialState: SnippetsState = {
@@ -103,11 +104,15 @@ export const snippetsSlice = createSlice({
       snippet.questions[questionIndex].solution = solution;
     },
 
-    chooseRater: (state, action: PayloadAction<string | undefined>) => {
+    chooseRater: (state, action: PayloadAction<Rater | undefined>) => {
       state.selectedRater = action.payload;
     },
-    setRaters: (state, action: PayloadAction<string[]>) => {
+    setRaters: (state, action: PayloadAction<Rater[]>) => {
       state.raters = action.payload;
+      state.selectedRater = state.raters.find(r => r.id === state.selectedRater?.id);
+      if (!state.selectedRater && state.raters.length > 0) {
+        state.selectedRater = state.raters[0];
+      }
     },
   },
 
