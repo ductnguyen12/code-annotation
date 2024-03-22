@@ -46,7 +46,7 @@ const DatasetsPage = ({
 
   const {
     status,
-    totalPages: totalDatasets,
+    totalPages,
     datasets,
     dataset,
   } = useDatasets(pageParams, datasetParams);
@@ -109,7 +109,7 @@ const DatasetsPage = ({
         <Grid key="pagination" item xs={12}>
           <Pagination
             className="flex justify-center"
-            count={totalDatasets}
+            count={totalPages}
             page={pageParams.page + 1}
             onChange={(event, page: number) => handlePageChange(page - 1)}
           />
