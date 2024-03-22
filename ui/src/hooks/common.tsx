@@ -20,10 +20,9 @@ export const usePage = (): [number, (page: number) => void] => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const setPage = useCallback((page: number) => {
-    setSearchParams(new URLSearchParams(Array.from(searchParams.entries())
-      .map(([k, v]) => k === 'page' ? [k, (page + 1).toString()] : [k, v])))
+    searchParams.set('page', (page + 1).toString());
+    setSearchParams(searchParams);
   }, [searchParams, setSearchParams]);
-
   try {
     if (!!searchParams.get('page')) {
       return [
