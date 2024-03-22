@@ -121,7 +121,7 @@ const SnippetList = () => {
       <SnippetRatingEditor
         snippets={snippets}
         selected={selected}
-        selectedRater={selectedRater}
+        selectedRater={selectedRater?.id}
         defaultPLanguage={dataset?.pLanguage}
         statistics={statistics}
         pRatings={pRatings}

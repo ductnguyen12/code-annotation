@@ -11,6 +11,7 @@ import api from '../../../../api';
 import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import ProtectedElement from '../../../../components/ProtectedElement';
 import { useIdFromPath } from '../../../../hooks/common';
+import { Rater } from '../../../../interfaces/rater.interface';
 import { Snippet } from "../../../../interfaces/snippet.interface";
 import { setOpenDialog } from '../../../../slices/modelExecutionSlice';
 import { pushNotification } from '../../../../slices/notificationSlice';
@@ -36,19 +37,12 @@ const SnippetToolBox = () => {
   useEffect(() => {
     if (selected < snippets.length) {
       dispatch(setRaters(
-        snippets[selected].rates?.filter(rate => rate.rater?.id !== undefined)
-          .map(rate => rate.rater?.id as string)
+        snippets[selected].rates?.filter(rate => !!rate.rater)
+          .map(rate => rate.rater as Rater)
         || []
       ));
     }
   }, [selected, snippets, dispatch]);
-
-  useEffect(() => {
-    if (raters.length > 0 && raters[0] && !selectedRater) {
-      dispatch(chooseRater(raters[0]));
-    }
-    // eslint-disable-next-line
-  }, [raters]);
 
   const onCreatedSnippet = (snippet: Snippet) => {
     if (datasetId) {
@@ -89,8 +83,8 @@ const SnippetToolBox = () => {
     dispatch(setOpenDialog(true));
   }
 
-  const onRaterChange = (raterId: string | undefined) => {
-    dispatch(chooseRater(raterId));
+  const onRaterChange = (rater?: Rater) => {
+    dispatch(chooseRater(rater));
   }
 
   return (
@@ -127,7 +121,7 @@ const SnippetToolBox = () => {
         </Tooltip>
         <RaterSelector
           rater={selectedRater}
-          raters={raters.filter(r => r !== cookies.token)}
+          raters={raters.filter(r => r.id !== cookies.token)}
           onRaterChange={onRaterChange}
         />
         <CreateSnippetDialog
