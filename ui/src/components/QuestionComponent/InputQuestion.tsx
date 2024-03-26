@@ -42,17 +42,16 @@ const InputQuestion = ({
   }
 
   const handleChange = (value: string) => {
-    if (!solution) {
-      solution = {
-        questionId: question.id as number,
-        value: {},
-      };
-    }
-    if (question.constraint?.isNumber)
-      solution.value.input = parseInt(value);
-    else
-      solution.value.input = value;
-    onValueChange(questionIndex, solution);
+    const newValue = {
+      ...(solution?.value || {}),
+      input: question.constraint?.isNumber ? parseInt(value) : value,
+    };
+
+    onValueChange(questionIndex, {
+      ...(solution || {}),
+      questionId: question.id as number,
+      value: newValue,
+    } as Solution);
   }
 
   return (
