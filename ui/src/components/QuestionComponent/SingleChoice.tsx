@@ -48,6 +48,9 @@ const SingleChoice = ({
   }
 
   const handleChange = (selected: number) => {
+    if (selected >= (question.answer?.options?.length || 0))
+      throw Error('Index out of bound: ' + selected + '/' + question.answer?.options?.length);
+
     if (!solution)
       solution = {
         questionId: question.id as number,

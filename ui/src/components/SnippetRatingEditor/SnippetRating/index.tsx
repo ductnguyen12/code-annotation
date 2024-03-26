@@ -191,7 +191,13 @@ export default function SnippetRating({
         </>
       </ProtectedElement>
       {!shouldHideQuestions && (
-        <Grid container sx={{ m: 1 }} spacing={2}>
+        <Grid
+          className="justify-center mb-4"
+          sx={{ minWidth: 600, mt: -2 }}
+          rowSpacing={5}
+          columnSpacing={3}
+          container
+        >
           {questions?.map((q, index) => (
             <SnippetQuestion
               key={q.id}

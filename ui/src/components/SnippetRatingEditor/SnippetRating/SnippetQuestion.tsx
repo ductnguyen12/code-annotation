@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Grid } from '@mui/material';
-import { Solution } from '../../../interfaces/question.interface';
+import { QuestionType, Solution } from '../../../interfaces/question.interface';
 import { SnippetQuestion as SQuestion } from '../../../interfaces/snippet.interface';
 import QuestionComponent from '../../QuestionComponent';
 
@@ -33,8 +33,21 @@ export default function SnippetQuestion({
     }, [editable, onSolutionChange]
   );
 
+  const gridItemSize = React.useMemo(() => {
+    switch (question.type) {
+      case QuestionType.RATING:
+        return 10;
+      default:
+        return 6;
+    }
+  }, [question.type]);
+
   return (
-    <Grid key={question?.id} item xs={6}>
+    <Grid
+      key={question?.id}
+      xs={gridItemSize}
+      item
+    >
       <QuestionComponent
         questionIndex={index}
         question={question}

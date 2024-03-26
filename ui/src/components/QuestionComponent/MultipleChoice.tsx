@@ -44,23 +44,25 @@ const MultipleChoice = ({
   }
 
   const handleChange = (checked: boolean, index: number) => {
-    if (!solution) {
-      solution = {
-        questionId: question.id as number,
-        value: { selected: [] },
-      };
-    }
+    if (index >= (question.answer?.options?.length || 0))
+      throw Error('Index out of bound: ' + index + '/' + question.answer?.options?.length);
+
+    const value = {
+      ...(solution?.value || {}),
+      selected: [...(solution?.value.selected || [])],
+    };
 
     if (checked) {
-      if (!solution.value.selected)
-        solution.value.selected = [];
-
-      solution.value.selected.push(index);
+      value.selected.push(index);
     } else {
-      solution.value.selected = solution?.value.selected?.filter(value => value !== index);
+      value.selected = value.selected.filter(value => value !== index);
     }
 
-    onValueChange(questionIndex, solution);
+    onValueChange(questionIndex, {
+      ...(solution || {}),
+      questionId: question.id as number,
+      value,
+    } as Solution);
   }
 
   return (

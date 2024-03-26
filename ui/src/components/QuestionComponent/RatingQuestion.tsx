@@ -43,18 +43,23 @@ const RatingQuestion = ({
   }
 
   const handleChange = (selected: number, index: number) => {
-    if (!solution) {
-      solution = {
-        questionId: question.id as number,
-        value: { selected: question.answer?.attributes?.map(_ => -1) || [] },
-      };
-    }
-    if (!solution.value.selected) {
-      solution.value.selected = question.answer?.attributes?.map(_ => -1) || [];
-    }
-    solution.value.selected[index] = selected;
+    if (selected >= (question.answer?.options?.length || 0))
+      throw Error('Index out of bound (options): ' + selected + '/' + question.answer?.options?.length);
 
-    onValueChange(questionIndex, solution);
+    if (index >= (question.answer?.attributes?.length || 0))
+      throw Error('Index out of bound (attributes): ' + index + '/' + question.answer?.attributes?.length);
+
+    const value = {
+      ...(solution?.value || {}),
+      selected: [...(solution?.value.selected || question.answer?.attributes?.map(_ => -1) || [])],
+    };
+
+    value.selected[index] = selected;
+    onValueChange(questionIndex, {
+      ...(solution || {}),
+      questionId: question.id as number,
+      value,
+    } as Solution);
   }
 
   return (
@@ -65,7 +70,7 @@ const RatingQuestion = ({
         component="legend"
         required={required}
       >
-        {`${questionIndex + 1}.`}
+        {`${questionIndex + 1}. ${question.content || ''}`}
       </FormLabel>
       <MultipleRating
         name={`question-id-${question.id}`}
