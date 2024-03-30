@@ -157,7 +157,7 @@ const DatasetsPage = ({
                   </Tooltip>
 
                   <Tooltip
-                    title="Archive"
+                    title={archived ? "Unarchive" : "Archive"}
                     placement="bottom"
                     arrow
                   >

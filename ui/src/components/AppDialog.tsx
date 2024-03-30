@@ -1,4 +1,4 @@
-import { FC, ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -6,27 +6,22 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
-type AppDialogProps = {
-  title: string,
-  open: boolean,
-  children: ReactElement,
-  setOpen: (open: boolean) => void,
-  onClose: () => void,
-  onConfirm: () => void,
-}
-
-const AppDialog: FC<AppDialogProps> = ({
+export default function AppDialog({
   title,
   open,
   children,
-  setOpen,
   onClose,
   onConfirm,
-}): ReactElement => {
+}: {
+  title: string,
+  open: boolean,
+  children: ReactElement,
+  onClose: () => void,
+  onConfirm: () => void,
+}) {
 
   const handleClose = () => {
     onClose();
-    setOpen(false);
   };
 
   const handleConfirm = () => {
@@ -46,5 +41,3 @@ const AppDialog: FC<AppDialogProps> = ({
     </Dialog>
   )
 }
-
-export default AppDialog;

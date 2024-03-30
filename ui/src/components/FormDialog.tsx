@@ -6,7 +6,6 @@ import AppDialog from "./AppDialog"
 const FormDialog = <T extends FieldValues>({
   title,
   open,
-  setOpen,
   onSubmit,
   onSuccess,
   onClose,
@@ -15,7 +14,6 @@ const FormDialog = <T extends FieldValues>({
 }: {
   title?: string,
   open: boolean,
-  setOpen: (open: boolean) => void,
   onSubmit: (value: T) => Promise<T>,
   onSuccess?: (value: T) => void,
   onClose?: () => void,
@@ -35,9 +33,8 @@ const FormDialog = <T extends FieldValues>({
   const onSubmission = (value: T) => {
     onSubmit(value)
       .then(() => {
-        setOpen(false);
-        if (onSuccess)
-          onSuccess(value);
+        onSuccess && onSuccess(value);
+        onClose && onClose();
       })
   };
 
@@ -45,11 +42,7 @@ const FormDialog = <T extends FieldValues>({
     <AppDialog
       title={title ? title : ""}
       open={open}
-      setOpen={setOpen}
-      onClose={() => {
-        if (onClose)
-          onClose();
-      }}
+      onClose={() => onClose && onClose()}
       onConfirm={handleConfirm}
     >
       <Box

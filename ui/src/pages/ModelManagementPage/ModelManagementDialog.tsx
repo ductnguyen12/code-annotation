@@ -55,10 +55,12 @@ const ModelManagementDialog = (): ReactElement => {
     <FormDialog<Model>
       title={title}
       open={openDialog}
-      setOpen={(open: boolean) => dispatch(setOpenDialog(open))}
       onSubmit={onSubmission}
       onSuccess={resetForm}
-      onClose={resetForm}
+      onClose={() => {
+        resetForm();
+        dispatch(setOpenDialog(false));
+      }}
       handleSubmit={handleSubmit}
     >
       <TextField
