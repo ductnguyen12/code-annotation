@@ -43,9 +43,9 @@ const CreateSnippetDialog: FC<CreateSnippetDialogProps> = ({
     <FormDialog<Snippet>
       title="Create Snippet"
       open={open}
-      setOpen={setOpen}
       onSubmit={onCreateSnippet}
       onSuccess={onCreated}
+      onClose={() => setOpen(false)}
       handleSubmit={handleSubmit}
     >
       <TextField

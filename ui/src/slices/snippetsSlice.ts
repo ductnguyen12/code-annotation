@@ -67,6 +67,9 @@ export const snippetsSlice = createSlice({
   name: 'snippets',
   initialState,
   reducers: {
+    setSnippets: (state, action: PayloadAction<Snippet[]>) => {
+      state.snippets = action.payload;
+    },
     chooseSnippet: (state, action: PayloadAction<number>) => {
       state.selected = action.payload;
     },
@@ -154,6 +157,7 @@ export const snippetsSlice = createSlice({
 });
 
 export const {
+  setSnippets,
   chooseSnippet,
   updateCurrentRateByKey,
   updateQuestionSolution,

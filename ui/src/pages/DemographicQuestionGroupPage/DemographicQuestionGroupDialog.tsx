@@ -37,9 +37,11 @@ const DemographicQuestionGroupDialog = (): ReactElement => {
     <FormDialog<DemographicQuestionGroup>
       title={title}
       open={openDialog}
-      setOpen={(open: boolean) => dispatch(setOpenDialog(open))}
       onSubmit={onSubmission}
-      onClose={() => dispatch(setSelected(undefined))}
+      onClose={() => {
+        dispatch(setSelected(undefined));
+        dispatch(setOpenDialog(false));
+      }}
       handleSubmit={handleSubmit}
     >
       <TextField
