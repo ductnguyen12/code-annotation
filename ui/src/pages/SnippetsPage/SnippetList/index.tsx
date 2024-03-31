@@ -15,9 +15,16 @@ import { useModels } from '../../../hooks/model';
 import { useDatasetSnippets } from "../../../hooks/snippet";
 import { PredictionTarget } from '../../../interfaces/model.interface';
 import { Solution } from "../../../interfaces/question.interface";
-import { SnippetRate } from "../../../interfaces/snippet.interface";
+import { SnippetQuestion, SnippetRate } from "../../../interfaces/snippet.interface";
 import { selectAuthState } from '../../../slices/authSlice';
-import { chooseSnippet, rateSnippetAsync, updateCurrentRateByKey, updateQuestionSolution } from "../../../slices/snippetsSlice";
+import {
+  chooseSnippet,
+  createQuestionAsync,
+  deleteQuestionAsync,
+  rateSnippetAsync,
+  updateCurrentRateByKey,
+  updateQuestionSolution,
+} from "../../../slices/snippetsSlice";
 import ModelExecutionDialog from '../ModelExecutionDialog';
 import SnippetToolBox from './SnippetToolBox';
 
@@ -89,6 +96,14 @@ const SnippetList = () => {
     dispatch(updateQuestionSolution({ questionIndex, solution }));
   }
 
+  const handleCreateQuestion = useCallback((question: SnippetQuestion) => {
+    dispatch(createQuestionAsync({ question, datasetId }));
+  }, [datasetId, dispatch]);
+
+  const handleDeleteQuestion = useCallback((question: SnippetQuestion) => {
+    dispatch(deleteQuestionAsync({ questionId: question.id as number, datasetId }));
+  }, [datasetId, dispatch]);
+
   return (
     <Box>
       <LoadingBackdrop open={'loading' === status} />
@@ -138,6 +153,8 @@ const SnippetList = () => {
           'Submit rating successfully',
         )}
         onSolutionChange={handleSolutionChange}
+        onCreateQuestion={handleCreateQuestion}
+        onDeleteQuestion={handleDeleteQuestion}
       />
     </Box>
   )

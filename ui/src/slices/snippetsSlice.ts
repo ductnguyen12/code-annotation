@@ -3,7 +3,7 @@ import api from '../api';
 import { RootState } from '../app/store';
 import { Solution } from '../interfaces/question.interface';
 import { Rater } from '../interfaces/rater.interface';
-import { Snippet, SnippetRate } from '../interfaces/snippet.interface';
+import { Snippet, SnippetQuestion, SnippetRate } from '../interfaces/snippet.interface';
 import { defaultAPIErrorHandle, defaultAPISuccessHandle } from '../util/error-util';
 
 export interface SnippetsState {
@@ -27,6 +27,36 @@ export const loadDatasetSnippetsAsync = createAsyncThunk(
   async (datasetId: number, { dispatch }) => {
     try {
       return await api.getDatasetSnippets(datasetId);
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
+export const createQuestionAsync = createAsyncThunk(
+  'snippets/createQuestion',
+  async ({ question, datasetId }: { question: SnippetQuestion, datasetId?: number }, { dispatch }) => {
+    try {
+      await api.createSnippetQuestion(question);
+      defaultAPISuccessHandle('Create snippet question successfully', dispatch);
+      if (datasetId)
+        dispatch(loadDatasetSnippetsAsync(datasetId));
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
+export const deleteQuestionAsync = createAsyncThunk(
+  'snippets/deleteQuestion',
+  async ({ questionId, datasetId }: { questionId: number, datasetId?: number }, { dispatch }) => {
+    try {
+      await api.deleteSnippetQuestion(questionId);
+      defaultAPISuccessHandle(`Delete snippet question ID '${questionId}' successfully`, dispatch);
+      if (datasetId)
+        dispatch(loadDatasetSnippetsAsync(datasetId));
     } catch (error: any) {
       defaultAPIErrorHandle(error, dispatch);
       throw error;
@@ -129,6 +159,26 @@ export const snippetsSlice = createSlice({
         state.snippets = action.payload;
       })
       .addCase(loadDatasetSnippetsAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(createQuestionAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(createQuestionAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+      })
+      .addCase(createQuestionAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(deleteQuestionAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteQuestionAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+      })
+      .addCase(deleteQuestionAsync.rejected, (state) => {
         state.status = 'failed';
       })
 

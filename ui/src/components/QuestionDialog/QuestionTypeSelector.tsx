@@ -5,7 +5,11 @@ import Select from "@mui/material/Select";
 import { useFormContext } from "react-hook-form";
 import { QuestionType } from "../../interfaces/question.interface";
 
-export default function QuestionTypeSelector() {
+export default function QuestionTypeSelector({
+  questionTypes,
+}: {
+  questionTypes?: QuestionType[],
+}) {
   const { register, watch } = useFormContext();
   const questionType = watch<any>('type', QuestionType.SINGLE_CHOICE) as QuestionType;
 
@@ -22,7 +26,7 @@ export default function QuestionTypeSelector() {
           required: true,
         })}
       >
-        {Object.keys(QuestionType).map(type => (
+        {(questionTypes?.map(type => type as string) || Object.keys(QuestionType)).map(type => (
           <MenuItem key={type} value={type}>{type}</MenuItem>
         ))}
       </Select>

@@ -19,7 +19,6 @@ export default function QuestionConstraint() {
             <Checkbox checked={required || false} {...register('constraint.required')} />
           }
           label="Required"
-
         />
         <FormControlLabel
           control={

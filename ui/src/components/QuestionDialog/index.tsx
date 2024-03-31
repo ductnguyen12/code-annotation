@@ -24,6 +24,7 @@ export default function QuestionDialog<T extends Question>({
   question,
   datasets,
   snippets,
+  questionTypes,
   children,
   onClose,
   onSubmit,
@@ -33,6 +34,7 @@ export default function QuestionDialog<T extends Question>({
   question?: T,
   datasets?: Dataset[],
   snippets?: Snippet[],
+  questionTypes?: QuestionType[],
   children?: JSX.Element[],
   onClose?: () => void,
   onSubmit?: (question: T) => void,
@@ -90,7 +92,7 @@ export default function QuestionDialog<T extends Question>({
   }, [onClose, reset])
 
   const title = useMemo(
-    () => !!question ? `Edit Demographic Question ID ${question.id}` : "Create Demographic Question",
+    () => !!question ? `Edit Question ID ${question.id}` : "Create Question",
     [question],
   );
 
@@ -124,7 +126,7 @@ export default function QuestionDialog<T extends Question>({
         )}
 
         {/* ===== Question type ===== */}
-        <QuestionTypeSelector />
+        <QuestionTypeSelector questionTypes={questionTypes} />
 
         {/* ===== Constraint ===== */}
         <QuestionConstraint />
