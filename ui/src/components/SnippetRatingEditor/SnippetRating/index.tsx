@@ -14,6 +14,7 @@ import { PredictedRating } from '../../../interfaces/model.interface';
 import { Solution } from '../../../interfaces/question.interface';
 import { SnippetQuestion as SQuestion, SnippetRate } from '../../../interfaces/snippet.interface';
 import ProtectedElement from '../../ProtectedElement';
+import AddQuestionButton from './AddQuestionButton';
 import MetricsDialog from './MetricsDialog';
 import SnippetQuestion from './SnippetQuestion';
 
@@ -60,6 +61,8 @@ export default function SnippetRating({
   onBlur,
   onValueChange,
   onSolutionChange,
+  onCreateQuestion,
+  onDeleteQuestion,
 }: {
   rating?: SnippetRate;
   questions?: Array<SQuestion>;
@@ -77,6 +80,8 @@ export default function SnippetRating({
   onBlur?: () => void,
   onValueChange?: (key: string, value: any) => void;
   onSolutionChange?: (questionIndex: number, solution: Solution) => void;
+  onCreateQuestion?: (question: SQuestion) => void;
+  onDeleteQuestion?: (question: SQuestion) => void;
 }) {
   const [hover, setHover] = React.useState(-1);
   const [openMetricsDialog, setOpenMetricsDialog] = React.useState(false);
@@ -103,6 +108,12 @@ export default function SnippetRating({
     },
     [pRating, pRatingScale],
   );
+
+  const handleDeleteQuestion = React.useCallback((questionIndex: number) => {
+    if (questions && questionIndex < questions.length) {
+      onDeleteQuestion && onDeleteQuestion(questions[questionIndex]);
+    }
+  }, [onDeleteQuestion, questions]);
 
   return (
     <Box
@@ -209,10 +220,16 @@ export default function SnippetRating({
               onFocus={onFocus}
               onBlur={onBlur}
               onSolutionChange={onSolutionChange}
+              onDelete={handleDeleteQuestion}
             />
           ))}
         </Grid>
       )}
+      <ProtectedElement hidden>
+        <AddQuestionButton
+          onCreate={onCreateQuestion}
+        />
+      </ProtectedElement>
     </Box>
   );
 }

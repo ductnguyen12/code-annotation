@@ -10,7 +10,7 @@ import { useAppDispatch } from '../../app/hooks';
 import { DatasetStatistics } from '../../interfaces/dataset.interface';
 import { Model, PredictedRating } from '../../interfaces/model.interface';
 import { Solution } from '../../interfaces/question.interface';
-import { Snippet, SnippetRate } from "../../interfaces/snippet.interface";
+import { Snippet, SnippetQuestion, SnippetRate } from "../../interfaces/snippet.interface";
 import { pushNotification } from '../../slices/notificationSlice';
 import NavigationButton from './NavigationButton';
 import SnippetCode from "./SnippetCode";
@@ -39,6 +39,8 @@ export default function SnippetRatingEditor({
   onRatingUpdate,
   onRatingSubmit,
   onSolutionChange,
+  onCreateQuestion,
+  onDeleteQuestion,
 }: {
   snippets: Snippet[];
   selected: number;
@@ -62,6 +64,8 @@ export default function SnippetRatingEditor({
   onRatingUpdate: (key: string, value: any) => void;
   onRatingSubmit: (rating: SnippetRate, next?: number) => void;
   onSolutionChange: (questionIndex: number, solution: Solution) => void;
+  onCreateQuestion?: (question: SnippetQuestion) => void;
+  onDeleteQuestion?: (question: SnippetQuestion) => void;
 }) {
   const dispatch = useAppDispatch();
 
@@ -187,6 +191,8 @@ export default function SnippetRatingEditor({
           onBlur={onBlur}
           onValueChange={onRatingUpdate}
           onSolutionChange={onSolutionChange}
+          onCreateQuestion={onCreateQuestion}
+          onDeleteQuestion={onDeleteQuestion}
         />
         <Box
           sx={{

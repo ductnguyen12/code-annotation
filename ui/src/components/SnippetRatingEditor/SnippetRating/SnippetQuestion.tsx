@@ -1,8 +1,13 @@
 import * as React from 'react';
 
-import { Grid } from '@mui/material';
+import CancelIcon from '@mui/icons-material/Cancel';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import { QuestionType, Solution } from '../../../interfaces/question.interface';
 import { SnippetQuestion as SQuestion } from '../../../interfaces/snippet.interface';
+import ConfirmationDialog from '../../ConfirmationDialog';
+import ProtectedElement from '../../ProtectedElement';
 import QuestionComponent from '../../QuestionComponent';
 
 export default function SnippetQuestion({
@@ -14,16 +19,20 @@ export default function SnippetQuestion({
   onFocus,
   onBlur,
   onSolutionChange,
+  onDelete,
 }: {
   index: number;
   question: SQuestion;
   rater?: string;         // For filtering soluton
   invalid?: boolean;
   editable?: boolean;
-  onFocus?: () => void,
-  onBlur?: () => void,
+  onFocus?: () => void;
+  onBlur?: () => void;
   onSolutionChange?: (questionIndex: number, solution: Solution) => void;
+  onDelete?: (questionIndex: number) => void;
 }) {
+  const [open, setOpen] = React.useState<boolean>(false);
+
   const handleChange = React.useCallback(
     (questionIndex: number, solution: Solution) => {
       if (!editable)
@@ -32,6 +41,13 @@ export default function SnippetQuestion({
         onSolutionChange(questionIndex, solution);
     }, [editable, onSolutionChange]
   );
+
+  const confirmContent = React.useMemo(() => {
+    if (question.solutions?.length) {
+      return 'Deleting will cascade deleting answers that were already given to this question';
+    }
+    return undefined;
+  }, [question.solutions?.length]);
 
   const gridItemSize = React.useMemo(() => {
     switch (question.type) {
@@ -46,8 +62,37 @@ export default function SnippetQuestion({
     <Grid
       key={question?.id}
       xs={gridItemSize}
+      className="relative"
       item
     >
+      {onDelete && (<ProtectedElement hidden>
+        <>
+          <Tooltip
+            className="right-0 top-4"
+            sx={{ position: 'absolute' }}
+            title="Delete"
+            placement="bottom"
+            hidden={!onDelete}
+            arrow
+          >
+            <IconButton
+              aria-label="delete"
+              hidden={!onDelete}
+              onClick={() => setOpen(true)}
+            >
+              <CancelIcon />
+            </IconButton>
+          </Tooltip>
+          <ConfirmationDialog
+            title="Are you sure to delete this question?"
+            confirmColor={confirmContent ? 'error' : 'primary'}
+            content={confirmContent}
+            open={open}
+            setOpen={setOpen}
+            onConfirm={() => onDelete(index)}
+          />
+        </>
+      </ProtectedElement>)}
       <QuestionComponent
         questionIndex={index}
         question={question}
