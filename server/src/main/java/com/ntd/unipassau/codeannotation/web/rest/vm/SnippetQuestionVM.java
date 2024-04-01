@@ -13,6 +13,8 @@ public class SnippetQuestionVM extends QuestionVM {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Collection<SolutionVM> solutions;
 
+    private Long snippetId;
+
     public SolutionVM getSolution() {
         if (CollectionUtils.isEmpty(solutions))
             return null;

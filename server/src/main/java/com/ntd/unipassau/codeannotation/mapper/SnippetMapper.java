@@ -30,6 +30,15 @@ public interface SnippetMapper {
     @Mapping(target = "questionSetIds", ignore = true)
     SnippetQuestionVM toSnippetQuestionVM(SnippetQuestion snippetQuestion);
 
+    @Mapping(target = "snippet", ignore = true)
+    @Mapping(target = "questionSets", ignore = true)
+    @Mapping(target = "lastModifiedDate", ignore = true)
+    @Mapping(target = "lastModifiedBy", ignore = true)
+    @Mapping(target = "dtype", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    SnippetQuestion toSnippetQuestion(SnippetQuestionVM snippetQuestion);
+
     @Mapping(target = "solutions", ignore = true)
     @Mapping(target = "rater.solutions", ignore = true)
     SnippetRateVM toSnippetRateVM(SnippetRate rate);

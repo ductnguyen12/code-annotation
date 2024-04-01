@@ -37,7 +37,7 @@ export default function SnippetPreview({
     }
 
     // Update snippet question solution using information from solution of sub-questions
-    _snippet.questions = demographicQuestion.subQuestions;
+    _snippet.questions = demographicQuestion.subQuestions?.map(q => ({ ...q, snippetId: _snippet.id }));
 
     return [_snippet];
   }, [demographicQuestion, solution]);

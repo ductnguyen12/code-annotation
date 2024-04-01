@@ -4,10 +4,8 @@ import com.ntd.unipassau.codeannotation.client.RemoteFileReader;
 import com.ntd.unipassau.codeannotation.client.impl.HttpFileReader;
 import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
 import com.ntd.unipassau.codeannotation.domain.dataset.SnippetQuestion;
-import com.ntd.unipassau.codeannotation.domain.question.Question;
 import com.ntd.unipassau.codeannotation.domain.rater.Rater;
 import com.ntd.unipassau.codeannotation.domain.rater.SnippetRate;
-import com.ntd.unipassau.codeannotation.domain.rater.Solution;
 import com.ntd.unipassau.codeannotation.mapper.SnippetMapper;
 import com.ntd.unipassau.codeannotation.repository.PredictedRatingRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRateRepository;
@@ -152,12 +150,6 @@ public class SnippetService {
                 .flatMap(s -> s.getQuestions().stream())
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
-        Set<Solution> solutions = questions.stream().map(Question::getSolutions)
-                .filter(Objects::nonNull)
-                .flatMap(Set::stream)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-        solutionRepository.deleteAllInBatch(solutions);
         snippetQuestionService.deleteAllInBatch(questions);
 
         Set<SnippetRate> rates = snippets.stream()

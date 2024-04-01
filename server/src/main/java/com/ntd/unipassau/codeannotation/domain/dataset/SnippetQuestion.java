@@ -17,4 +17,7 @@ public class SnippetQuestion extends Question {
     @JoinColumn(name = "snippet_id", nullable = false, foreignKey = @ForeignKey(name = "fk_squestion_snippet"))
     @ToString.Exclude
     private Snippet snippet;
+
+    @Column(name = "snippet_id", insertable = false, updatable = false)
+    private Long snippetId;
 }
