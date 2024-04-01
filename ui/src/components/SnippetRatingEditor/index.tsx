@@ -115,6 +115,13 @@ export default function SnippetRatingEditor({
     }
   }, [editable, onSnippetChange, handleRatingSubmit]);
 
+  const handleCreateQuestion = useCallback((question: SnippetQuestion) => {
+    if (snippets && selected < snippets.length) {
+      question.snippetId = snippets[selected].id;
+      onCreateQuestion && onCreateQuestion(question);
+    }
+  }, [onCreateQuestion, selected, snippets]);
+
   useEffect(() => {
     // set hidden questions to default value.
     setHiddenQuestion(!!shouldHideQuestions);
@@ -191,7 +198,7 @@ export default function SnippetRatingEditor({
           onBlur={onBlur}
           onValueChange={onRatingUpdate}
           onSolutionChange={onSolutionChange}
-          onCreateQuestion={onCreateQuestion}
+          onCreateQuestion={handleCreateQuestion}
           onDeleteQuestion={onDeleteQuestion}
         />
         <Box
