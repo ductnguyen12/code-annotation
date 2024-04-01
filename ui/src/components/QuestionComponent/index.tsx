@@ -5,9 +5,12 @@ import MultipleChoice from "./MultipleChoice"
 import RatingQuestion from "./RatingQuestion"
 import SingleChoice from "./SingleChoice"
 import SnippetPreview from "./SnippetPreview"
+import TextOnly from "./TextOnly"
 
 const getQuestionComponents = (questionType: QuestionType) => {
   switch (questionType) {
+    case QuestionType.TEXT_ONLY:
+      return TextOnly;
     case QuestionType.SINGLE_CHOICE:
       return SingleChoice;
     case QuestionType.MULTIPLE_CHOICE:

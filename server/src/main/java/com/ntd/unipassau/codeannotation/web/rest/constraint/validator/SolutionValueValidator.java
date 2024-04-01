@@ -23,7 +23,7 @@ public abstract class SolutionValueValidator {
             case SINGLE_CHOICE, MULTIPLE_CHOICE, SNIPPET -> new SolutionChoiceValidator(context);
             case RATING -> new SolutionRatingValidator(context);
             case INPUT -> new SolutionInputValidator(context);
-            case NON_QUESTION -> new SolutionValueValidator(context) {
+            case TEXT_ONLY -> new SolutionValueValidator(context) {
                 @Override
                 boolean validate(int index, Question question, SolutionValue value) {
                     return true;
