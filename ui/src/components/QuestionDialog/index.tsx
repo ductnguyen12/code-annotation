@@ -72,6 +72,7 @@ export default function QuestionDialog<T extends Question>({
       newQuestion.answer = {
         ...newQuestion.answer,
         options: newQuestion.answer.options?.map((option: any) => option.value),
+        attributes: newQuestion.answer.attributes?.map((option: any) => option.value),
         correctChoices: newQuestion.answer.options?.map(((option: any, i: number) => [option, i]))
           .filter((pair: any[]) => pair[0].correct)
           .map((pair: any[]) => pair[1] as number),
