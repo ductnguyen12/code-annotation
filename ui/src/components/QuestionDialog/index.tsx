@@ -10,10 +10,9 @@ import QuestionOptions from './QuestionOptions';
 import QuestionTypeSelector from './QuestionTypeSelector';
 import SnippetSelectorContainer from "./SnippetSelectorContainer";
 
-const DEFAULT_TYPE = Object.keys(QuestionType)[0] as QuestionType;
 const DEFAULT_FORM_VALUES = {
   content: '',
-  type: DEFAULT_TYPE,
+  type: QuestionType.SINGLE_CHOICE,
   answer: {
     options: [],
     attributes: [],
@@ -130,7 +129,9 @@ export default function QuestionDialog<T extends Question>({
         <QuestionTypeSelector questionTypes={questionTypes} />
 
         {/* ===== Constraint ===== */}
-        <QuestionConstraint />
+        {QuestionType.TEXT_ONLY !== questionType && (
+          <QuestionConstraint />
+        )}
 
         {/* ===== Options ===== */}
         {[

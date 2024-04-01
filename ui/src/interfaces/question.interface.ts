@@ -35,6 +35,7 @@ export interface QuestionConstraint {
 }
 
 export enum QuestionType {
+  TEXT_ONLY = "TEXT_ONLY",
   SINGLE_CHOICE = "SINGLE_CHOICE",
   MULTIPLE_CHOICE = "MULTIPLE_CHOICE",
   RATING = "RATING",

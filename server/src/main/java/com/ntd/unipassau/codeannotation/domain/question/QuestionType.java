@@ -1,7 +1,7 @@
 package com.ntd.unipassau.codeannotation.domain.question;
 
 public enum QuestionType {
-    NON_QUESTION,
+    TEXT_ONLY,
     SINGLE_CHOICE,
     MULTIPLE_CHOICE,
     RATING,

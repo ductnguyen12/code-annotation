@@ -6,7 +6,7 @@ import QuestionDialog from "../../QuestionDialog";
 
 const SUPPORT_QUESTION_TYPES = Object.keys(QuestionType)
   .map(type => type as QuestionType)
-  .filter(type => QuestionType.SNIPPET !== type);
+  .filter(type => ![QuestionType.TEXT_ONLY, QuestionType.SNIPPET].includes(type));
 
 export default function AddQuestionButton({
   onCreate,
