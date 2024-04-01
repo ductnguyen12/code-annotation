@@ -1,4 +1,5 @@
 import ArchiveIcon from '@mui/icons-material/Archive';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
@@ -20,8 +21,8 @@ import LoadingBackdrop from "../../components/LoadingBackdrop";
 import { usePage } from '../../hooks/common';
 import { useDatasets } from "../../hooks/dataset";
 import { PageParams } from '../../interfaces/common.interface';
-import { DatasetParams } from '../../interfaces/dataset.interface';
-import { chooseDataset, deleteDatasetAsync, patchDatasetThenReloadAsync } from '../../slices/datasetsSlice';
+import { Dataset, DatasetParams } from '../../interfaces/dataset.interface';
+import { chooseDataset, createDatasetAsync, deleteDatasetAsync, patchDatasetThenReloadAsync } from '../../slices/datasetsSlice';
 import DatasetDialog from "./DatasetDialog";
 
 const DEFAULT_PAGE_SIZE = 12;
@@ -54,6 +55,10 @@ const DatasetsPage = ({
   const dispatch = useAppDispatch();
   const [open, setOpen] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
+
+  const handleDuplication = useCallback((newDataset: Dataset) => {
+    dispatch(createDatasetAsync(newDataset));
+  }, [dispatch]);
 
   const handleArchivedChange = useCallback((datasetId: number) => {
     dispatch(patchDatasetThenReloadAsync({
@@ -155,7 +160,18 @@ const DatasetsPage = ({
                       <EditIcon color="inherit" />
                     </IconButton>
                   </Tooltip>
-
+                  <Tooltip
+                    title="Duplicate"
+                    placement="bottom"
+                    arrow
+                  >
+                    <IconButton
+                      aria-label="duplicate"
+                      onClick={() => handleDuplication(d)}
+                    >
+                      <ContentCopyIcon color="inherit" />
+                    </IconButton>
+                  </Tooltip>
                   <Tooltip
                     title={archived ? "Unarchive" : "Archive"}
                     placement="bottom"
