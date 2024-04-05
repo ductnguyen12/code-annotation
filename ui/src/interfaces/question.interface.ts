@@ -48,6 +48,10 @@ export interface QuestionSet {
   title: string;
   description?: string;
   priority: number;
+  questions?: Question[];
+  questionsPriority?: {
+    [key: number]: number;
+  }
 }
 
 export interface DemographicQuestion extends Question {
