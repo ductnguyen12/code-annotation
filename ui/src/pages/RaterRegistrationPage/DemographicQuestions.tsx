@@ -8,7 +8,7 @@ import Paper from '@mui/material/Paper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useEffect, useMemo, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import QuestionComponent from '../../components/QuestionComponent';
 import { useDemographicQuestionGroups, useDemographicQuestions } from '../../hooks/demographicQuestion';
@@ -44,12 +44,30 @@ const DemographicQuestions = ({
   const [validities, setValidities] = useState<boolean[]>([]);
   const [showErrors, setShowErrors] = useState<boolean[]>([]);
 
+  const stepQuestionsPriority = useMemo(() => {
+    return Object.fromEntries(
+      questionGroups.map(group => {
+        const questionsPriority = Object.fromEntries(group.questions?.map((q, i) => [q.id as number, i]) || []);
+        return [group.id as number, questionsPriority]
+      })
+    );
+  }, [questionGroups]);
+
   useEffect(() => {
     const newStepData = questionGroups.map(group => {
-      return {
+      const result = {
         questionGroup: group,
         questions: questions.filter(question => question.groupIds?.includes(group.id as number)),
       } as StepData;
+      const questionsPriority = stepQuestionsPriority[group.id as number];
+      console.log(questionsPriority);
+
+      if (questionsPriority) {
+        result.questions = result.questions.sort(
+          (q1, q2) => questionsPriority[q1.id as number] - questionsPriority[q2.id as number]
+        );
+      }
+      return result;
     });
     setSteps(newStepData);
     setActiveStep(0);
@@ -57,7 +75,7 @@ const DemographicQuestions = ({
       setShowErrors(newStepData[0].questions?.map(_ => false) || []);
       setValidities(newStepData[0].questions?.map(_ => true) || []);
     }
-  }, [questionGroups, questions]);
+  }, [questionGroups, questions, stepQuestionsPriority]);
 
   useEffect(() => {
     if (!steps[activeStep] || !steps[activeStep].questions) {
