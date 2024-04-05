@@ -6,10 +6,7 @@ import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestion;
 import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestionGroup;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DemographicQuestionVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.QuestionSetVM;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 import java.util.Collection;
 import java.util.Set;
@@ -17,6 +14,8 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface DemographicQuestionMapper {
+    @Mapping(target = "questionsPriority", ignore = true)
+    @Mapping(target = "questions", ignore = true)
     QuestionSetVM toQuestionSetVM(QuestionSet questionSet);
 
     @Mapping(target = "datasets", ignore = true)
@@ -27,8 +26,14 @@ public interface DemographicQuestionMapper {
     @Mapping(target = "createdBy", ignore = true)
     DemographicQuestionGroup toDQuestionGroup(QuestionSetVM questionSetVM);
 
-    Collection<QuestionSetVM> toDQuestionGroupVMs(Collection<DemographicQuestionGroup> groups);
+    @Named("toSimpleQuestionVM")
+    @Mapping(target = "parentId", source = "parentQuestionId")
+    @Mapping(target = "questionSetIds", ignore = true)
+    @Mapping(target = "groupIds", ignore = true)
+    @Mapping(target = "subQuestions", ignore = true)
+    DemographicQuestionVM toSimpleQuestionVM(DemographicQuestion question);
 
+    @BeanMapping(qualifiedByName = "afterToDQuestionVM")
     @Mapping(target = "parentId", source = "parentQuestionId")
     @Mapping(target = "questionSetIds", ignore = true)
     @Mapping(target = "groupIds", ignore = true)
@@ -48,6 +53,7 @@ public interface DemographicQuestionMapper {
     Collection<DemographicQuestionVM> toQuestionVMs(Collection<DemographicQuestion> questions);
 
     @AfterMapping
+    @Named("afterToDQuestionVM")
     default void afterToDQuestionVM(DemographicQuestion question, @MappingTarget DemographicQuestionVM questionVM) {
         Set<Long> groupIds = question.getGroupAssignments().stream()
                 .map(QuestionGroupAssignment::getId)

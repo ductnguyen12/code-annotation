@@ -1,24 +1,33 @@
-import { TextField } from "@mui/material"
+import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
 import { ReactElement, useEffect } from "react"
-import { useForm } from "react-hook-form"
+import { FormProvider, useForm } from "react-hook-form"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import FormDialog from "../../components/FormDialog"
+import QuestionPriorityFormControl from "../../components/QuestionPriorityFormControl"
 import { DemographicQuestionGroup } from "../../interfaces/question.interface"
 import { createDemographicQuestionGroupAsync, selectDemographicQuestionGroupState, setOpenDialog, setSelected, updateDemographicQuestionGroupAsync } from "../../slices/demographicQuestionGroupSlice"
 
+const IGNORE_FIELDS = [
+  'questionsPriority',
+]
 
 const DemographicQuestionGroupDialog = (): ReactElement => {
-  const { register, handleSubmit, setValue } = useForm<DemographicQuestionGroup>();
   const {
     openDialog,
     selected,
   } = useAppSelector(selectDemographicQuestionGroupState);
 
+  const methods = useForm<DemographicQuestionGroup>();
+  const { register, handleSubmit, setValue, reset } = methods;
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (selected) {
-      (Object.keys(selected) as (keyof DemographicQuestionGroup)[]).forEach(key => setValue(key, selected[key]));
+      (Object.keys(selected) as (keyof DemographicQuestionGroup)[])
+        .filter(key => !IGNORE_FIELDS.includes(key))
+        .forEach(key => setValue(key, selected[key]));
     }
   }, [selected, setValue])
 
@@ -41,28 +50,43 @@ const DemographicQuestionGroupDialog = (): ReactElement => {
       onClose={() => {
         dispatch(setSelected(undefined));
         dispatch(setOpenDialog(false));
+        reset();
       }}
       handleSubmit={handleSubmit}
     >
-      <TextField
-        id="title"
-        label="Title"
-        variant="outlined"
-        {...register('title')}
-      />
-      <TextField
-        id="description"
-        label="Description"
-        variant="outlined"
-        {...register('description')}
-      />
-      <TextField
-        id="priority"
-        label="Priority"
-        variant="outlined"
-        placeholder="0"
-        {...register('priority')}
-      />
+      <FormProvider {...methods}>
+        <TextField
+          id="title"
+          label="Title"
+          variant="outlined"
+          {...register('title', {
+            required: true,
+          })}
+        />
+        <TextField
+          id="description"
+          label="Description"
+          variant="outlined"
+          {...register('description')}
+        />
+        <TextField
+          id="priority"
+          label="Priority"
+          variant="outlined"
+          placeholder="0"
+          {...register('priority')}
+        />
+        {selected?.questions?.length && (
+          <>
+            <Typography variant="subtitle1" display="block" gutterBottom>
+              Question priority
+            </Typography>
+            <QuestionPriorityFormControl
+              questions={selected.questions}
+            />
+          </>
+        )}
+      </FormProvider>
     </FormDialog>
   );
 };

@@ -2,13 +2,24 @@ package com.ntd.unipassau.codeannotation.web.rest.vm;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
-public record QuestionSetVM(
-        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-        Long id,
-        @NotBlank(message = "Question-set title is required")
-        String title,
-        String description,
-        int priority
-) {
+import java.util.Collection;
+import java.util.Map;
+
+@Data
+public class QuestionSetVM {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long id;
+
+    @NotBlank(message = "Question-set title is required")
+    private String title;
+    private String description;
+    private int priority;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Map<Long, Integer> questionsPriority;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Collection<? extends QuestionVM> questions;
 }
