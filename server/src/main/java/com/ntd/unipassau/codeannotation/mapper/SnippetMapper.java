@@ -31,7 +31,7 @@ public interface SnippetMapper {
     SnippetQuestionVM toSnippetQuestionVM(SnippetQuestion snippetQuestion);
 
     @Mapping(target = "snippet", ignore = true)
-    @Mapping(target = "questionSets", ignore = true)
+    @Mapping(target = "groupAssignments", ignore = true)
     @Mapping(target = "lastModifiedDate", ignore = true)
     @Mapping(target = "lastModifiedBy", ignore = true)
     @Mapping(target = "dtype", ignore = true)

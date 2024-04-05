@@ -42,17 +42,13 @@ public class Question extends AbstractAuditingEntity<Long> {
     @Column(insertable = false, updatable = false)
     private String dtype;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "question_question_set",
-            joinColumns =
-            @JoinColumn(name = "question_id", referencedColumnName = "id",
-                    foreignKey = @ForeignKey(name = "fk_question_questionset")),
-            inverseJoinColumns =
-            @JoinColumn(name = "question_set_id", referencedColumnName = "id",
-                    foreignKey = @ForeignKey(name = "fk_questionset_question"))
+    @OneToMany(
+            mappedBy = "question",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
     )
     @ToString.Exclude
-    private Set<QuestionSet> questionSets = new LinkedHashSet<>();
+    private Set<QuestionGroupAssignment> groupAssignments = new LinkedHashSet<>();
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "question")
     @ToString.Exclude

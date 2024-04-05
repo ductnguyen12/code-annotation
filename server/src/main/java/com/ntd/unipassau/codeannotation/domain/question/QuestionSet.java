@@ -6,7 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "question_set")
@@ -25,7 +26,16 @@ public class QuestionSet extends AbstractAuditingEntity<Long> {
     private String description;
     private Integer priority;
 
-    @ManyToMany(mappedBy = "questionSets")
+    @OneToMany(
+            mappedBy = "group",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @ToString.Exclude
-    private Collection<Question> questions;
+    private Set<QuestionGroupAssignment> questionAssignments = new LinkedHashSet<>();
+
+    public void addQuestion(Question question) {
+        QuestionGroupAssignment assignment = new QuestionGroupAssignment(question, this);
+        questionAssignments.add(assignment);
+    }
 }

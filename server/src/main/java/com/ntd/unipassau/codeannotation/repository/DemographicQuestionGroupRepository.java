@@ -11,7 +11,8 @@ import java.util.Set;
 @Repository
 public interface DemographicQuestionGroupRepository extends JpaRepository<DemographicQuestionGroup, Long> {
     @Query("FROM DemographicQuestionGroup dqg " +
-            "LEFT JOIN FETCH dqg.questions q " +
+            "LEFT JOIN FETCH dqg.questionAssignments qa " +
+            "LEFT JOIN FETCH qa.question q " +
             "LEFT JOIN dqg.datasets d " +
             "WHERE :datasetId IS NULL OR d.id = :datasetId " +
             "ORDER BY dqg.priority")
@@ -28,7 +29,8 @@ public interface DemographicQuestionGroupRepository extends JpaRepository<Demogr
     Set<DemographicQuestionGroup> findAllFetchDataset(Long datasetId);
 
     @Query("FROM DemographicQuestionGroup dqg " +
-            "LEFT JOIN FETCH dqg.questions q " +
+            "LEFT JOIN FETCH dqg.questionAssignments qa " +
+            "LEFT JOIN FETCH qa.question q " +
             "WHERE dqg.id IN :ids")
     Set<DemographicQuestionGroup> findAllFetchQuestionsByIds(Collection<Long> ids);
 }
