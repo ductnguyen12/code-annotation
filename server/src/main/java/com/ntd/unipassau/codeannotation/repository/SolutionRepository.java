@@ -17,8 +17,9 @@ public interface SolutionRepository extends JpaRepository<Solution, Solution.Sol
     @Query("FROM Solution s JOIN FETCH s.rater r " +
             "JOIN FETCH r.datasets d " +
             "JOIN FETCH s.question q " +
-            "LEFT JOIN FETCH q.questionSets qs " +
-            "JOIN FETCH qs.datasets ds " +
+            "LEFT JOIN FETCH q.groupAssignments ga " +
+            "LEFT JOIN FETCH ga.group g " +
+            "JOIN FETCH g.datasets ds " +
             "WHERE d.id = :datasetId AND ds.id = :datasetId AND q.dtype = 'demographic'")
     Collection<Solution> findDemographicSolutionsByDataset(Long datasetId);
 

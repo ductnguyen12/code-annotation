@@ -1,5 +1,6 @@
 package com.ntd.unipassau.codeannotation.mapper;
 
+import com.ntd.unipassau.codeannotation.domain.question.QuestionGroupAssignment;
 import com.ntd.unipassau.codeannotation.domain.question.QuestionSet;
 import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestion;
 import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestionGroup;
@@ -19,7 +20,7 @@ public interface DemographicQuestionMapper {
     QuestionSetVM toQuestionSetVM(QuestionSet questionSet);
 
     @Mapping(target = "datasets", ignore = true)
-    @Mapping(target = "questions", ignore = true)
+    @Mapping(target = "questionAssignments", ignore = true)
     @Mapping(target = "lastModifiedDate", ignore = true)
     @Mapping(target = "lastModifiedBy", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
@@ -37,7 +38,7 @@ public interface DemographicQuestionMapper {
     @Mapping(target = "parentQuestion", ignore = true)
     @Mapping(target = "dtype", ignore = true)
     @Mapping(target = "solutions", ignore = true)
-    @Mapping(target = "questionSets", ignore = true)
+    @Mapping(target = "groupAssignments", ignore = true)
     @Mapping(target = "lastModifiedDate", ignore = true)
     @Mapping(target = "lastModifiedBy", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
@@ -48,8 +49,9 @@ public interface DemographicQuestionMapper {
 
     @AfterMapping
     default void afterToDQuestionVM(DemographicQuestion question, @MappingTarget DemographicQuestionVM questionVM) {
-        Set<Long> groupIds = question.getQuestionSets().stream()
-                .map(QuestionSet::getId)
+        Set<Long> groupIds = question.getGroupAssignments().stream()
+                .map(QuestionGroupAssignment::getId)
+                .map(QuestionGroupAssignment.Id::getGroupId)
                 .collect(Collectors.toSet());
         questionVM.setGroupIds(groupIds);
     }

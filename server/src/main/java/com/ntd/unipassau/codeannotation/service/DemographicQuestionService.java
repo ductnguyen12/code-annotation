@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -118,8 +117,8 @@ public class DemographicQuestionService {
         if (questionVM.getQuestionSetIds() != null) {
             Set<DemographicQuestionGroup> groups =
                     dqgRepository.findAllFetchQuestionsByIds(questionVM.getQuestionSetIds());
-            groups.forEach(group -> group.getQuestions().add(question));
-            question.setQuestionSets(new LinkedHashSet<>(groups));
+            question.getGroupAssignments().clear();
+            groups.forEach(group -> group.addQuestion(question));
         }
     }
 

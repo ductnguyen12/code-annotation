@@ -1,0 +1,52 @@
+databaseChangeLog:
+- changeSet:
+    id: 1712322210207-3
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: created_by
+            type: varchar(50)
+        tableName: question_question_set
+- changeSet:
+    id: 1712322210207-4
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: created_date
+            type: timestamp(6)
+        tableName: question_question_set
+- changeSet:
+    id: 1712322210207-5
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: last_modified_by
+            type: varchar(50)
+        tableName: question_question_set
+- changeSet:
+    id: 1712322210207-6
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: last_modified_date
+            type: timestamp(6)
+        tableName: question_question_set
+- changeSet:
+    id: 1712322210207-7
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: priority
+            type: integer
+        tableName: question_question_set
+
