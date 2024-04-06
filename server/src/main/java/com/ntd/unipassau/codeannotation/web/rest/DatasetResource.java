@@ -91,6 +91,17 @@ public class DatasetResource {
                         "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
     }
 
+    @Operation(summary = "Duplicate a dataset")
+    @PostMapping("/v1/datasets/{datasetId}/duplicates")
+    @Secured({AuthoritiesConstants.USER})
+    public DatasetVM duplicateDataset(
+            @PathVariable Long datasetId,
+            @RequestParam Boolean withSnippet) {
+        return datasetService.duplicateDataset(datasetId, withSnippet)
+                .orElseThrow(() -> new NotFoundException(
+                        "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
+    }
+
     @Operation(summary = "Export dataset's snippets and annotation")
     @GetMapping(value = "/v1/datasets/{datasetId}/export-snippets", produces = "application/zip")
     @Secured({AuthoritiesConstants.USER})

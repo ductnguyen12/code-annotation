@@ -159,6 +159,31 @@ export const deleteDatasetAsync = createAsyncThunk<number, number, { dispatch: D
   }
 );
 
+export const duplicateDatasetAsync = createAsyncThunk(
+  'datasets/duplicateDatasetAsync',
+  async ({
+    datasetId,
+    params,
+    onSuccess,
+  }: {
+    datasetId: number,
+    params?: {
+      withSnippet?: boolean,
+    },
+    onSuccess?: () => void,
+  }, { dispatch }) => {
+    try {
+      const duplicatedDataset = await api.duplicateDataset(datasetId, params);
+      defaultAPISuccessHandle(`Duplicated dataset '${datasetId}' successfully`, dispatch);
+      onSuccess && onSuccess();
+      return duplicatedDataset;
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
 export const datasetsSlice = createSlice({
   name: 'datasets',
   initialState,
@@ -252,7 +277,7 @@ export const datasetsSlice = createSlice({
         state.status = 'idle';
         state.dataset = undefined;
         state.configuration = undefined;
-        state.datasets.push(action.payload);
+        state.datasets = [action.payload, ...state.datasets];
       })
       .addCase(createDatasetAsync.rejected, (state) => {
         state.status = 'failed';
@@ -293,6 +318,18 @@ export const datasetsSlice = createSlice({
         state.datasets = state.datasets.filter(dataset => dataset.id !== action.payload);
       })
       .addCase(deleteDatasetAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(duplicateDatasetAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(duplicateDatasetAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.dataset = undefined;
+        state.configuration = undefined;
+      })
+      .addCase(duplicateDatasetAsync.rejected, (state) => {
         state.status = 'failed';
       })
       ;

@@ -2,6 +2,7 @@ package com.ntd.unipassau.codeannotation.service;
 
 import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
+import com.ntd.unipassau.codeannotation.domain.dataset.SnippetQuestion;
 import com.ntd.unipassau.codeannotation.domain.question.QuestionSet;
 import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestionGroup;
 import com.ntd.unipassau.codeannotation.domain.rater.SnippetRate;
@@ -158,6 +159,61 @@ public class DatasetService {
                     dQuestionGroups.clear();
                     datasetRepository.delete(dataset);
                     return dataset;
+                });
+    }
+
+    @Transactional
+    public Optional<DatasetVM> duplicateDataset(
+            Long datasetId, Boolean withSnippet) {
+        return datasetRepository.findFetchSnippetQuestionsById(datasetId)
+                .map(dataset -> {
+                    DatasetVM datasetVM = datasetMapper.toDatasetVM(dataset);
+                    final var newDataset = datasetMapper.toDataset(datasetVM);
+                    newDataset.setId(null);
+                    newDataset.setConfiguration(dataset.getConfiguration());
+                    newDataset.setDQuestionGroups(new LinkedHashSet<>(dataset.getDQuestionGroups()));
+                    newDataset.getDQuestionGroups()
+                            .forEach(dqGroup -> dqGroup.getDatasets().add(newDataset));
+
+                    if (!Boolean.TRUE.equals(withSnippet)) {
+                        createDataset(newDataset);
+                        return newDataset;
+                    }
+
+                    Set<Snippet> newSnippets = dataset.getSnippets().stream()
+                            .map(s -> {
+                                var newSnippet = new Snippet();
+                                BeanUtils.copyProperties(
+                                        s, newSnippet,
+                                        "id", "dataset", "questions", "rates", "predictedRatings");
+                                Set<SnippetQuestion> newQuestions = s.getQuestions().stream()
+                                        .map(q -> {
+                                            var newQuestion = new SnippetQuestion();
+                                            BeanUtils.copyProperties(
+                                                    q, newQuestion,
+                                                    "id", "snippet", "groupAssignments", "solutions");
+                                            newQuestion.setSnippet(newSnippet);
+                                            return newQuestion;
+                                        })
+                                        .collect(Collectors.toSet());
+                                newSnippet.setDataset(newDataset);
+                                newSnippet.setQuestions(newQuestions);
+                                return newSnippet;
+                            })
+                            .collect(Collectors.toSet());
+                    newDataset.setSnippets(newSnippets);
+
+                    createDataset(newDataset);
+                    return newDataset;
+                })
+                .map(dataset -> {
+                    DatasetVM result = datasetMapper.toDatasetVM(dataset);
+                    result.setDemographicQuestionGroupIds(
+                            dataset.getDQuestionGroups().stream()
+                                    .map(QuestionSet::getId)
+                                    .collect(Collectors.toSet())
+                    );
+                    return result;
                 });
     }
 

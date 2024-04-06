@@ -43,6 +43,13 @@ export const deleteDataset = async (datasetId: number): Promise<void> => {
   await axios.delete<void>(`/api/v1/datasets/${datasetId}`);
 }
 
+export const duplicateDataset = async (datasetId: number, params?: { withSnippet?: boolean }): Promise<Dataset> => {
+  const response: AxiosResponse<Dataset> = await axios.post<Dataset>(`/api/v1/datasets/${datasetId}/duplicates`, undefined, {
+    params,
+  });
+  return response.data;
+}
+
 export const importDatasetSnippets = async (datasetId: number, file: File): Promise<void> => {
   const formData = new FormData();
   formData.append('file', file);
