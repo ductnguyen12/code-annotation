@@ -21,9 +21,10 @@ import LoadingBackdrop from "../../components/LoadingBackdrop";
 import { usePage } from '../../hooks/common';
 import { useDatasets } from "../../hooks/dataset";
 import { PageParams } from '../../interfaces/common.interface';
-import { Dataset, DatasetParams } from '../../interfaces/dataset.interface';
-import { chooseDataset, createDatasetAsync, deleteDatasetAsync, patchDatasetThenReloadAsync } from '../../slices/datasetsSlice';
+import { DatasetParams } from '../../interfaces/dataset.interface';
+import { chooseDataset, deleteDatasetAsync, duplicateDatasetAsync, loadDatasetsAsync, patchDatasetThenReloadAsync } from '../../slices/datasetsSlice';
 import DatasetDialog from "./DatasetDialog";
+import DuplicateDialog from './DuplicateDialog';
 
 const DEFAULT_PAGE_SIZE = 12;
 const DEFAULT_SORT = 'id,desc';
@@ -55,10 +56,15 @@ const DatasetsPage = ({
   const dispatch = useAppDispatch();
   const [open, setOpen] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
+  const [openDuplicate, setOpenDuplicate] = React.useState(false);
 
-  const handleDuplication = useCallback((newDataset: Dataset) => {
-    dispatch(createDatasetAsync(newDataset));
-  }, [dispatch]);
+  const handleDuplication = useCallback((params: { withSnippet?: boolean }) => {
+    dispatch(duplicateDatasetAsync({
+      datasetId: dataset?.id as number,
+      params,
+      onSuccess: () => dispatch(loadDatasetsAsync({ pParams: pageParams, dParams: datasetParams })),
+    }));
+  }, [dataset?.id, datasetParams, dispatch, pageParams]);
 
   const handleArchivedChange = useCallback((datasetId: number) => {
     dispatch(patchDatasetThenReloadAsync({
@@ -110,6 +116,14 @@ const DatasetsPage = ({
           setOpen={setOpenDelete}
           onConfirm={handleDeleting}
           onCancel={handleCancelDeleting}
+        />
+        <DuplicateDialog
+          open={openDuplicate}
+          onClose={() => {
+            setOpenDuplicate(false);
+            dispatch(chooseDataset(-1));
+          }}
+          onSubmit={handleDuplication}
         />
         <Grid key="pagination" item xs={12}>
           <Pagination
@@ -167,7 +181,10 @@ const DatasetsPage = ({
                   >
                     <IconButton
                       aria-label="duplicate"
-                      onClick={() => handleDuplication(d)}
+                      onClick={() => {
+                        dispatch(chooseDataset(d.id as number));
+                        setOpenDuplicate(true);
+                      }}
                     >
                       <ContentCopyIcon color="inherit" />
                     </IconButton>
