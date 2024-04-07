@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { Page, PageParams } from "../interfaces/common.interface";
 import { Dataset, DatasetParams, DatasetStatistics } from "../interfaces/dataset.interface";
 import { PredictedRating } from "../interfaces/model.interface";
-import { downloadFile } from "./util";
+import { downloadFile, packFiles } from "./util";
 
 export const getDatasets = async (): Promise<Dataset[]> => {
   const response: AxiosResponse<Dataset[]> = await axios.get<Dataset[]>('/api/v1/datasets');
@@ -50,9 +50,8 @@ export const duplicateDataset = async (datasetId: number, params?: { withSnippet
   return response.data;
 }
 
-export const importDatasetSnippets = async (datasetId: number, file: File): Promise<void> => {
-  const formData = new FormData();
-  formData.append('file', file);
+export const importDatasetSnippets = async (datasetId: number, files: File[]): Promise<void> => {
+  const formData = packFiles(files);
   await axios.post(`/api/v1/datasets/${datasetId}/import-snippets`, formData);
 }
 

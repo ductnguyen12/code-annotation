@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -98,6 +99,28 @@ public class BackupService {
         // Extract uploaded file to tmp dir
         Path tmpDir = Files.createTempDirectory(MessageFormat.format(DIR_DATASET_SNIPPETS, dataset.getId()));
         ZipUtil.unzip(resource.getInputStream(), tmpDir);
+
+        dataset = datasetExporter.importSnippets(dataset, tmpDir);
+
+        snippetService.createSnippetsInBatch(dataset.getSnippets());
+    }
+
+    @Transactional
+    public void importSnippets(Long datasetId, Collection<Resource> resources) throws IOException {
+        // Delete all old snippets
+        Collection<Snippet> snippets = snippetRepository.findAllByDatasetId(datasetId);
+        snippetService.deleteAllInBatch(snippets);
+
+        // Extract snippet information from import file
+        Dataset dataset = datasetRepository.findById(datasetId)
+                .orElseThrow(() -> new RuntimeException("Could not find dataset by id to import snippets: " + datasetId));
+
+        // Extract uploaded file to tmp dir
+        Path tmpDir = Files.createTempDirectory(MessageFormat.format(DIR_DATASET_SNIPPETS, dataset.getId()));
+        for (var resource : resources) {
+            Objects.requireNonNull(resource.getFilename());
+            Files.copy(resource.getInputStream(), tmpDir.resolve(resource.getFilename()));
+        }
 
         dataset = datasetExporter.importSnippets(dataset, tmpDir);
 
