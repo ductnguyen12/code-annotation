@@ -34,3 +34,11 @@ export const downloadFile = async (url: string, defaultFilename?: string) => {
       window.URL.revokeObjectURL(href);
     });
 }
+
+export function packFiles(files: File[]): FormData {
+  const data = new FormData();
+  [...files].forEach((file, i) => {
+    data.append(`files`, file, file.name)
+  });
+  return data;
+}

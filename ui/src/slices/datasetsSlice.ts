@@ -184,6 +184,48 @@ export const duplicateDatasetAsync = createAsyncThunk(
   }
 );
 
+export const importSnippetsAsync = createAsyncThunk(
+  'datasets/importSnippetsAsync',
+  async ({
+    datasetId,
+    files,
+    onSuccess,
+  }: {
+    datasetId: number,
+    files: File[],
+    onSuccess?: () => void,
+  }, { dispatch }) => {
+    try {
+      await api.importDatasetSnippets(datasetId, files);
+      defaultAPISuccessHandle(`Imported snippets to dataset '${datasetId}' successfully`, dispatch);
+      onSuccess && onSuccess();
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
+export const exportSnippetsAsync = createAsyncThunk(
+  'datasets/exportSnippetsAsync',
+  async ({
+    datasetId,
+    onSuccess,
+  }: {
+    datasetId: number,
+    onSuccess?: () => void,
+  }, { dispatch }) => {
+    try {
+      await api.exportDatasetSnippets(datasetId);
+      defaultAPISuccessHandle(`Exported snippets of dataset '${datasetId}' successfully`, dispatch);
+      onSuccess && onSuccess();
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
 export const datasetsSlice = createSlice({
   name: 'datasets',
   initialState,
@@ -330,6 +372,26 @@ export const datasetsSlice = createSlice({
         state.configuration = undefined;
       })
       .addCase(duplicateDatasetAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(importSnippetsAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(importSnippetsAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+      })
+      .addCase(importSnippetsAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(exportSnippetsAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(exportSnippetsAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+      })
+      .addCase(exportSnippetsAsync.rejected, (state) => {
         state.status = 'failed';
       })
       ;

@@ -7,19 +7,17 @@ import OnlinePredictionIcon from '@mui/icons-material/OnlinePrediction';
 import Box from '@mui/material/Box';
 import IconButton from "@mui/material/IconButton";
 import Tooltip from '@mui/material/Tooltip';
-import React, { ChangeEvent, useEffect, useMemo } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useMemo } from 'react';
 import { useCookies } from 'react-cookie';
-import api from '../../../../api';
 import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import ProtectedElement from '../../../../components/ProtectedElement';
 import { useIdFromPath } from '../../../../hooks/common';
 import { Solution } from '../../../../interfaces/question.interface';
 import { Rater } from '../../../../interfaces/rater.interface';
 import { Snippet, SnippetQuestion } from "../../../../interfaces/snippet.interface";
+import { exportSnippetsAsync, importSnippetsAsync } from '../../../../slices/datasetsSlice';
 import { setOpenDialog } from '../../../../slices/modelExecutionSlice';
-import { pushNotification } from '../../../../slices/notificationSlice';
 import { chooseRater, loadDatasetSnippetsAsync, selectSnippetsState, setRaters } from "../../../../slices/snippetsSlice";
-import { defaultAPIErrorHandle } from '../../../../util/error-util';
 import CreateSnippetDialog from './CreateSnippetDialog';
 import RaterSelector from './RaterSelector';
 
@@ -70,34 +68,21 @@ const SnippetToolBox = () => {
     }
   };
 
-  const onImportSnippets = (event: ChangeEvent<HTMLInputElement>) => {
+  const onImportSnippets = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     event.persist();    // This is needed so you can actually get the currentTarget
-    if (datasetId && event.target.files && event.target.files.length > 0) {
-      api.importDatasetSnippets(datasetId, event.target.files.item(0) as File)
-        .then(() => {
-          console.log("Import successfully");
-          dispatch(loadDatasetSnippetsAsync(datasetId));
-          dispatch(pushNotification({ message: `Imported snippets to dataset '${datasetId}' successfully`, variant: 'success' }));
-        })
-        .catch((error: any) => {
-          defaultAPIErrorHandle(error, dispatch);
-          throw error;
-        });
+    if (datasetId && event.target.files?.length) {
+      dispatch(importSnippetsAsync({
+        datasetId,
+        files: Array.from(event.target.files),
+        onSuccess: () => dispatch(loadDatasetSnippetsAsync(datasetId)),
+      }));
     }
-  }
+  }, [datasetId, dispatch]);
 
-  const onExportSnippets = () => {
+  const onExportSnippets = useCallback(() => {
     if (datasetId)
-      api.exportDatasetSnippets(datasetId)
-        .then(() => {
-          console.log("Export successfully");
-          dispatch(pushNotification({ message: `Exported snippets of dataset '${datasetId}' successfully`, variant: 'success' }));
-        })
-        .catch((error: any) => {
-          defaultAPIErrorHandle(error, dispatch);
-          throw error;
-        });
-  }
+      dispatch(exportSnippetsAsync({ datasetId }));
+  }, [datasetId, dispatch]);
 
   const onOpenModelExecution = () => {
     dispatch(setOpenDialog(true));
@@ -118,7 +103,7 @@ const SnippetToolBox = () => {
         <input
           id="import-dataset-snippets"
           type="file"
-          accept=".zip"
+          multiple
           onChange={onImportSnippets}
           hidden={true}
         />

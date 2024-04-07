@@ -59,14 +59,14 @@ const DemographicQuestions = ({
         questionGroup: group,
         questions: questions.filter(question => question.groupIds?.includes(group.id as number)),
       } as StepData;
-      const questionsPriority = stepQuestionsPriority[group.id as number];
-      console.log(questionsPriority);
 
+      const questionsPriority = stepQuestionsPriority[group.id as number];
       if (questionsPriority) {
         result.questions = result.questions.sort(
           (q1, q2) => questionsPriority[q1.id as number] - questionsPriority[q2.id as number]
         );
       }
+
       return result;
     });
     setSteps(newStepData);

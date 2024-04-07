@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Tag(name = "Dataset Resource")
 @RestController
@@ -121,19 +123,21 @@ public class DatasetResource {
     @Secured({AuthoritiesConstants.USER})
     public void importSnippets(
             @PathVariable Long datasetId,
-            @RequestParam("file") MultipartFile file) throws IOException {
+            @RequestParam("files") MultipartFile[] files) throws IOException {
         Dataset dataset = datasetService.getById(datasetId)
                 .orElseThrow(() -> new NotFoundException(
                         "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
         if (dataset.isArchived()) {
             throw new BadRequestException("Could not import to an archived dataset", null, null);
         }
-        if (!"application/zip".equals(file.getContentType())) {
-            throw new BadRequestException(
-                    "File content type must be \"application/zip\" instead of " + file.getContentType(), null, null);
+        if (files.length == 1 && "application/zip".equals(files[0].getContentType())) {
+            backupService.importSnippets(datasetId, files[0].getResource());
+            return;
         }
-
-        backupService.importSnippets(datasetId, file.getResource());
+        List<Resource> resources = Arrays.stream(files)
+                .map(MultipartFile::getResource)
+                .toList();
+        backupService.importSnippets(datasetId, resources);
     }
 
     @Operation(summary = "Get dataset's statistics")
