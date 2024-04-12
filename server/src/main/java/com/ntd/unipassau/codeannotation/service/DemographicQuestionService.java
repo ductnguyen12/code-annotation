@@ -6,6 +6,7 @@ import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
 import com.ntd.unipassau.codeannotation.domain.question.Answer;
 import com.ntd.unipassau.codeannotation.domain.question.Question;
+import com.ntd.unipassau.codeannotation.domain.question.QuestionGroupAssignment;
 import com.ntd.unipassau.codeannotation.domain.question.QuestionType;
 import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestion;
 import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestionGroup;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
@@ -116,8 +118,11 @@ public class DemographicQuestionService {
         if (questionVM.getQuestionSetIds() != null) {
             Set<DemographicQuestionGroup> groups =
                     dqgRepository.findAllFetchQuestionsByIds(questionVM.getQuestionSetIds());
+            Set<QuestionGroupAssignment> assignments = groups.stream()
+                    .map(g -> new QuestionGroupAssignment(question, g))
+                    .collect(Collectors.toSet());
             question.getGroupAssignments().clear();
-            groups.forEach(group -> group.addQuestion(question));
+            question.getGroupAssignments().addAll(assignments);
         }
     }
 
@@ -132,7 +137,8 @@ public class DemographicQuestionService {
             question.setContent(content);
             snippet.getQuestions().forEach(sQuestion -> {
                 DemographicQuestion subQuestion = new DemographicQuestion();
-                BeanUtils.copyProperties(sQuestion, subQuestion, "id", "questionSets", "solutions");
+                BeanUtils.copyProperties(sQuestion, subQuestion,
+                        "id", "questionSets", "solutions", "groupAssignments");
                 question.addSubQuestion(subQuestion);
             });
         } catch (JsonProcessingException e) {
