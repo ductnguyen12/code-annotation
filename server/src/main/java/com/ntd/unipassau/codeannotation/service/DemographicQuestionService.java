@@ -94,10 +94,9 @@ public class DemographicQuestionService {
                 dQuestionRepository.deleteAllInBatch(question.getSubQuestions());
 
                 enrichSnippetContent(question, snippetVM.getId());
-
-                BeanUtils.copyProperties(questionVM, question,
-                        "id", "content", "subQuestions", "answer");
             }
+            BeanUtils.copyProperties(questionVM, question,
+                    "id", "content", "subQuestions", "answer");
         } else {
             BeanUtils.copyProperties(questionVM, question, "id");
         }
