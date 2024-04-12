@@ -20,7 +20,8 @@ export default function DemographicQuestionGroupSelector({
 
   useEffect(() => {
     register('groupIds', { value: selectedIds });
-  }, [register, selectedIds]);
+    setValue('groupIds', selectedIds);
+  }, [register, selectedIds, setValue]);
 
   const handleGroupsChange = useCallback((newGroups: DemographicQuestionGroup[]) => {
     setValue('groupIds', newGroups.map(g => g.id as number));
