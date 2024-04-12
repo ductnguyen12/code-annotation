@@ -33,9 +33,4 @@ public class QuestionSet extends AbstractAuditingEntity<Long> {
     )
     @ToString.Exclude
     private Set<QuestionGroupAssignment> questionAssignments = new LinkedHashSet<>();
-
-    public void addQuestion(Question question) {
-        QuestionGroupAssignment assignment = new QuestionGroupAssignment(question, this);
-        questionAssignments.add(assignment);
-    }
 }
