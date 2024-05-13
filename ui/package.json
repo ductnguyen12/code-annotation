@@ -25,12 +25,14 @@
     "react-router-dom": "^6.14.1",
     "react-scripts": "5.0.1",
     "react-syntax-highlighter": "^15.5.0",
+    "scratch-blocks": "^1.1.109",
+    "scratch-vm": "^4.5.146",
     "typescript": "^4.9.5",
     "universal-cookie": "^4.0.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "ncp node_modules/scratch-blocks/media public/media && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -65,6 +67,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/react-syntax-highlighter": "^15.5.7",
     "@types/universal-cookie": "^3.0.0",
+    "ncp": "^2.0.0",
     "react-inject-env": "^2.1.0"
   }
 }
