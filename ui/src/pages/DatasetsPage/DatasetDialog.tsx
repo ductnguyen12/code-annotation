@@ -20,7 +20,7 @@ import {
   updateConfiguration,
   updateDatasetAsync
 } from "../../slices/datasetsSlice"
-import { PROGRAMMING_LANGUAGES } from "../../util/programming-languages"
+import { EXTENDED_PROGRAMMING_LANGUAGES } from "../../util/programming-languages"
 import RaterMgmtSelector from "./RaterMgmtSelector"
 
 type DatasetDialogProps = {
@@ -147,7 +147,7 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
             onChange={e => handleChangeLanguage(e.target.value as string)}
           >
             <MenuItem value=""><em>None</em></MenuItem>
-            {PROGRAMMING_LANGUAGES.map(pl => (
+            {EXTENDED_PROGRAMMING_LANGUAGES.map(pl => (
               <MenuItem key={pl} value={pl}>{pl}</MenuItem>
             ))}
           </Select>

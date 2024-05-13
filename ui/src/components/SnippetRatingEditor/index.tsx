@@ -12,8 +12,8 @@ import { Model, PredictedRating } from '../../interfaces/model.interface';
 import { Solution } from '../../interfaces/question.interface';
 import { Snippet, SnippetQuestion, SnippetRate } from "../../interfaces/snippet.interface";
 import { pushNotification } from '../../slices/notificationSlice';
+import SnippetViewer from '../SnippetViewer';
 import NavigationButton from './NavigationButton';
-import SnippetCode from "./SnippetCode";
 import SnippetRating from "./SnippetRating";
 
 export default function SnippetRatingEditor({
@@ -169,7 +169,7 @@ export default function SnippetRatingEditor({
             />
           )}
         </Box>
-        <SnippetCode
+        <SnippetViewer
           snippet={snippets[selected]}
           defaultPLanguage={defaultPLanguage}
           showSnippetPath={showSnippetPath}

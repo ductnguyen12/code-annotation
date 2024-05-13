@@ -26,3 +26,7 @@ export const EXT_LANGUAGE_MAP = new Map([
 
 export const PROGRAMMING_LANGUAGES = Array.from(new Set(EXT_LANGUAGE_MAP.values()).values());
 
+export const EXTENDED_PROGRAMMING_LANGUAGES = [
+  ...PROGRAMMING_LANGUAGES,
+  'sb3',
+]
