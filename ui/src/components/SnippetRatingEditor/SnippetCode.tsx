@@ -129,6 +129,12 @@ const SnippetCode = ({
           </FormControl>
         </Tooltip>
       </Box>
+      {snippet?.attentionCheck && (
+        <Typography className="pt-4" variant="body1">
+          This snippet is just for attention check.
+          Please give this snippet <b>{snippet?.correctRating} stars</b> to pass.
+        </Typography>
+      )}
       <SyntaxHighlighter
         startingLineNumber={snippet.fromLine}
         showLineNumbers={true}

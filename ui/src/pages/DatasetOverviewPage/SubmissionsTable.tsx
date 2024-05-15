@@ -1,3 +1,5 @@
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -16,6 +18,7 @@ const headers = [
   "Rater ID",
   "External ID",
   "Status",
+  "Attention check",
   "Started time",
   "Completed time",
 ];
@@ -83,6 +86,11 @@ export default function SubmissionsTable({
                 </Button>
               </TableCell>
               <TableCell align="center">{submission.status}</TableCell>
+              <TableCell align="center">
+                {submission.failedAttentionCheck
+                  ? (<CancelOutlinedIcon color="error" />)
+                  : (<CheckCircleOutlinedIcon color="success" />)}
+              </TableCell>
               <TableCell align="center">{submission.startedAt}</TableCell>
               <TableCell align="center">{submission.startedAt}</TableCell>
             </TableRow>

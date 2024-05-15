@@ -1,6 +1,7 @@
 package com.ntd.unipassau.codeannotation.domain.dataset;
 
 import com.ntd.unipassau.codeannotation.domain.AbstractAuditingEntity;
+import com.ntd.unipassau.codeannotation.domain.AttentionCheck;
 import com.ntd.unipassau.codeannotation.domain.prediction.PredictedRating;
 import com.ntd.unipassau.codeannotation.domain.rater.SnippetRate;
 import jakarta.persistence.*;
@@ -15,20 +16,29 @@ import java.util.Set;
 @Setter
 @Getter
 @ToString
-public class Snippet extends AbstractAuditingEntity<Long> {
+public class Snippet extends AbstractAuditingEntity<Long> implements AttentionCheck {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "snippet_seq")
     @SequenceGenerator(name = "snippet_seq", allocationSize = 1)
     private Long id;
+
     @Column(nullable = false)
     private String path;
+
     @Column(nullable = false)
     private Integer fromLine;
+
     @Column(nullable = false)
     private Integer toLine;
+
     @Column(name = "code", columnDefinition = "TEXT")
     @ToString.Exclude
     private String code;
+
+    @Column(name = "correct_rating")
+    private Integer correctRating;      // for attention check
+
+    private Integer priority;
 
     @Column(name = "dataset_id", insertable = false, updatable = false)
     private Long datasetId;
@@ -54,4 +64,9 @@ public class Snippet extends AbstractAuditingEntity<Long> {
     )
     @ToString.Exclude
     private Set<PredictedRating> predictedRatings;
+
+    @Override
+    public boolean isAttentionCheck() {
+        return correctRating != null;
+    }
 }

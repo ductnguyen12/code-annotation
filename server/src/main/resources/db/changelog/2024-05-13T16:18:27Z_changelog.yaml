@@ -1,0 +1,21 @@
+databaseChangeLog:
+- changeSet:
+    id: 1715617119023-3
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: correct_rating
+            type: integer
+        tableName: snippet
+- changeSet:
+    id: 1715617119023-4
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: priority
+            type: integer
+        tableName: snippet

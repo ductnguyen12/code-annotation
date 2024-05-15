@@ -12,6 +12,9 @@ export interface Snippet {
   rates?: Array<SnippetRate>;   // All ratings
   questions?: Array<SnippetQuestion>;
   pLanguage?: string;
+  attentionCheck: boolean;
+  correctRating?: number;
+  priority?: number;
 }
 
 export interface SnippetRate {

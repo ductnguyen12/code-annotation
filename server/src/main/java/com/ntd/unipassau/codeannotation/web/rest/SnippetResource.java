@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,6 +56,7 @@ public class SnippetResource {
     @Operation(summary = "Create a snippet")
     @PostMapping("/v1/snippets")
     @ResponseStatus(HttpStatus.CREATED)
+    @Transactional
     public SnippetVM createSnippet(@RequestBody @Valid SnippetVM snippetVM) {
         Dataset dataset = datasetService.getById(snippetVM.getDatasetId())
                 .orElseThrow(() -> new BadRequestException(
@@ -64,6 +66,7 @@ public class SnippetResource {
         }
         Snippet snippet = snippetMapper.toSnippet(snippetVM);
         snippet.setDataset(dataset);
+        snippet.setPriority(dataset.getSnippets().size());
         return snippetMapper.toSnippetVM(snippetService.createSnippet(snippet));
     }
 
@@ -81,6 +84,16 @@ public class SnippetResource {
                         throw new BadRequestException("Could not delete a snippet of an archived dataset", null, null);
                 });
         snippetService.deleteById(snippetId);
+    }
+
+    @Operation(summary = "Clone a snippet to create an attention check")
+    @PostMapping("/v1/snippets/{snippetId}/attention-check")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Secured({AuthoritiesConstants.USER})
+    public void createAttentionCheckSnippet(@PathVariable Long snippetId) {
+        snippetService.createAttentionCheckSnippet(snippetId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Could not find snippet by id: " + snippetId, "pathVars", "snippetId"));
     }
 
     @Operation(summary = "Rate a snippet")

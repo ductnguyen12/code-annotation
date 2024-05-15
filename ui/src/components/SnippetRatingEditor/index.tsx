@@ -188,6 +188,7 @@ export default function SnippetRatingEditor({
           editable={editable}
           shouldHideQuestions={!showQuestions}
           disableComment={disableComment}
+          correctRating={snippets[selected].correctRating}
           statistics={statistics?.snippets[snippets[selected].id]}
           pRating={pRatings?.find(rating => rating.snippetId === snippets[selected].id)}
           pRatingScale={models?.find(model => {
