@@ -1,11 +1,7 @@
 package com.ntd.unipassau.codeannotation.web.rest;
 
-import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import com.ntd.unipassau.codeannotation.security.AuthoritiesConstants;
 import com.ntd.unipassau.codeannotation.service.DatasetService;
-import com.ntd.unipassau.codeannotation.service.RaterMgmtService;
-import com.ntd.unipassau.codeannotation.service.RaterMgmtServiceFactory;
-import com.ntd.unipassau.codeannotation.web.rest.errors.NotFoundException;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SubmissionVM;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,24 +17,17 @@ import java.util.Collection;
 @RestController
 public class SubmissionResource {
     private final DatasetService datasetService;
-    private final RaterMgmtServiceFactory raterMgmtServiceFactory;
 
     @Autowired
     public SubmissionResource(
-            DatasetService datasetService,
-            RaterMgmtServiceFactory raterMgmtServiceFactory) {
+            DatasetService datasetService) {
         this.datasetService = datasetService;
-        this.raterMgmtServiceFactory = raterMgmtServiceFactory;
     }
 
     @Operation(summary = "Get all submissions")
     @GetMapping("/v1/datasets/{datasetId}/submissions")
     @Secured({AuthoritiesConstants.USER})
     public Collection<SubmissionVM> getSubmissions(@PathVariable Long datasetId) {
-        Dataset dataset = datasetService.getById(datasetId)
-                .orElseThrow(() -> new NotFoundException(
-                        "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
-        RaterMgmtService raterMgmtService = raterMgmtServiceFactory.create(dataset);
-        return raterMgmtService.listSubmissions(dataset);
+        return datasetService.listSubmissions(datasetId);
     }
 }

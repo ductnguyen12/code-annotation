@@ -27,6 +27,12 @@ public class SnippetVM {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String code;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Integer correctRating;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Integer priority;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private boolean attentionCheck;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Collection<SnippetRateVM> rates;
 
     public SnippetRateVM getRate() {

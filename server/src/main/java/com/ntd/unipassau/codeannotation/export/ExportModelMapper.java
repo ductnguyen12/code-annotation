@@ -62,10 +62,12 @@ public interface ExportModelMapper {
 
     @AfterMapping
     default void afterToSnippet(SnippetDoc snippetDoc, @MappingTarget Snippet snippet) {
-        // Ensure bi-directional relation
-        snippet.getQuestions().forEach(q -> {
-            q.setSnippet(snippet);
-        });
+        if (snippet.getQuestions() != null) {
+            // Ensure bi-directional relation
+            snippet.getQuestions().forEach(q -> {
+                q.setSnippet(snippet);
+            });
+        }
         if (snippetDoc.getRates() != null) {
             Collection<SnippetRate> snippetRates = toSnippetRate(snippetDoc.getRates());
             snippetRates.forEach(sr -> {

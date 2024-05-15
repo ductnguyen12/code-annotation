@@ -7,4 +7,5 @@ export interface Submission {
   completedAt?: string;
   startedAt?: string;
   studyCode?: string;
+  failedAttentionCheck: boolean;
 }

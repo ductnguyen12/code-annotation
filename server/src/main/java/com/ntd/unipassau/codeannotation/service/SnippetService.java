@@ -25,6 +25,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -113,6 +114,7 @@ public class SnippetService {
     public Collection<Snippet> createSnippetsInBatch(Collection<Snippet> snippets) {
         Collection<SnippetQuestion> questions = new LinkedHashSet<>();
         Collection<SnippetRate> rates = new LinkedHashSet<>();
+        AtomicInteger priority = new AtomicInteger();
 
         // Separate rates and snipets in order to avoid saving one by one
         snippets.forEach(s -> {
@@ -124,6 +126,7 @@ public class SnippetService {
             }
             s.setQuestions(null);
             s.setRates(new LinkedHashSet<>());
+            s.setPriority(priority.getAndIncrement());
         });
 
         // Save all in batch
@@ -163,6 +166,34 @@ public class SnippetService {
         pRatingRepository.deleteAllBySnippets(snippets.stream().map(Snippet::getId).toList());
 
         snippetRepository.deleteAllInBatch(snippets);
+    }
+
+    @Transactional
+    public Optional<Snippet> createAttentionCheckSnippet(Long snippetId) {
+        return snippetRepository.findById(snippetId)
+                .map(snippet -> {
+                    // Increase the priority of snippets that are after current snippet
+                    List<Long> snippetIds = new LinkedList<>(snippet.getDataset().getSnippets().stream()
+                            .filter(s -> s.getPriority() == null
+                                    ? s.getId() > snippetId
+                                    : s.getPriority() > snippet.getPriority())
+                            .map(Snippet::getId)
+                            .toList());
+                    snippetIds.add(snippetId);
+                    snippetRepository.increasePriority(snippetIds);
+                    return snippet;
+                })
+                .map(snippet -> {
+                    Snippet clone = new Snippet();
+                    clone.setPath(snippet.getPath());
+                    clone.setCode(snippet.getCode());
+                    clone.setFromLine(snippet.getFromLine());
+                    clone.setToLine(snippet.getToLine());
+                    clone.setDataset(snippet.getDataset());
+                    clone.setPriority(snippet.getPriority());
+                    clone.setCorrectRating(new Random().nextInt(1, 6));
+                    return snippetRepository.save(clone);
+                });
     }
 
     @Transactional

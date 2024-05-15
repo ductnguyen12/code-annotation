@@ -34,6 +34,12 @@ function getLabelText(value: number) {
   return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
 }
 
+const CorrectRating = styled(Rating)({
+  '& .MuiRating-iconFilled': {
+    color: '#f73411',
+  },
+});
+
 const AverageRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
     color: '#1976d2',
@@ -54,6 +60,7 @@ export default function SnippetRating({
   editable,
   shouldHideQuestions,
   disableComment,
+  correctRating,
   statistics,
   pRating,
   pRatingScale,
@@ -71,6 +78,7 @@ export default function SnippetRating({
   editable?: boolean;
   shouldHideQuestions?: boolean;
   disableComment?: boolean;
+  correctRating?: number;
   statistics?: {
     averageRating: number;
   };
@@ -167,6 +175,16 @@ export default function SnippetRating({
           {labels[hover !== -1 ? hover : ratingValue]}
         </Box>
       </FormControl>
+      {correctRating && (<ProtectedElement hidden>
+        <>
+          <CorrectRating
+            readOnly
+            emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+            value={correctRating}
+          />
+          <Box>(Correct rating: {correctRating})</Box>
+        </>
+      </ProtectedElement>)}
       <ProtectedElement hidden>
         <>
           <AverageRating

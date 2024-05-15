@@ -9,9 +9,12 @@ import com.ntd.unipassau.codeannotation.domain.rater.SnippetRate;
 import com.ntd.unipassau.codeannotation.mapper.DatasetMapper;
 import com.ntd.unipassau.codeannotation.repository.DatasetRepository;
 import com.ntd.unipassau.codeannotation.repository.DemographicQuestionGroupRepository;
+import com.ntd.unipassau.codeannotation.repository.SnippetRateRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRepository;
+import com.ntd.unipassau.codeannotation.web.rest.errors.NotFoundException;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DatasetStatistics;
 import com.ntd.unipassau.codeannotation.web.rest.vm.DatasetVM;
+import com.ntd.unipassau.codeannotation.web.rest.vm.SubmissionVM;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,17 +32,23 @@ public class DatasetService {
     private final DatasetRepository datasetRepository;
     private final DatasetMapper datasetMapper;
     private final SnippetRepository snippetRepository;
+    private final SnippetRateRepository snippetRateRepository;
+    private final RaterMgmtServiceFactory raterMgmtServiceFactory;
 
     @Autowired
     public DatasetService(
             DemographicQuestionGroupRepository dqgRepository,
             DatasetRepository datasetRepository,
             DatasetMapper datasetMapper,
-            SnippetRepository snippetRepository) {
+            SnippetRepository snippetRepository,
+            SnippetRateRepository snippetRateRepository,
+            RaterMgmtServiceFactory raterMgmtServiceFactory) {
         this.dqgRepository = dqgRepository;
         this.datasetRepository = datasetRepository;
         this.datasetMapper = datasetMapper;
         this.snippetRepository = snippetRepository;
+        this.snippetRateRepository = snippetRateRepository;
+        this.raterMgmtServiceFactory = raterMgmtServiceFactory;
     }
 
     @Transactional(readOnly = true)
@@ -218,6 +227,23 @@ public class DatasetService {
     }
 
     @Transactional(readOnly = true)
+    public Collection<SubmissionVM> listSubmissions(Long datasetId) {
+        Dataset dataset = datasetRepository.findById(datasetId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
+        RaterMgmtService raterMgmtService = raterMgmtServiceFactory.create(dataset);
+        Collection<SubmissionVM> submissions = raterMgmtService.listSubmissions(dataset);
+
+        // Enrich attention check results
+        Set<UUID> failedRaterIds = snippetRateRepository.findIncorrectRatingsByDatasetId(datasetId).stream()
+                .map(SnippetRate::getRaterId)
+                .collect(Collectors.toSet());
+        submissions.forEach(s -> s.setFailedAttentionCheck(failedRaterIds.contains(s.getRater().getId())));
+
+        return submissions;
+    }
+
+    @Transactional(readOnly = true)
     public Optional<DatasetStatistics> getDatasetStatistics(Long datasetId) {
         return datasetRepository.findById(datasetId)
                 .map(dataset -> {
@@ -258,6 +284,8 @@ public class DatasetService {
 
     private double calculateAverageRating(Collection<Snippet> snippets) {
         return snippets.stream()
+                // Ignore attention check snippets
+                .filter(snippet -> !snippet.isAttentionCheck())
                 .flatMap(snippet -> snippet.getRates().stream())
                 .filter(rating -> rating != null && rating.getValue() != null)
                 .mapToInt(SnippetRate::getValue)
