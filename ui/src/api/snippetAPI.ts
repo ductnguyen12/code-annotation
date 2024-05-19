@@ -24,6 +24,14 @@ export const createSnippet = async (snippet: Snippet): Promise<Snippet> => {
   return response.data;
 }
 
+export const createAttentionCheckSnippet = async (snippetId: number): Promise<void> => {
+  await axios.post(`/api/v1/snippets/${snippetId}/attention-check`);
+}
+
+export const deleteSnippet = async (snippetId: number): Promise<void> => {
+  await axios.delete(`/api/v1/snippets/${snippetId}`);
+}
+
 export const rateSnippet = async (snippetId: number, rate: SnippetRate): Promise<void> => {
   await axios.post(`/api/v1/snippets/${snippetId}/rates`, rate, { withCredentials: true });
 }

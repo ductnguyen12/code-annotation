@@ -1,8 +1,10 @@
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
+import ClearIcon from '@mui/icons-material/Clear';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import OnlinePredictionIcon from '@mui/icons-material/OnlinePrediction';
+import TextIncreaseIcon from '@mui/icons-material/TextIncrease';
 
 import Box from '@mui/material/Box';
 import IconButton from "@mui/material/IconButton";
@@ -17,7 +19,14 @@ import { Rater } from '../../../../interfaces/rater.interface';
 import { Snippet, SnippetQuestion } from "../../../../interfaces/snippet.interface";
 import { exportSnippetsAsync, importSnippetsAsync } from '../../../../slices/datasetsSlice';
 import { setOpenDialog } from '../../../../slices/modelExecutionSlice';
-import { chooseRater, loadDatasetSnippetsAsync, selectSnippetsState, setRaters } from "../../../../slices/snippetsSlice";
+import {
+  chooseRater,
+  createAttentionCheckSnippetAsync,
+  deleteSnippetAsync,
+  loadDatasetSnippetsAsync,
+  selectSnippetsState,
+  setRaters
+} from "../../../../slices/snippetsSlice";
 import CreateSnippetDialog from './CreateSnippetDialog';
 import RaterSelector from './RaterSelector';
 
@@ -68,6 +77,30 @@ const SnippetToolBox = () => {
     }
   };
 
+  const onCreateAttentionCheckSnippet = useCallback(() => {
+    if (!datasetId || !snippets[selected]?.id) {
+      return;
+    }
+    dispatch(createAttentionCheckSnippetAsync({
+      snippetId: snippets[selected].id,
+      onSuccess: () => {
+        dispatch(loadDatasetSnippetsAsync(datasetId));
+      },
+    }));
+  }, [datasetId, dispatch, selected, snippets]);
+
+  const onDeleteSnippet = useCallback(() => {
+    if (!datasetId || !snippets[selected]?.id) {
+      return;
+    }
+    dispatch(deleteSnippetAsync({
+      snippetId: snippets[selected].id,
+      onSuccess: () => {
+        dispatch(loadDatasetSnippetsAsync(datasetId));
+      },
+    }));
+  }, [datasetId, dispatch, selected, snippets]);
+
   const onImportSnippets = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     event.persist();    // This is needed so you can actually get the currentTarget
     if (datasetId && event.target.files?.length) {
@@ -98,6 +131,16 @@ const SnippetToolBox = () => {
         <Tooltip title="Add snippet" arrow>
           <IconButton onClick={() => setOpen(true)}>
             <AddIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Add attention check snippet" arrow>
+          <IconButton onClick={onCreateAttentionCheckSnippet}>
+            <TextIncreaseIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete snippet" arrow>
+          <IconButton onClick={onDeleteSnippet}>
+            <ClearIcon />
           </IconButton>
         </Tooltip>
         <input
