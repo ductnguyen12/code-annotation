@@ -34,6 +34,48 @@ export const loadDatasetSnippetsAsync = createAsyncThunk(
   }
 );
 
+export const createAttentionCheckSnippetAsync = createAsyncThunk(
+  'snippets/createAttentionCheckSnippetAsync',
+  async ({
+    snippetId,
+    onSuccess,
+  }: {
+    snippetId: number,
+    onSuccess?: () => void,
+  }, { dispatch }) => {
+    try {
+      await api.createAttentionCheckSnippet(snippetId);
+      defaultAPISuccessHandle('Create attention check snippet successfully', dispatch);
+      if (onSuccess)
+        onSuccess();
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
+export const deleteSnippetAsync = createAsyncThunk(
+  'snippets/deleteSnippetAsync',
+  async ({
+    snippetId,
+    onSuccess,
+  }: {
+    snippetId: number,
+    onSuccess?: () => void,
+  }, { dispatch }) => {
+    try {
+      await api.deleteSnippet(snippetId);
+      defaultAPISuccessHandle(`Delete snippet ${snippetId} successfully`, dispatch);
+      if (onSuccess)
+        onSuccess();
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
 export const createQuestionAsync = createAsyncThunk(
   'snippets/createQuestion',
   async ({ question, datasetId }: { question: SnippetQuestion, datasetId?: number }, { dispatch }) => {
@@ -159,6 +201,26 @@ export const snippetsSlice = createSlice({
         state.snippets = action.payload;
       })
       .addCase(loadDatasetSnippetsAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(createAttentionCheckSnippetAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(createAttentionCheckSnippetAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+      })
+      .addCase(createAttentionCheckSnippetAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(deleteSnippetAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteSnippetAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+      })
+      .addCase(deleteSnippetAsync.rejected, (state) => {
         state.status = 'failed';
       })
 
