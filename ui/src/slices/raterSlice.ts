@@ -50,9 +50,6 @@ export const raterSlice = createSlice({
   },
 });
 
-export const {
-} = raterSlice.actions;
-
 export const selectRaterState = (state: RootState) => state.rater;
 
 export default raterSlice.reducer;
