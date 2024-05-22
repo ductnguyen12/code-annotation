@@ -1,6 +1,6 @@
 import { Snippet } from "../../interfaces/snippet.interface";
-import SnippetCode from "../SnippetRatingEditor/SnippetCode";
 import SnippetBlocks from "./SnippetBlocks";
+import SnippetCode from "./SnippetCode";
 
 export default function SnippetViewer({
   snippet,

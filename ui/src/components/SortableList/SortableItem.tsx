@@ -4,9 +4,8 @@ import type {
 } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import ListItem from "@mui/material/ListItem";
 import type { CSSProperties, PropsWithChildren } from "react";
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useMemo } from "react";
 
 // import "./SortableItem.css";
 
