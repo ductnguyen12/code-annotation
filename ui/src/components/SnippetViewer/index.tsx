@@ -11,7 +11,7 @@ export default function SnippetViewer({
   defaultPLanguage?: string,
   [key: string]: any,
 }) {
-  if ('sb3' === defaultPLanguage) {
+  if ('sb3' === snippet?.pLanguage) {
     return (
       <SnippetBlocks
         snippet={snippet}
