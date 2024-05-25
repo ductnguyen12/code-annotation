@@ -120,10 +120,11 @@ public class SnippetService {
     public Collection<Snippet> createSnippetsInBatch(Collection<Snippet> snippets) {
         Collection<SnippetQuestion> questions = new LinkedHashSet<>();
         Collection<SnippetRate> rates = new LinkedHashSet<>();
-        AtomicInteger priority = new AtomicInteger();
 
-        // Separate rates and snipets in order to avoid saving one by one
+        AtomicInteger priority = new AtomicInteger();
         snippets.forEach(s -> {
+            s.setPriority(priority.getAndIncrement());
+            // Separate rates and questions from snippets in order to avoid saving one by one
             if (CollectionUtils.isEmpty(s.getQuestions()))
                 return;
             questions.addAll(s.getQuestions());
@@ -132,7 +133,6 @@ public class SnippetService {
             }
             s.setQuestions(null);
             s.setRates(new LinkedHashSet<>());
-            s.setPriority(priority.getAndIncrement());
         });
 
         // Save all in batch
