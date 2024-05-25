@@ -8,7 +8,7 @@ export default function DemographicQuestionGroupSelector({
   selectedIds,
 }: {
   questionGroups: DemographicQuestionGroup[],
-  selectedIds: number[],
+  selectedIds?: number[],
 }) {
   const { register, watch, setValue } = useFormContext();
   const groupIds = watch('groupIds', []);
@@ -19,8 +19,9 @@ export default function DemographicQuestionGroupSelector({
   );
 
   useEffect(() => {
-    register('groupIds', { value: selectedIds });
-    setValue('groupIds', selectedIds);
+    const ids = selectedIds || [];
+    register('groupIds', { value: ids });
+    setValue('groupIds', ids);
   }, [register, selectedIds, setValue]);
 
   const handleGroupsChange = useCallback((newGroups: DemographicQuestionGroup[]) => {

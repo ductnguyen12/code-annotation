@@ -157,7 +157,7 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
         />
         <DemographicQuestionGroupSelector
           questionGroups={questionGroups}
-          selectedIds={dataset?.demographicQuestionGroupIds || []}
+          selectedIds={dataset?.demographicQuestionGroupIds}
         />
         <TextField
           id="completeText"
