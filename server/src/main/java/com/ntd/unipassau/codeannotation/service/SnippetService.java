@@ -63,7 +63,13 @@ public class SnippetService {
     @Transactional(readOnly = true)
     public Collection<SnippetVM> getDatasetSnippets(Long datasetId) {
         Collection<Snippet> snippets = snippetRepository.findAllByDatasetId(datasetId);
-        Collection<SnippetVM> snippetVMs = snippets.stream().map(snippetMapper::toSnippetVM).toList();
+        Collection<SnippetVM> snippetVMs = snippets.stream()
+                .map(snippet -> {
+                    SnippetVM snippetVM = snippetMapper.toSnippetVM(snippet);
+                    snippetVM.setPLanguage(snippet.getDataset().getPLanguage());
+                    return snippetVM;
+                })
+                .toList();
 
         // Admin can retrieve all rates and solutions
         if (SecurityUtils.isAuthenticated())
