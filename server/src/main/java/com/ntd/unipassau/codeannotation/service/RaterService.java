@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -61,7 +60,7 @@ public class RaterService {
                                 rater.setId(user.getId());
                             BeanUtils.copyProperties(raterVM, rater, "id");
                             rater.setUser(user);
-                            rater.getDatasets().add(dataset);
+                            rater.addDataset(dataset);
                             return rater;
                         })
                         .orElseGet(() -> {
@@ -80,10 +79,7 @@ public class RaterService {
                                 raterOpt = Optional.of(rater);
                             }
                             Rater rater = raterOpt.get();
-                            if (rater.getDatasets() == null) {
-                                rater.setDatasets(new LinkedHashSet<>());
-                            }
-                            rater.getDatasets().add(dataset);
+                            rater.addDataset(dataset);
                             return rater;
                         })
         );

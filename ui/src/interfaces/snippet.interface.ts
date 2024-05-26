@@ -22,6 +22,7 @@ export interface SnippetRate {
   comment?: string;
   rater?: Rater;
   solutions?: Array<Solution>;
+  isSubmission?: boolean;
 }
 
 export interface SnippetQuestion extends Question {

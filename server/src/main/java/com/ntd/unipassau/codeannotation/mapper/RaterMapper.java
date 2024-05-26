@@ -13,7 +13,7 @@ import java.util.Collection;
 @Mapper(componentModel = "spring", uses = {SolutionMapper.class})
 public interface RaterMapper {
 
-    @Mapping(target = "datasets", ignore = true)
+    @Mapping(target = "raterDatasets", ignore = true)
     @Mapping(target = "rates", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "lastModifiedDate", ignore = true)

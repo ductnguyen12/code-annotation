@@ -11,10 +11,12 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = {SolutionMapper.class})
 public interface SnippetMapper {
+    @Mapping(target = "PLanguage", ignore = true)
     @Mapping(target = "rate", ignore = true)
     @Mapping(target = "rates", ignore = true)
     SnippetVM toSimpleSnippetVM(Snippet snippet);
 
+    @Mapping(target = "PLanguage", ignore = true)
     @Mapping(target = "rate", ignore = true)
     SnippetVM toSnippetVM(Snippet snippet);
 
@@ -39,10 +41,13 @@ public interface SnippetMapper {
     @Mapping(target = "createdBy", ignore = true)
     SnippetQuestion toSnippetQuestion(SnippetQuestionVM snippetQuestion);
 
+    @Mapping(target = "submission", ignore = true)
     @Mapping(target = "solutions", ignore = true)
     @Mapping(target = "rater.solutions", ignore = true)
     SnippetRateVM toSnippetRateVM(SnippetRate rate);
 
+    @Mapping(target = "snippetId", ignore = true)
+    @Mapping(target = "raterId", ignore = true)
     @Mapping(target = "snippet", ignore = true)
     @Mapping(target = "lastModifiedDate", ignore = true)
     @Mapping(target = "lastModifiedBy", ignore = true)

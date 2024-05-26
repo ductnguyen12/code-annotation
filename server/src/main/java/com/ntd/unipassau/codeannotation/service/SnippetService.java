@@ -5,12 +5,14 @@ import com.ntd.unipassau.codeannotation.client.impl.HttpFileReader;
 import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
 import com.ntd.unipassau.codeannotation.domain.dataset.SnippetQuestion;
 import com.ntd.unipassau.codeannotation.domain.rater.Rater;
+import com.ntd.unipassau.codeannotation.domain.rater.RaterDataset;
 import com.ntd.unipassau.codeannotation.domain.rater.SnippetRate;
+import com.ntd.unipassau.codeannotation.domain.rater.SubmissionStatus;
 import com.ntd.unipassau.codeannotation.mapper.SnippetMapper;
 import com.ntd.unipassau.codeannotation.repository.PredictedRatingRepository;
+import com.ntd.unipassau.codeannotation.repository.RaterDatasetRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRateRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRepository;
-import com.ntd.unipassau.codeannotation.repository.SolutionRepository;
 import com.ntd.unipassau.codeannotation.security.SecurityUtils;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetRateVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetVM;
@@ -34,30 +36,30 @@ public class SnippetService {
     private final SnippetRepository snippetRepository;
     private final SnippetRateRepository snippetRateRepository;
     private final PredictedRatingRepository pRatingRepository;
+    private final RaterDatasetRepository raterDatasetRepository;
     private final SnippetMapper snippetMapper;
     private final SnippetQuestionService snippetQuestionService;
     private final SolutionService solutionService;
     private final RaterService raterService;
-    private final SolutionRepository solutionRepository;
 
     @Autowired
     public SnippetService(
             SnippetRepository snippetRepository,
             SnippetRateRepository snippetRateRepository,
             PredictedRatingRepository pRatingRepository,
+            RaterDatasetRepository raterDatasetRepository,
             SnippetMapper snippetMapper,
             SnippetQuestionService snippetQuestionService,
             SolutionService solutionService,
-            RaterService raterService,
-            SolutionRepository solutionRepository) {
+            RaterService raterService) {
         this.snippetRepository = snippetRepository;
         this.snippetRateRepository = snippetRateRepository;
         this.pRatingRepository = pRatingRepository;
+        this.raterDatasetRepository = raterDatasetRepository;
         this.solutionService = solutionService;
         this.snippetMapper = snippetMapper;
         this.snippetQuestionService = snippetQuestionService;
         this.raterService = raterService;
-        this.solutionRepository = solutionRepository;
     }
 
     @Transactional(readOnly = true)
@@ -204,16 +206,22 @@ public class SnippetService {
 
     @Transactional
     public void rateSnippet(SnippetRateVM rateVM, Snippet snippet) {
-        saveSnippetRate(rateVM, snippet);
+        SnippetRate rating = saveSnippetRate(rateVM, snippet);
         solutionService.createSnippetSolutionsInBatch(
                 snippet.getId(),
                 raterService.getCurrentRater()
                         .orElseThrow(() -> new RuntimeException("Saving Solution requires rater")),
                 rateVM.getSolutions()
         );
+        if (!rateVM.isSubmission())
+            return;
+        var id = new RaterDataset.RaterDatasetId();
+        id.setRaterId(rating.getRaterId());
+        id.setDatasetId(snippet.getDatasetId());
+        raterDatasetRepository.updateStatusById(id, SubmissionStatus.AWAITING_REVIEW);
     }
 
-    private void saveSnippetRate(SnippetRateVM rateVM, Snippet snippet) {
+    private SnippetRate saveSnippetRate(SnippetRateVM rateVM, Snippet snippet) {
         Rater rater = raterService.getCurrentRater()
                 .orElseThrow(() -> new RuntimeException("Saving SnippetRate requires rater"));
         SnippetRate rate = snippetRateRepository.findBySnippetAndRater(snippet.getId(), rater.getId())
@@ -227,7 +235,7 @@ public class SnippetService {
         rate.setSnippet(snippet);
         rate.setRater(rater);
 
-        snippetRateRepository.save(rate);
+        return snippetRateRepository.save(rate);
     }
 
     private String extractSnippetCode(Snippet snippet) throws IOException {

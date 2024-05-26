@@ -15,7 +15,8 @@ public interface SolutionRepository extends JpaRepository<Solution, Solution.Sol
     Collection<Solution> findSolutionsByRater(UUID raterId);
 
     @Query("FROM Solution s JOIN FETCH s.rater r " +
-            "JOIN FETCH r.datasets d " +
+            "JOIN FETCH r.raterDatasets rd " +
+            "JOIN FETCH rd.dataset d " +
             "JOIN FETCH s.question q " +
             "LEFT JOIN FETCH q.groupAssignments ga " +
             "LEFT JOIN FETCH ga.group g " +

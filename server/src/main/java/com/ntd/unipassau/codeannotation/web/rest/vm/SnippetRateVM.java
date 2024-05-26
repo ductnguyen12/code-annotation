@@ -11,10 +11,13 @@ import java.util.Collection;
 public class SnippetRateVM {
     private Integer value;
     private String comment;
+    private boolean isSubmission;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotNull(message = "Question solutions must not be null")
     @SolutionsConstraint
     private Collection<@NotNull(message = "A solution can not be null") SolutionVM> solutions;
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private RaterVM rater;
 }
