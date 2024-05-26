@@ -8,8 +8,8 @@ import java.util.Date;
 public class SubmissionVM {
     private String id;
     private RaterVM rater;
-    public Date completedAt;
-    public Date startedAt;
+    private Date completedAt;
+    private Date startedAt;
     private String status;
     private String studyCode;
     private boolean failedAttentionCheck;

@@ -15,7 +15,7 @@ public interface DatasetMapper {
     @Mapping(target = "demographicQuestionGroupIds", ignore = true)
     DatasetVM toDatasetVM(Dataset dataset);
 
-    @Mapping(target = "raters", ignore = true)
+    @Mapping(target = "raterDatasets", ignore = true)
     @Mapping(target = "DQuestionGroups", ignore = true)
     @Mapping(target = "snippets", ignore = true)
     @Mapping(target = "lastModifiedDate", ignore = true)

@@ -1,0 +1,71 @@
+databaseChangeLog:
+- changeSet:
+    id: 1716747414686-6
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: completed_at
+            type: timestamp(6)
+        tableName: rater_dataset
+- changeSet:
+    id: 1716747414686-7
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: created_by
+            type: varchar(50)
+        tableName: rater_dataset
+- changeSet:
+    id: 1716747414686-8
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: created_date
+            type: timestamp(6)
+        tableName: rater_dataset
+- changeSet:
+    id: 1716747414686-9
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: last_modified_by
+            type: varchar(50)
+        tableName: rater_dataset
+- changeSet:
+    id: 1716747414686-10
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: last_modified_date
+            type: timestamp(6)
+        tableName: rater_dataset
+- changeSet:
+    id: 1716747414686-11
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: started_at
+            type: timestamp(6)
+        tableName: rater_dataset
+- changeSet:
+    id: 1716747414686-12
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: status
+            type: varchar(255)
+        tableName: rater_dataset

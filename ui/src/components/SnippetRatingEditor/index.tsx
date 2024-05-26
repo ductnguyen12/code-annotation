@@ -98,6 +98,7 @@ export default function SnippetRatingEditor({
       const rate: SnippetRate = {
         ...snippets[selected].rate as SnippetRate,
         solutions: solutions,
+        isSubmission: nextSnippet === undefined,   // Hit submit button
       };
       onRatingSubmit(rate, nextSnippet);
     },

@@ -8,8 +8,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Calendar;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "rater",
@@ -40,15 +43,25 @@ public class Rater extends AbstractAuditingEntity<UUID> {
     @ToString.Exclude
     private Set<SnippetRate> rates;
 
-    @ManyToMany
-    @JoinTable(name = "rater_dataset",
-            joinColumns =
-            @JoinColumn(name = "rater_id", referencedColumnName = "id",
-                    foreignKey = @ForeignKey(name = "fk_dataset_rater")),
-            inverseJoinColumns =
-            @JoinColumn(name = "dataset_id", referencedColumnName = "id",
-                    foreignKey = @ForeignKey(name = "fk_rater_dataset"))
-    )
+    @OneToMany(mappedBy = "rater", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @ToString.Exclude
-    private Set<Dataset> datasets;
+    private Set<RaterDataset> raterDatasets;
+
+    public void addDataset(Dataset dataset) {
+        if (dataset == null)
+            return;
+        if (raterDatasets == null) {
+            raterDatasets = new LinkedHashSet<>();
+        }
+        RaterDataset raterDataset = new RaterDataset(this, dataset);
+        raterDataset.setStatus(SubmissionStatus.ACTIVE);
+        raterDataset.setStartedAt(Calendar.getInstance().getTime());
+        raterDatasets.add(raterDataset);
+    }
+
+    public Set<Dataset> getDatasets() {
+        return raterDatasets.stream()
+                .map(RaterDataset::getDataset)
+                .collect(Collectors.toSet());
+    }
 }

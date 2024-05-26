@@ -1,43 +1,42 @@
 package com.ntd.unipassau.codeannotation.service;
 
 import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
-import com.ntd.unipassau.codeannotation.domain.rater.Solution;
 import com.ntd.unipassau.codeannotation.integration.prolific.ProlificProps;
 import com.ntd.unipassau.codeannotation.integration.prolific.ProlificPropsParser;
 import com.ntd.unipassau.codeannotation.integration.prolific.SubmissionMapper;
 import com.ntd.unipassau.codeannotation.integration.prolific.impl.ProlificService;
 import com.ntd.unipassau.codeannotation.repository.RaterRepository;
-import com.ntd.unipassau.codeannotation.web.rest.vm.SubmissionVM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 @Service
 public final class RaterMgmtServiceFactory {
     private final SubmissionMapper submissionMapper;
     private final RaterRepository raterRepository;
+    private final LocalRaterMgmtService localRaterMgmtService;
 
     @Autowired
     public RaterMgmtServiceFactory(
             SubmissionMapper submissionMapper,
-            RaterRepository raterRepository) {
+            RaterRepository raterRepository,
+            LocalRaterMgmtService localRaterMgmtService) {
         this.submissionMapper = submissionMapper;
         this.raterRepository = raterRepository;
+        this.localRaterMgmtService = localRaterMgmtService;
     }
 
     public RaterMgmtService create(Dataset dataset) {
         Map<String, Map<String, Object>> configuration = dataset.getConfiguration();
         if (configuration == null)
-            return new LocalRaterMgmtService();
+            return localRaterMgmtService;
 
         if (configuration.containsKey(ProlificPropsParser.PROLIFIC_CONFIG_KEY)) {
             return createProlificService(dataset);
         }
 
-        return new LocalRaterMgmtService();
+        return localRaterMgmtService;
     }
 
     private RaterMgmtService createProlificService(Dataset dataset) {
@@ -49,18 +48,5 @@ public final class RaterMgmtServiceFactory {
                 prolificProps,
                 submissionMapper,
                 raterRepository);
-    }
-
-    private static class LocalRaterMgmtService implements RaterMgmtService {
-        @Override
-        public Collection<SubmissionVM> listSubmissions(Dataset dataset) {
-            // has not supported yet.
-            return Collections.emptyList();
-        }
-
-        @Override
-        public Collection<Solution> getVerifiedSolutions(Collection<Solution> solutions) {
-            return solutions;
-        }
     }
 }

@@ -30,6 +30,9 @@ public class SnippetRate extends AbstractAuditingEntity<Long> {
     @ToString.Exclude
     private Snippet snippet;
 
+    @Column(name = "snippet_id", insertable = false, updatable = false)
+    private Long snippetId;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "rater_id", nullable = false, foreignKey = @ForeignKey(name = "fk_rate_rater"))
     @ToString.Exclude
