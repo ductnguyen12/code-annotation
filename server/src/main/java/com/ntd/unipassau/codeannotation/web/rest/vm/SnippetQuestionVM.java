@@ -15,6 +15,8 @@ public class SnippetQuestionVM extends QuestionVM {
 
     private Long snippetId;
 
+    private Boolean hidden;
+
     public SolutionVM getSolution() {
         if (CollectionUtils.isEmpty(solutions))
             return null;

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuestionDoc {
+public abstract class QuestionDoc {
     private Long id;
     private String content;
     private QuestionType type;

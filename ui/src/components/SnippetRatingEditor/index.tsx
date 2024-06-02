@@ -124,9 +124,14 @@ export default function SnippetRatingEditor({
   }, [onCreateQuestion, selected, snippets]);
 
   useEffect(() => {
+    if (!snippets[selected])
+      return;
+    // Not hide snippet's questions if there is not any hidden question
+    const noHiddenQuestions = snippets[selected].questions?.every(q => !q.hidden);
+
     // set hidden questions to default value.
-    setHiddenQuestion(!!shouldHideQuestions);
-  }, [shouldHideQuestions]);
+    setHiddenQuestion(!!shouldHideQuestions && !noHiddenQuestions);
+  }, [shouldHideQuestions, selected, snippets]);
 
   return snippets.length <= selected
     ? (<Typography variant="body2">There is no snippet in this dataset</Typography>)

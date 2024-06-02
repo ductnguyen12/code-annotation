@@ -101,12 +101,20 @@ export default function SnippetRating({
     comment: "",
   }
 
-  const handleChange = React.useCallback((key: string, value: any) => {
-    if (!editable)
-      return;
-    if (onValueChange)
-      onValueChange(key, value);
-  }, [editable, onValueChange]);
+  const questionIndexMap = React.useMemo(() => {
+    if (!questions)
+      return {};
+    const map = Object.fromEntries(questions.map((q, index) => [q.id as number, index]));
+    return map;
+  }, [questions]);
+
+  const hiddenQuestions = React.useMemo(() => {
+    return questions?.filter(q => !shouldHideQuestions && !!q.hidden) || [];
+  }, [questions, shouldHideQuestions]);
+
+  const otherQuestions = React.useMemo(() => {
+    return questions?.filter(q => !q.hidden) || [];
+  }, [questions]);
 
   const pRatingValue = React.useMemo(
     () => {
@@ -116,6 +124,19 @@ export default function SnippetRating({
     },
     [pRating, pRatingScale],
   );
+
+  const handleChange = React.useCallback((key: string, value: any) => {
+    if (!editable)
+      return;
+    if (onValueChange)
+      onValueChange(key, value);
+  }, [editable, onValueChange]);
+
+  const handleSolutionChange = React.useCallback((questionId: number, solution: Solution) => {
+    if (!onSolutionChange)
+      return;
+    onSolutionChange(questionIndexMap[questionId], solution);
+  }, [onSolutionChange, questionIndexMap]);
 
   const handleDeleteQuestion = React.useCallback((questionIndex: number) => {
     if (questions && questionIndex < questions.length) {
@@ -219,15 +240,15 @@ export default function SnippetRating({
           />
         </>
       </ProtectedElement>
-      {!shouldHideQuestions && (
-        <Grid
-          className="justify-center mb-4"
-          sx={{ minWidth: 600, mt: -2 }}
-          rowSpacing={5}
-          columnSpacing={3}
-          container
-        >
-          {questions?.map((q, index) => (
+      <Grid
+        className="justify-center mb-4"
+        sx={{ minWidth: 600, mt: -2 }}
+        rowSpacing={5}
+        columnSpacing={3}
+        container
+      >
+        {otherQuestions
+          .map((q, index) => (
             <SnippetQuestion
               key={q.id}
               index={index}
@@ -237,12 +258,26 @@ export default function SnippetRating({
               editable={editable}
               onFocus={onFocus}
               onBlur={onBlur}
-              onSolutionChange={onSolutionChange}
+              onSolutionChange={(_, solution) => handleSolutionChange(q.id as number, solution)}
               onDelete={handleDeleteQuestion}
             />
           ))}
-        </Grid>
-      )}
+        {hiddenQuestions
+          .map((q, index) => (
+            <SnippetQuestion
+              key={q.id}
+              index={otherQuestions.length + index}
+              question={q}
+              rater={rater}
+              invalid={invalid}
+              editable={editable}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              onSolutionChange={(_, solution) => handleSolutionChange(q.id as number, solution)}
+              onDelete={handleDeleteQuestion}
+            />
+          ))}
+      </Grid>
       <ProtectedElement hidden>
         <AddQuestionButton
           onCreate={onCreateQuestion}

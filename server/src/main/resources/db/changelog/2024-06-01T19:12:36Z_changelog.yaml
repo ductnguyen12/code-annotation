@@ -1,0 +1,11 @@
+databaseChangeLog:
+- changeSet:
+    id: 1717269168328-6
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: hidden
+            type: boolean
+        tableName: snippet_question

@@ -1,6 +1,8 @@
 import * as React from 'react';
 
 import CancelIcon from '@mui/icons-material/Cancel';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -65,6 +67,19 @@ export default function SnippetQuestion({
       className="relative"
       item
     >
+      {question?.hidden && (<ProtectedElement hidden>
+        <Tooltip
+          className="right-6 top-4 p-2"
+          sx={{ position: 'absolute' }}
+          title="Hidden at first"
+          placement="bottom"
+          arrow
+        >
+          <Box>
+            <VisibilityOffIcon className="p-1" />
+          </Box>
+        </Tooltip>
+      </ProtectedElement>)}
       {onDelete && (<ProtectedElement hidden>
         <>
           <Tooltip
