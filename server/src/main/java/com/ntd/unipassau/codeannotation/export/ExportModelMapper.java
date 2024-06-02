@@ -48,6 +48,8 @@ public interface ExportModelMapper {
     @Mapping(target = "rates", ignore = true)
     Snippet toSnippet(SnippetDoc snippet);
 
+    @Mapping(target = "raterId", ignore = true)
+    @Mapping(target = "snippetId", ignore = true)
     @Mapping(target = "value", ignore = true)
     @Mapping(target = "snippet", ignore = true)
     @Mapping(target = "lastModifiedDate", ignore = true)

@@ -12,6 +12,6 @@ public class SnippetDoc {
     private Integer priority;
     private Integer correctRating;
     private boolean attentionCheck;
-    private Collection<QuestionDoc> questions;
+    private Collection<SnippetQuestionDoc> questions;
     private Collection<RateDoc> rates;
 }

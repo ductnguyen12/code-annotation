@@ -20,4 +20,6 @@ public class SnippetQuestion extends Question {
 
     @Column(name = "snippet_id", insertable = false, updatable = false)
     private Long snippetId;
+
+    private Boolean hidden;
 }
