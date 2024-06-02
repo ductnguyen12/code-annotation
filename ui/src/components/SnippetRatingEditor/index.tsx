@@ -128,10 +128,14 @@ export default function SnippetRatingEditor({
       return;
     // Not hide snippet's questions if there is not any hidden question
     const noHiddenQuestions = snippets[selected].questions?.every(q => !q.hidden);
+    if (noHiddenQuestions)
+      return;
 
     // set hidden questions to default value.
-    setHiddenQuestion(!!shouldHideQuestions && !noHiddenQuestions);
-  }, [shouldHideQuestions, selected, snippets]);
+    setHiddenQuestion(!!shouldHideQuestions);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldHideQuestions, selected]);
 
   return snippets.length <= selected
     ? (<Typography variant="body2">There is no snippet in this dataset</Typography>)
