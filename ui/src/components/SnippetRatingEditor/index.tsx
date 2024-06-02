@@ -72,8 +72,12 @@ export default function SnippetRatingEditor({
   const [hiddenQuestion, setHiddenQuestion] = useState(false);
 
   const showQuestions = useMemo(
-    () => !shouldHideQuestions || !hiddenQuestion
-      || (snippets[selected] && (snippets[selected].questions?.length || 0) < 1),
+    () => !shouldHideQuestions
+      || !hiddenQuestion                                          // Show in the second step
+      || (snippets[selected] && (
+        (snippets[selected].questions?.length || 0) < 1           // No questions
+        || snippets[selected].questions?.every(q => !q.hidden)    // No hidden question
+      )),
     [selected, snippets, shouldHideQuestions, hiddenQuestion]
   );
 
@@ -124,17 +128,8 @@ export default function SnippetRatingEditor({
   }, [onCreateQuestion, selected, snippets]);
 
   useEffect(() => {
-    if (!snippets[selected])
-      return;
-    // Not hide snippet's questions if there is not any hidden question
-    const noHiddenQuestions = snippets[selected].questions?.every(q => !q.hidden);
-    if (noHiddenQuestions)
-      return;
-
     // set hidden questions to default value.
     setHiddenQuestion(!!shouldHideQuestions);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldHideQuestions, selected]);
 
   return snippets.length <= selected
