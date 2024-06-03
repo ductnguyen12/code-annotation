@@ -13,6 +13,10 @@ public interface SolutionMapper {
     @Mapping(target = "raterId", source = "id.raterId")
     @Mapping(target = "value", source = "solution")
     @Mapping(target = "questionId", source = "id.questionId")
+    @Mapping(
+            target = "timeTaken",
+            expression = "java(solution.getTimeTaken() != null ? solution.getTimeTaken().toMillis() : null)"
+    )
     SolutionVM toSolutionVM(Solution solution);
 
     @Mapping(target = "rater", ignore = true)
@@ -25,6 +29,11 @@ public interface SolutionMapper {
     @Mapping(target = "id.raterId", source = "raterId")
     @Mapping(target = "id.questionId", source = "questionId")
     @Mapping(target = "solution", source = "value")
+    @Mapping(
+            target = "timeTaken",
+            expression = "java(solutionVM.timeTaken() != null " +
+                    "? java.time.Duration.ofMillis(solutionVM.timeTaken()) : null)"
+    )
     Solution toSolution(SolutionVM solutionVM);
 
     Collection<SolutionVM> toSolutionVMs(Collection<Solution> solutions);

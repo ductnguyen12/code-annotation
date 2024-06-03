@@ -11,7 +11,7 @@ public record SolutionVM(
         Long questionId,
         @NotNull
         SolutionValue value,
-
+        Long timeTaken,
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         UUID raterId,
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
