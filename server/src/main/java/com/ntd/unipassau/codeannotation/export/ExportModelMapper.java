@@ -32,6 +32,10 @@ public interface ExportModelMapper {
     @Mapping(target = "raterExternalId", source = "rater.externalId")
     @Mapping(target = "questionId", source = "id.questionId")
     @Mapping(target = "rater", source = "id.raterId")
+    @Mapping(
+            target = "timeTaken",
+            expression = "java(solution.getTimeTaken() != null ? solution.getTimeTaken().toMillis() : null)"
+    )
     SolutionDoc toSolutionDoc(Solution solution);
 
     DemographicQuestionDoc toDQuestionDoc(DemographicQuestion question);

@@ -1,0 +1,11 @@
+databaseChangeLog:
+- changeSet:
+    id: 1717441824180-6
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: time_taken
+            type: interval
+        tableName: solution

@@ -49,6 +49,9 @@ const QuestionComponent = ({
 }) => {
   const [validity, setValidity] = useState(true);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const renderTime = useMemo(() => Date.now(), [question]);
+
   const notifyValidityChange = useCallback((valid: boolean) => {
     if (onValidityChange)
       onValidityChange(questionIndex, valid);
@@ -79,8 +82,10 @@ const QuestionComponent = ({
   }, [notifyValidityChange, onBlur, setShowError, validity]);
 
   const handleValueChange = useCallback((questionIndex: number, solution: Solution, subQuestionIndex?: number) => {
+    const elapsedTime = Date.now() - renderTime;
+    solution.timeTaken = (solution.timeTaken || 0) + elapsedTime;
     onValueChange(questionIndex, solution, subQuestionIndex);
-  }, [onValueChange]);
+  }, [onValueChange, renderTime]);
 
   const Component = useMemo(() => getQuestionComponents(question.type), [question]);
 

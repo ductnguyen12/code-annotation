@@ -6,8 +6,10 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { QuestionType, Solution } from '../../../interfaces/question.interface';
 import { SnippetQuestion as SQuestion } from '../../../interfaces/snippet.interface';
+import { formatMilliseconds } from '../../../util/time-util';
 import ConfirmationDialog from '../../ConfirmationDialog';
 import ProtectedElement from '../../ProtectedElement';
 import QuestionComponent from '../../QuestionComponent';
@@ -42,6 +44,12 @@ export default function SnippetQuestion({
       if (onSolutionChange)
         onSolutionChange(questionIndex, solution);
     }, [editable, onSolutionChange]
+  );
+
+  const solution = React.useMemo(() => editable
+    ? question.solution
+    : question.solutions?.find(s => s.raterId === rater),
+    [editable, question.solution, question.solutions, rater]
   );
 
   const confirmContent = React.useMemo(() => {
@@ -111,16 +119,18 @@ export default function SnippetQuestion({
       <QuestionComponent
         questionIndex={index}
         question={question}
-        solution={editable
-          ? question.solution
-          : question.solutions?.find(s => s.raterId === rater)
-        }
+        solution={solution}
         invalid={invalid}
         showError={!!invalid}
         onFocus={onFocus}
         onBlur={onBlur}
         onValueChange={handleChange}
       />
+      {solution?.timeTaken && (<ProtectedElement hidden>
+        <Typography variant="caption" display="block" gutterBottom>
+          Time taken: {formatMilliseconds(solution.timeTaken)}
+        </Typography>
+      </ProtectedElement>)}
     </Grid>
   );
 }

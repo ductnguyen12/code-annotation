@@ -22,6 +22,7 @@ export interface Solution {
   value: SolutionValue;
   raterId?: string;
   question?: Question;
+  timeTaken?: number;
 }
 
 export interface SolutionValue {

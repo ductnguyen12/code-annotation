@@ -9,4 +9,5 @@ public class SolutionDoc {
     private String rater;
     private String raterExternalId;
     private SolutionValue solution;
+    private Long timeTaken;
 }
