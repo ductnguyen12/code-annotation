@@ -70,6 +70,10 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
     dispatch(updateConfiguration({ key: "hiddenQuestions", value: { value: checked } }));
   }, [dispatch]);
 
+  const handleSetAllowNoRating = useCallback((checked: boolean) => {
+    dispatch(updateConfiguration({ key: "allowNoRating", value: { value: checked } }));
+  }, [dispatch]);
+
   const handleSystemChange = useCallback((oldValue: RaterMgmtSystem, newValue: RaterMgmtSystem) => {
     dispatch(deleteConfiguration({ key: oldValue.toLowerCase() }));
   }, [dispatch]);
@@ -134,6 +138,12 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
           checked={!!configuration?.hiddenQuestions?.value}
           onChange={(_, checked) => handleSetHiddenQuestions(checked)}
           label="Hide snippet questions before rating"
+        />
+        <FormControlLabel
+          control={<Checkbox />}
+          checked={!!configuration?.allowNoRating?.value}
+          onChange={(_, checked) => handleSetAllowNoRating(checked)}
+          label="Allow no rating"
         />
         <FormControl sx={{ minWidth: 120 }}>
           <InputLabel id="programming-language" size="small">Language</InputLabel>
