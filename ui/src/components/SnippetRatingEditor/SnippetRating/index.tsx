@@ -1,9 +1,11 @@
 import * as React from 'react';
 
+import BlockIcon from '@mui/icons-material/Block';
 import InfoIcon from '@mui/icons-material/Info';
 import StarIcon from '@mui/icons-material/Star';
 import { styled } from '@mui/material';
 import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
@@ -60,6 +62,7 @@ export default function SnippetRating({
   editable,
   shouldHideQuestions,
   disableComment,
+  allowNoRating,
   correctRating,
   statistics,
   pRating,
@@ -78,6 +81,7 @@ export default function SnippetRating({
   editable?: boolean;
   shouldHideQuestions?: boolean;
   disableComment?: boolean;
+  allowNoRating?: boolean;
   correctRating?: number;
   statistics?: {
     averageRating: number;
@@ -125,6 +129,8 @@ export default function SnippetRating({
     [pRating, pRatingScale],
   );
 
+  const ignoreRating = React.useMemo(() => ratingValue === -1, [ratingValue]);
+
   const handleChange = React.useCallback((key: string, value: any) => {
     if (!editable)
       return;
@@ -154,7 +160,7 @@ export default function SnippetRating({
         gap: 1,
       }}
     >
-      {!disableComment && (<FormControl
+      {(!disableComment || ignoreRating) && (<FormControl
         sx={{
           width: '300px',
         }}
@@ -173,27 +179,49 @@ export default function SnippetRating({
         />
       </FormControl>)}
       <FormControl error={invalid}>
-        <Rating
-          getLabelText={getLabelText}
-          onChange={(event, newValue) => {
-            onFocus && onFocus();
-            handleChange('rate', newValue ? newValue : 0);
-          }}
-          onChangeActive={(event, newHover) => {
-            setHover(newHover);
-          }}
-          emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
-          value={ratingValue}
-        />
         <Box
-          hidden={!ratingValue && hover === -1}
+          sx={{ display: "inline-flex" }}
+        >
+          <Rating
+            getLabelText={getLabelText}
+            onChange={(event, newValue) => {
+              onFocus && onFocus();
+              handleChange('rate', newValue ? newValue : 0);
+            }}
+            onChangeActive={(event, newHover) => {
+              setHover(newHover);
+            }}
+            emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+            value={ratingValue}
+          />
+          {allowNoRating && (<Tooltip
+            title="No rating. Please input the reason in comment box."
+            placement="right-end"
+            arrow
+          >
+            <Checkbox
+              sx={{
+                padding: '1px',
+              }}
+              checked={ignoreRating}
+              icon={(<BlockIcon style={{ opacity: 0.55 }} />)}
+              checkedIcon={<BlockIcon color="error" />}
+              onChange={(_, checked) => {
+                onFocus && onFocus();
+                handleChange('rate', checked ? -1 : 0);
+              }}
+            />
+          </Tooltip>)}
+        </Box>
+        <Box
+          hidden={!ratingValue && !ignoreRating && hover === -1}
           sx={{
             ml: 2,
             minHeight: '24px',
             display: 'block',
           }}
         >
-          {labels[hover !== -1 ? hover : ratingValue]}
+          {!ignoreRating ? labels[hover !== -1 ? hover : ratingValue] : 'Ignore rating'}
         </Box>
       </FormControl>
       {correctRating && (<ProtectedElement hidden>

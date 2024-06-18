@@ -287,7 +287,9 @@ public class DatasetService {
                 // Ignore attention check snippets
                 .filter(snippet -> !snippet.isAttentionCheck())
                 .flatMap(snippet -> snippet.getRates().stream())
-                .filter(rating -> rating != null && rating.getValue() != null)
+                .filter(rating -> rating != null && rating.getValue() != null
+                        // Do not count if rating was ignored
+                        && rating.getValue() > 0)
                 .mapToInt(SnippetRate::getValue)
                 .average()
                 .orElse(0d);

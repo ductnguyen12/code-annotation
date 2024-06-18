@@ -145,7 +145,8 @@ const SnippetList = () => {
         shouldHideQuestions={shouldHideQuestions}
         showSnippetPath={authenticated}
         disableLanguageSelector={!authenticated}
-        disableComment={dataset?.configuration?.hideComment}
+        disableComment={dataset?.configuration?.hideComment?.value}
+        allowNoRating={dataset?.configuration?.allowNoRating?.value}
         onSnippetChange={handleSelectSnippet}
         onRatingUpdate={handleRatingValueUpdate}
         onRatingSubmit={(rating: SnippetRate, next?: number) => handleRatingChange(

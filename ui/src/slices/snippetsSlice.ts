@@ -123,7 +123,7 @@ export const rateSnippetAsync = createAsyncThunk(
   }, { dispatch }) => {
     try {
       await api.rateSnippet(snippetId, rate);
-      if (!nextSnippet && successfulMsg)
+      if (!nextSnippet && nextSnippet !== 0 && successfulMsg)
         defaultAPISuccessHandle(successfulMsg, dispatch);
       if (onSuccess)
         onSuccess();

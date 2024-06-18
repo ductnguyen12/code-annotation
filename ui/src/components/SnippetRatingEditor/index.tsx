@@ -33,6 +33,7 @@ export default function SnippetRatingEditor({
   disableNavigation,
   disableSubmission,
   disableComment,
+  allowNoRating,
   onFocus,
   onBlur,
   onSnippetChange,
@@ -58,6 +59,7 @@ export default function SnippetRatingEditor({
   disableNavigation?: boolean;
   disableSubmission?: boolean;
   disableComment?: boolean;
+  allowNoRating?: boolean;
   onFocus?: () => void,
   onBlur?: () => void,
   onSnippetChange: (index: number) => void;
@@ -85,10 +87,17 @@ export default function SnippetRatingEditor({
     (nextSnippet?: number): void => {
       if (!editable)
         return;
-      if (snippets[selected].rate?.value === undefined
-        || (snippets[selected].rate?.value as number) < 1) {
+      const ratingValue = snippets[selected].rate?.value;
+      if (ratingValue === undefined || ratingValue === 0) {
         dispatch(pushNotification({
           message: 'Rating is required',
+          variant: 'error',
+        }));
+        return;
+      } else if (ratingValue === -1 && !snippets[selected].rate?.comment) {
+        // Ignore rating without give a comment
+        dispatch(pushNotification({
+          message: 'Comment is required when rating was ignored',
           variant: 'error',
         }));
         return;
@@ -193,6 +202,7 @@ export default function SnippetRatingEditor({
           editable={editable}
           shouldHideQuestions={!showQuestions}
           disableComment={disableComment}
+          allowNoRating={allowNoRating}
           correctRating={snippets[selected].correctRating}
           statistics={statistics?.snippets[snippets[selected].id]}
           pRating={pRatings?.find(rating => rating.snippetId === snippets[selected].id)}
