@@ -73,7 +73,7 @@ public class RaterValidator implements ConstraintValidator<RaterConstraint, Rate
                 .map(SolutionVM::questionId)
                 .collect(Collectors.toSet());
         Set<Long> requiredNotAnsweredQuestions = allQuestions.stream()
-                .filter(q -> null != q.getConstraint() && q.getConstraint().getRequired())
+                .filter(q -> null != q.getConstraint() && Boolean.TRUE.equals(q.getConstraint().getRequired()))
                 .map(DemographicQuestion::getId)
                 .filter(id -> !answeredQuestions.contains(id))
                 .collect(Collectors.toSet());
