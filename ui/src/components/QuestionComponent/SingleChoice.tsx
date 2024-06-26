@@ -4,6 +4,7 @@ import FormHelperText from "@mui/material/FormHelperText"
 import FormLabel from "@mui/material/FormLabel"
 import Radio from "@mui/material/Radio"
 import RadioGroup from "@mui/material/RadioGroup"
+import DOMPurify from "dompurify"
 import { useCallback, useEffect, useMemo } from "react"
 import { Question, Solution } from "../../interfaces/question.interface"
 
@@ -75,7 +76,11 @@ const SingleChoice = ({
         id={`question-id-${question.id}`}
         required={required}
       >
-        {`${questionIndex + 1}. ${question.content}`}
+        <div
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(`${questionIndex + 1}. ${question.content || ''}`)
+          }}
+        />
       </FormLabel>
       <RadioGroup
         aria-labelledby={`question-id-${question.id}`}

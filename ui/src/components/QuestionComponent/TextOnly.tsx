@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import DOMPurify from "dompurify";
 import { Question } from "../../interfaces/question.interface";
 
 export default function TextOnly({
@@ -8,6 +9,12 @@ export default function TextOnly({
   [key: string]: any,
 }) {
   return (
-    <Box>{question.content}</Box>
+    <Box>
+      <div
+        dangerouslySetInnerHTML={{
+          __html: DOMPurify.sanitize(question.content || '')
+        }}
+      />
+    </Box>
   );
 }

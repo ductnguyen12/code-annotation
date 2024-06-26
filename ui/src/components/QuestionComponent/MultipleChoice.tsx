@@ -4,6 +4,7 @@ import FormControlLabel from "@mui/material/FormControlLabel"
 import FormGroup from "@mui/material/FormGroup"
 import FormHelperText from "@mui/material/FormHelperText"
 import FormLabel from "@mui/material/FormLabel"
+import DOMPurify from "dompurify"
 import { useCallback, useEffect, useMemo } from "react"
 import { Question, Solution } from "../../interfaces/question.interface"
 
@@ -75,7 +76,11 @@ const MultipleChoice = ({
       <FormLabel component="legend"
         required={required}
       >
-        {`${questionIndex + 1}. ${question?.content}`}
+        <div
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(`${questionIndex + 1}. ${question.content || ''}`)
+          }}
+        />
       </FormLabel>
       <FormGroup
         onFocus={onFocus}

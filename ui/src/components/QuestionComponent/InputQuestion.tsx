@@ -2,6 +2,7 @@ import FormControl from "@mui/material/FormControl"
 import FormHelperText from "@mui/material/FormHelperText"
 import FormLabel from "@mui/material/FormLabel"
 import TextField from "@mui/material/TextField"
+import DOMPurify from "dompurify"
 import { useCallback, useEffect, useMemo } from "react"
 import { Question, Solution } from "../../interfaces/question.interface"
 
@@ -62,7 +63,11 @@ const InputQuestion = ({
         id={`question-id-${question.id}`}
         required={required}
       >
-        {`${questionIndex + 1}. ${question.content}`}
+        <div
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(`${questionIndex + 1}. ${question.content || ''}`)
+          }}
+        />
       </FormLabel>
       <TextField
         variant="outlined"

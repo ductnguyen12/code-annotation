@@ -1,6 +1,7 @@
 import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import FormLabel from "@mui/material/FormLabel";
+import DOMPurify from "dompurify";
 import { useCallback, useEffect, useMemo } from "react";
 import { Question, Solution } from "../../interfaces/question.interface";
 import MultipleRating from "../MultipleRating";
@@ -70,7 +71,11 @@ const RatingQuestion = ({
         component="legend"
         required={required}
       >
-        {`${questionIndex + 1}. ${question.content || ''}`}
+        <div
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(`${questionIndex + 1}. ${question.content || ''}`)
+          }}
+        />
       </FormLabel>
       <MultipleRating
         name={`question-id-${question.id}`}
