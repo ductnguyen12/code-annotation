@@ -11,6 +11,7 @@ export default function TextOnly({
   return (
     <Box>
       <div
+        className="inline-block"
         dangerouslySetInnerHTML={{
           __html: DOMPurify.sanitize(question.content || '')
         }}
