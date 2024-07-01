@@ -5,6 +5,7 @@ import TableBody from "@mui/material/TableBody"
 import TableCell from "@mui/material/TableCell"
 import TableHead from "@mui/material/TableHead"
 import TableRow from "@mui/material/TableRow"
+import DOMPurify from "dompurify"
 
 const MultipleRating = ({
   name,
@@ -28,7 +29,15 @@ const MultipleRating = ({
       <TableHead>
         <TableRow>
           <TableCell />
-          {options.map((option, index) => (<TableCell key={index} align="right">{option}</TableCell>))}
+          {options.map((option, index) => (
+            <TableCell key={index} align="right">
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(option)
+                }}
+              />
+            </TableCell>
+          ))}
         </TableRow>
       </TableHead>
       <TableBody>
@@ -38,7 +47,13 @@ const MultipleRating = ({
             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
           >
             <TableCell component="th" scope="row">
-              <FormLabel id={`${name}-attr-${index}`}>{attribute}</FormLabel>
+              <FormLabel id={`${name}-attr-${index}`}>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(attribute)
+                  }}
+                />
+              </FormLabel>
             </TableCell>
             {options.map((_, i) => (
               <TableCell key={i} align="right">

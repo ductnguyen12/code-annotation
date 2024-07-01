@@ -91,7 +91,18 @@ const SingleChoice = ({
         onChange={e => handleChange(parseInt(e.target.value))}
       >
         {question.answer?.options?.map((option, index) => (
-          <FormControlLabel key={index} value={index} control={<Radio />} label={option} />
+          <FormControlLabel
+            key={index}
+            value={index}
+            label={(
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(option)
+                }}
+              />
+            )}
+            control={<Radio />}
+          />
         ))}
       </RadioGroup>
       <FormHelperText>{showError && !validity ? 'This question is required' : ''}</FormHelperText>

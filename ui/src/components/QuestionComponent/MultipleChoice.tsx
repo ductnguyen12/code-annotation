@@ -96,7 +96,13 @@ const MultipleChoice = ({
                 name={index + ""}
               />
             }
-            label={option}
+            label={(
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(option)
+                }}
+              />
+            )}
           />
         ))}
       </FormGroup>
