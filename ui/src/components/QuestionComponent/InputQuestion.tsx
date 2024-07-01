@@ -64,6 +64,7 @@ const InputQuestion = ({
         required={required}
       >
         <div
+          className="inline-block"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(`${questionIndex + 1}. ${question.content || ''}`)
           }}
