@@ -89,6 +89,9 @@ const MultipleChoice = ({
         {question?.answer?.options?.map((option, index) => (
           <FormControlLabel
             key={index}
+            style={{
+              alignItems: 'flex-start',
+            }}
             control={
               <Checkbox
                 checked={solution?.value.selected?.includes(index)}
@@ -98,6 +101,7 @@ const MultipleChoice = ({
             }
             label={(
               <div
+                className="pt-2"
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(option)
                 }}
