@@ -94,8 +94,12 @@ const SingleChoice = ({
           <FormControlLabel
             key={index}
             value={index}
+            style={{
+              alignItems: 'flex-start',
+            }}
             label={(
               <div
+                className="pt-2"
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(option)
                 }}
