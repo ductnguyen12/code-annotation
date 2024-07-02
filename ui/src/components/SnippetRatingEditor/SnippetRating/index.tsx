@@ -221,7 +221,7 @@ export default function SnippetRating({
             display: 'block',
           }}
         >
-          {!ignoreRating ? labels[hover !== -1 ? hover : ratingValue] : 'Ignore rating'}
+          {!ignoreRating ? labels[hover !== -1 ? hover : ratingValue] : 'No rating'}
         </Box>
       </FormControl>
       {correctRating && (<ProtectedElement hidden>
