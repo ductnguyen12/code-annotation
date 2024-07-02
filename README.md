@@ -2,6 +2,12 @@
 
 An source code annotation tool based on likert scale.
 
+## Documentation
+
+Please refer to our [documentation](https://github.com/ductnguyen12/code-annotation/wiki) for more information.
+
+## Installation
+
 To run the whole application in development mode at local machine, run the following command:
 ```
 docker-compose -f compose.dev.yaml up --build
