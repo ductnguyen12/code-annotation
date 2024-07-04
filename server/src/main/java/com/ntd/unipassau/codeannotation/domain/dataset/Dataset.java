@@ -25,11 +25,17 @@ public class Dataset extends AbstractAuditingEntity<Long> {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dataset_seq")
     @SequenceGenerator(name = "dataset_seq", allocationSize = 1)
     private Long id;
+
     private String name;
+
+    @Column(length = 2048)
     private String description;
+
     private String pLanguage;
+
     @Column(length = 2048)
     private String completeText;
+
     private Boolean archived;
 
     @Type(JsonType.class)

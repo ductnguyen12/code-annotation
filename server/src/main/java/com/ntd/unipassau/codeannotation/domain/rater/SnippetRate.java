@@ -21,6 +21,7 @@ public class SnippetRate extends AbstractAuditingEntity<Long> {
     @SequenceGenerator(name = "snippet_rate_seq", allocationSize = 1)
     private Long id;
 
+    @Column(length = 2048)
     private String comment;
 
     private Integer value;
