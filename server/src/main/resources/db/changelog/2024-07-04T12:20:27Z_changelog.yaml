@@ -1,0 +1,17 @@
+databaseChangeLog:
+- changeSet:
+    id: 1720095638047-1
+    author: ducnt (generated)
+    changes:
+    - modifyDataType:
+        columnName: comment
+        newDataType: varchar(2048)
+        tableName: snippet_rate
+- changeSet:
+    id: 1720095638047-2
+    author: ducnt (generated)
+    changes:
+    - modifyDataType:
+        columnName: description
+        newDataType: varchar(2048)
+        tableName: dataset
