@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import api from '../api';
 import { RootState } from '../app/store';
-import { Solution } from '../interfaces/question.interface';
+import { QuestionPriority, Solution } from '../interfaces/question.interface';
 import { Rater } from '../interfaces/rater.interface';
 import { Snippet, SnippetQuestion, SnippetRate } from '../interfaces/snippet.interface';
 import { defaultAPIErrorHandle, defaultAPISuccessHandle } from '../util/error-util';
@@ -84,6 +84,27 @@ export const createQuestionAsync = createAsyncThunk(
       defaultAPISuccessHandle('Create snippet question successfully', dispatch);
       if (datasetId)
         dispatch(loadDatasetSnippetsAsync(datasetId));
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
+export const reorderQuestionsAsync = createAsyncThunk(
+  'snippets/reorderQuestionsAsync',
+  async ({
+    priority,
+    onSuccess,
+  }: {
+    priority: QuestionPriority,
+    onSuccess?: () => void,
+  }, { dispatch }) => {
+    try {
+      await api.updateSnippetQuestionPriority(priority);
+      defaultAPISuccessHandle('Reorder snippet questions successfully', dispatch);
+      if (onSuccess)
+        onSuccess();
     } catch (error: any) {
       defaultAPIErrorHandle(error, dispatch);
       throw error;

@@ -9,7 +9,7 @@ import { DemographicQuestionGroup } from "../../interfaces/question.interface"
 import { createDemographicQuestionGroupAsync, selectDemographicQuestionGroupState, setOpenDialog, setSelected, updateDemographicQuestionGroupAsync } from "../../slices/demographicQuestionGroupSlice"
 
 const IGNORE_FIELDS = [
-  'questionsPriority',
+  'priorityMap',
 ]
 
 const DemographicQuestionGroupDialog = (): ReactElement => {

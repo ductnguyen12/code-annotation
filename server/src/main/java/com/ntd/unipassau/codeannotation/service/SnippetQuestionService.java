@@ -8,6 +8,7 @@ import com.ntd.unipassau.codeannotation.mapper.SnippetMapper;
 import com.ntd.unipassau.codeannotation.repository.SnippetQuestionRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRepository;
 import com.ntd.unipassau.codeannotation.repository.SolutionRepository;
+import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetQuestionPriority;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetQuestionVM;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,11 @@ public class SnippetQuestionService {
         Snippet snippet = snippetRepository.findById(questionVM.getSnippetId())
                 .orElseThrow(() -> new RuntimeException("Could not find snippet ID: " + questionVM.getSnippetId()));
         SnippetQuestion snippetQuestion = snippetMapper.toSnippetQuestion(questionVM);
+        int maxPriority = snippet.getQuestions().stream()
+                .mapToInt(q -> q.getPriority() != null ? q.getPriority() : 0)
+                .max()
+                .orElse(-1);
+        snippetQuestion.setPriority(maxPriority + 1);
         snippetQuestion.setSnippet(snippet);
         snippetQuestion = snippetQuestionRepository.save(snippetQuestion);
         return snippetMapper.toSnippetQuestionVM(snippetQuestion);
@@ -68,5 +74,14 @@ public class SnippetQuestionService {
                 .collect(Collectors.toSet());
         solutionRepository.deleteAllInBatch(solutions);
         snippetQuestionRepository.deleteAllInBatch(questions);
+    }
+
+    @Transactional
+    public void updateQuestionPriority(SnippetQuestionPriority questionPriority) {
+        List<SnippetQuestion> snippetQuestions = snippetQuestionRepository.findAllById(questionPriority.getQuestionIds());
+        snippetQuestions.forEach(q -> questionPriority
+                .getPriorityByQuestionId(q.getId())
+                .ifPresent(q::setPriority));
+        snippetQuestionRepository.saveAll(snippetQuestions);
     }
 }

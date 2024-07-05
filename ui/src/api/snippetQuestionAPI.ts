@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import { QuestionPriority } from "../interfaces/question.interface";
 import { SnippetQuestion } from "../interfaces/snippet.interface";
 
 export const createSnippetQuestion = async (question: SnippetQuestion): Promise<SnippetQuestion> => {
@@ -8,4 +9,8 @@ export const createSnippetQuestion = async (question: SnippetQuestion): Promise<
 
 export const deleteSnippetQuestion = async (questionId: number): Promise<void> => {
   await axios.delete(`/api/v1/snippet-questions/${questionId}`);
+}
+
+export const updateSnippetQuestionPriority = async (priority: QuestionPriority): Promise<void> => {
+  await axios.post<QuestionPriority>('/api/v1/snippet-questions-priorities', priority);
 }

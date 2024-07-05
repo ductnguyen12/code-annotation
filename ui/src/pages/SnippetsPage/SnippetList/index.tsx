@@ -14,14 +14,16 @@ import { useDataset, useDatasetPRatings, useDatasetStatistics } from '../../../h
 import { useModels } from '../../../hooks/model';
 import { useDatasetSnippets } from "../../../hooks/snippet";
 import { PredictionTarget } from '../../../interfaces/model.interface';
-import { Solution } from "../../../interfaces/question.interface";
+import { QuestionPriority, Solution } from "../../../interfaces/question.interface";
 import { SnippetQuestion, SnippetRate } from "../../../interfaces/snippet.interface";
 import { selectAuthState } from '../../../slices/authSlice';
 import {
   chooseSnippet,
   createQuestionAsync,
   deleteQuestionAsync,
+  loadDatasetSnippetsAsync,
   rateSnippetAsync,
+  reorderQuestionsAsync,
   updateCurrentRateByKey,
   updateQuestionSolution,
 } from "../../../slices/snippetsSlice";
@@ -104,6 +106,13 @@ const SnippetList = () => {
     dispatch(deleteQuestionAsync({ questionId: question.id as number, datasetId }));
   }, [datasetId, dispatch]);
 
+  const handleQuestionPriorityChange = useCallback((priority: QuestionPriority) => {
+    dispatch(reorderQuestionsAsync({
+      priority,
+      onSuccess: () => dispatch(loadDatasetSnippetsAsync(datasetId as number)),
+    }));
+  }, [datasetId, dispatch]);
+
   return (
     <Box>
       <LoadingBackdrop open={'loading' === status} />
@@ -156,6 +165,7 @@ const SnippetList = () => {
         onSolutionChange={handleSolutionChange}
         onCreateQuestion={handleCreateQuestion}
         onDeleteQuestion={handleDeleteQuestion}
+        onQuestionPriorityChange={handleQuestionPriorityChange}
       />
     </Box>
   )

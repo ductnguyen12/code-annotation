@@ -27,5 +27,6 @@ export interface SnippetRate {
 
 export interface SnippetQuestion extends Question {
   snippetId: number;
+  priority?: number;
   hidden?: boolean;
 }

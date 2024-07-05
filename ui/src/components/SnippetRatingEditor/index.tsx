@@ -9,7 +9,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch } from '../../app/hooks';
 import { DatasetStatistics } from '../../interfaces/dataset.interface';
 import { Model, PredictedRating } from '../../interfaces/model.interface';
-import { Solution } from '../../interfaces/question.interface';
+import { QuestionPriority, Solution } from '../../interfaces/question.interface';
 import { Snippet, SnippetQuestion, SnippetRate } from "../../interfaces/snippet.interface";
 import { pushNotification } from '../../slices/notificationSlice';
 import SnippetViewer from '../SnippetViewer';
@@ -42,6 +42,7 @@ export default function SnippetRatingEditor({
   onSolutionChange,
   onCreateQuestion,
   onDeleteQuestion,
+  onQuestionPriorityChange,
 }: {
   snippets: Snippet[];
   selected: number;
@@ -68,6 +69,7 @@ export default function SnippetRatingEditor({
   onSolutionChange: (questionIndex: number, solution: Solution) => void;
   onCreateQuestion?: (question: SnippetQuestion) => void;
   onDeleteQuestion?: (question: SnippetQuestion) => void;
+  onQuestionPriorityChange?: (priorities: QuestionPriority) => void;
 }) {
   const dispatch = useAppDispatch();
 
@@ -216,6 +218,7 @@ export default function SnippetRatingEditor({
           onSolutionChange={onSolutionChange}
           onCreateQuestion={handleCreateQuestion}
           onDeleteQuestion={onDeleteQuestion}
+          onQuestionPriorityChange={onQuestionPriorityChange}
         />
         <Box
           sx={{
