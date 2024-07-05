@@ -44,15 +44,18 @@ export enum QuestionType {
   SNIPPET = "SNIPPET",
 }
 
-export interface QuestionSet {
+export interface QuestionPriority {
+  priorityMap?: {
+    [key: number]: number;
+  };
+}
+
+export interface QuestionSet extends QuestionPriority {
   id?: number;
   title: string;
   description?: string;
   priority: number;
   questions?: Question[];
-  questionsPriority?: {
-    [key: number]: number;
-  }
 }
 
 export interface DemographicQuestion extends Question {

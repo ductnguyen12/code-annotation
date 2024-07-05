@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class SnippetQuestionDoc extends QuestionDoc {
+    private Integer priority;
     private Boolean hidden;
 }

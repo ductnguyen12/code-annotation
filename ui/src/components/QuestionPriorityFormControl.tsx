@@ -7,7 +7,7 @@ import { useFormContext } from "react-hook-form";
 import { Question } from "../interfaces/question.interface";
 import SortableList from "./SortableList";
 
-const FORM_KEY_PRIORITY = 'questionsPriority';
+const FORM_KEY_PRIORITY = 'priorityMap';
 
 export default function QuestionPriorityFormControl<T extends Question>({
   questions,
@@ -15,7 +15,7 @@ export default function QuestionPriorityFormControl<T extends Question>({
   questions: T[],
 }) {
   const { register, watch, setValue } = useFormContext();
-  const questionsPriority = watch(FORM_KEY_PRIORITY, {});
+  const priorityMap = watch(FORM_KEY_PRIORITY, {});
 
   useEffect(() => {
     register(FORM_KEY_PRIORITY, { value: Object.fromEntries(questions.map((q, i) => [q.id as number, i])) });
@@ -23,13 +23,13 @@ export default function QuestionPriorityFormControl<T extends Question>({
   }, [questions, register, setValue]);
 
   const items = useMemo(() => {
-    if (!questionsPriority) {
+    if (!priorityMap) {
       return [];
     }
 
-    return [...questions].sort((q1: T, q2: T) => questionsPriority[q1.id as number] - questionsPriority[q2.id as number])
+    return [...questions].sort((q1: T, q2: T) => priorityMap[q1.id as number] - priorityMap[q2.id as number])
       .map(q => ({ ...q, id: q.id as number }))
-  }, [questions, questionsPriority]);
+  }, [questions, priorityMap]);
 
   const onChange = useCallback((newItems: any) => {
     setValue(FORM_KEY_PRIORITY, Object.fromEntries(newItems.map((q: any, i: number) => [parseInt(q.id), i])));

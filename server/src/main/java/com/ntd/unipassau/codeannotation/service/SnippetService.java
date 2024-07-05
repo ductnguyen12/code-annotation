@@ -129,6 +129,15 @@ public class SnippetService {
             // Separate rates and questions from snippets in order to avoid saving one by one
             if (CollectionUtils.isEmpty(s.getQuestions()))
                 return;
+
+            // Init questions' priorities
+            AtomicInteger qPriority = new AtomicInteger();
+            s.getQuestions().forEach(q -> {
+                int p = qPriority.getAndIncrement();
+                if (q.getPriority() == null)
+                    q.setPriority(p);
+            });
+
             questions.addAll(s.getQuestions());
             if (!CollectionUtils.isEmpty(s.getRates())) {
                 rates.addAll(s.getRates());

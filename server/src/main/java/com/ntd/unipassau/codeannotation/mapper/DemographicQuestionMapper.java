@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface DemographicQuestionMapper {
-    @Mapping(target = "questionsPriority", ignore = true)
+    @Mapping(target = "priorityMap", ignore = true)
     @Mapping(target = "questions", ignore = true)
     QuestionSetVM toQuestionSetVM(QuestionSet questionSet);
 

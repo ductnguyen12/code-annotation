@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DQuestionGroupService {
@@ -62,12 +65,10 @@ public class DQuestionGroupService {
         return dqgRepository.findById(groupId)
                 .map(group -> {
                     BeanUtils.copyProperties(groupVM, group, "id");
-                    if (groupVM.getQuestionsPriority() != null) {
-                        Map<Long, Integer> priorityMap = groupVM.getQuestionsPriority();
+                    if (groupVM.hasQuestionPriority()) {
                         group.getQuestionAssignments().forEach(assignment -> {
-                            assignment.setPriority(
-                                    priorityMap.getOrDefault(
-                                            assignment.getId().getQuestionId(), null));
+                            groupVM.getPriorityByQuestionId(assignment.getId().getQuestionId())
+                                    .ifPresent(assignment::setPriority);
                         });
                     }
                     return dqgRepository.save(group);

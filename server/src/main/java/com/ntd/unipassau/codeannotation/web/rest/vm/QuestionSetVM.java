@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Map;
 
 @Data
-public class QuestionSetVM {
+public class QuestionSetVM implements QuestionPriorityMap {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
@@ -18,7 +18,7 @@ public class QuestionSetVM {
     private int priority;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Map<Long, Integer> questionsPriority;
+    private Map<Long, Integer> priorityMap;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Collection<? extends QuestionVM> questions;

@@ -44,11 +44,11 @@ const DemographicQuestions = ({
   const [validities, setValidities] = useState<boolean[]>([]);
   const [showErrors, setShowErrors] = useState<boolean[]>([]);
 
-  const stepQuestionsPriority = useMemo(() => {
+  const stepPriorityMap = useMemo(() => {
     return Object.fromEntries(
       questionGroups.map(group => {
-        const questionsPriority = Object.fromEntries(group.questions?.map((q, i) => [q.id as number, i]) || []);
-        return [group.id as number, questionsPriority]
+        const priorityMap = Object.fromEntries(group.questions?.map((q, i) => [q.id as number, i]) || []);
+        return [group.id as number, priorityMap]
       })
     );
   }, [questionGroups]);
@@ -60,10 +60,10 @@ const DemographicQuestions = ({
         questions: questions.filter(question => question.groupIds?.includes(group.id as number)),
       } as StepData;
 
-      const questionsPriority = stepQuestionsPriority[group.id as number];
-      if (questionsPriority) {
+      const priorityMap = stepPriorityMap[group.id as number];
+      if (priorityMap) {
         result.questions = result.questions.sort(
-          (q1, q2) => questionsPriority[q1.id as number] - questionsPriority[q2.id as number]
+          (q1, q2) => priorityMap[q1.id as number] - priorityMap[q2.id as number]
         );
       }
 
@@ -75,7 +75,7 @@ const DemographicQuestions = ({
       setShowErrors(newStepData[0].questions?.map(_ => false) || []);
       setValidities(newStepData[0].questions?.map(_ => true) || []);
     }
-  }, [questionGroups, questions, stepQuestionsPriority]);
+  }, [questionGroups, questions, stepPriorityMap]);
 
   useEffect(() => {
     if (!steps[activeStep] || !steps[activeStep].questions) {

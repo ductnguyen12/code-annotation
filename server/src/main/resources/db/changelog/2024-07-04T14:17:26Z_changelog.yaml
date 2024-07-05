@@ -1,0 +1,11 @@
+databaseChangeLog:
+- changeSet:
+    id: 1720102658351-6
+    author: ducnt (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: priority
+            type: integer
+        tableName: snippet_question

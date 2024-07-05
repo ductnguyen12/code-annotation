@@ -15,6 +15,8 @@ public class SnippetQuestionVM extends QuestionVM {
 
     private Long snippetId;
 
+    private Integer priority;
+
     private Boolean hidden;
 
     public SolutionVM getSolution() {
