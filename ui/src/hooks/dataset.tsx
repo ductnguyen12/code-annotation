@@ -8,6 +8,7 @@ import { selectAuthState } from "../slices/authSlice";
 import {
   DatasetsState,
   loadDatasetAsync,
+  loadDatasetConfigurationAsync,
   loadDatasetPRatingsAsync,
   loadDatasetStatisticsAsync,
   loadDatasetSubmissionsAsync,
@@ -85,4 +86,15 @@ export const useDatasetSubmissions = (datasetId?: number): Submission[] => {
   }, [dispatch, authenticated, datasetId])
 
   return useAppSelector(selectDatasetsState).submissions;
+};
+
+export const useDatasetConfiguration = (datasetId?: number): any => {
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    if (datasetId)
+      dispatch(loadDatasetConfigurationAsync(datasetId));
+  }, [dispatch, datasetId])
+
+  return useAppSelector(selectDatasetsState).configuration;
 };

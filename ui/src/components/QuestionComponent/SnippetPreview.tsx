@@ -9,6 +9,8 @@ export default function SnippetPreview({
   solution,
   validity,
   showError,
+  hideComment,
+  allowNoRating,
   onInit,
   onFocus,
   onBlur,
@@ -19,6 +21,8 @@ export default function SnippetPreview({
   solution?: Solution,
   validity?: boolean,
   showError?: boolean,
+  hideComment?: boolean,
+  allowNoRating?: boolean,
   onInit: (validity: boolean) => void,
   onFocus: () => void,
   onBlur: (validity: boolean) => void,
@@ -50,15 +54,30 @@ export default function SnippetPreview({
   const required = useMemo(() => !!question.constraint?.required, [question]);
 
   const validate = useCallback(() => {
-    const ratingAndCommentConstraint = demographicQuestion.solution?.value.selected?.length === 1
-      && (demographicQuestion.solution?.value.input as string)?.length > 0;
+    const selected = demographicQuestion.solution?.value.selected;
+    const ratingValue = selected?.length === 1 ? selected[0] : undefined;
+    const comment = demographicQuestion.solution?.value.input;
+
+    // No rating without giving comment
+    if (ratingValue === -1 && !comment)
+      return false;
+
+    // Not a required question
+    if (!required)
+      return true;
+
+    // Not give a rating
+    if (!ratingValue)
+      return false;
+
+    // Must answer all snippet questions
     const subQuestionsConstraint =
       (demographicQuestion.subQuestions || []).length === (demographicQuestion.subQuestions || [])
         .filter(q => (q.solution?.value.selected || [])?.length > 0
           || (q.solution?.value.input as string)?.length > 0)
         .length;
 
-    return !required || (ratingAndCommentConstraint && subQuestionsConstraint);
+    return subQuestionsConstraint;
   }, [required, demographicQuestion]);
 
   useEffect(() => {
@@ -110,6 +129,8 @@ export default function SnippetPreview({
       disablePagination
       disableNavigation
       disableSubmission
+      disableComment={hideComment}
+      allowNoRating={allowNoRating}
       onFocus={onFocus}
       onBlur={handleBlur}
       onSnippetChange={(index: number) => { }}

@@ -72,3 +72,9 @@ export const getDatasetPrediction = async (datasetId: number): Promise<Predicted
     });
   return response.data;
 }
+
+export const getDatasetConfiguration = async (datasetId: number): Promise<any> => {
+  const response: AxiosResponse<any> =
+    await axios.get<any>(`/api/v1/datasets/${datasetId}/configuration`);
+  return response.data;
+}

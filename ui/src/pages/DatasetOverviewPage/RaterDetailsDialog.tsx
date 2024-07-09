@@ -9,10 +9,12 @@ import { Question } from "../../interfaces/question.interface";
 import { Rater } from "../../interfaces/rater.interface";
 
 export default function RaterDetailsDialog({
+  datasetConfiguration,
   rater,
   open,
   onClose,
 }: {
+  datasetConfiguration?: any,
   rater?: Rater,
   open?: boolean,
   onClose: () => void,
@@ -40,7 +42,10 @@ export default function RaterDetailsDialog({
               questionIndex={index}
               question={solution.question as Question}
               solution={solution}
-              onValueChange={(..._) => { }} />
+              hideComment={!!datasetConfiguration?.hideComment?.value}
+              allowNoRating={!!datasetConfiguration?.allowNoRating?.value}
+              onValueChange={(..._) => { }}
+            />
           </Paper>
         ))}
       </DialogContent>

@@ -35,6 +35,7 @@ const QuestionComponent = ({
   onBlur,
   onValueChange,
   onValidityChange,
+  ...otherProps
 }: {
   questionIndex: number;
   question: Question;
@@ -46,6 +47,7 @@ const QuestionComponent = ({
   onBlur?: () => void,
   onValueChange: (questionIndex: number, solution: Solution, subQuestionIndex?: number) => void;
   onValidityChange?: (questionIndex: number, validity: boolean) => void;
+  [key: string]: any,
 }) => {
   const [validity, setValidity] = useState(true);
 
@@ -100,6 +102,7 @@ const QuestionComponent = ({
       onFocus={handleFocus}
       onBlur={handleBlur}
       onValueChange={handleValueChange}
+      {...otherProps}
     />
   )
 }

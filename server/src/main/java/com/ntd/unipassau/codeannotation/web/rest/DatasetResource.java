@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Dataset Resource")
 @RestController
@@ -145,6 +146,15 @@ public class DatasetResource {
     @Secured({AuthoritiesConstants.USER})
     public DatasetStatistics getDatasetStatistics(@PathVariable Long datasetId) {
         return datasetService.getDatasetStatistics(datasetId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
+    }
+
+    @Operation(summary = "Get dataset by id")
+    @GetMapping("/v1/datasets/{datasetId}/configuration")
+    public Map<String, Map<String, Object>> getDatasetConfiguration(@PathVariable Long datasetId) {
+        return datasetService.getDatasetById(datasetId)
+                .map(DatasetVM::getConfiguration)
                 .orElseThrow(() -> new NotFoundException(
                         "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
     }

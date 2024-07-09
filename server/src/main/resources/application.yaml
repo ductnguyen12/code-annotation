@@ -54,6 +54,7 @@ app:
       - /v1/raters/{externalSystem}/{externalId}
       - /v1/datasets/{datasetId}
       - /v1/datasets/{datasetId}/snippets
+      - /v1/datasets/{datasetId}/configuration
       - /v1/datasets/{datasetId}/prolific-completion
       - /v1/snippets/{snippetId}/rates
       - /v1/demographic-question-groups
