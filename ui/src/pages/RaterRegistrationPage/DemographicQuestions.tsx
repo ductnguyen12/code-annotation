@@ -11,6 +11,7 @@ import Stepper from '@mui/material/Stepper';
 import { ReactElement, useEffect, useMemo, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import QuestionComponent from '../../components/QuestionComponent';
+import { useDatasetConfiguration } from '../../hooks/dataset';
 import { useDemographicQuestionGroups, useDemographicQuestions } from '../../hooks/demographicQuestion';
 import { DemographicQuestion, Solution } from "../../interfaces/question.interface";
 import { Rater } from '../../interfaces/rater.interface';
@@ -36,6 +37,8 @@ const DemographicQuestions = ({
   const {
     questions,
   } = useDemographicQuestions(datasetId);
+
+  const datasetConfiguration = useDatasetConfiguration(datasetId);
 
   const dispatch = useAppDispatch();
 
@@ -231,6 +234,8 @@ const DemographicQuestions = ({
                 questionIndex={index}
                 question={question}
                 solution={steps[activeStep].questions[index].solution}
+                hideComment={!!datasetConfiguration?.hideComment?.value}
+                allowNoRating={!!datasetConfiguration?.allowNoRating?.value}
                 showError={showErrors.length > index && showErrors[index]}
                 setShowError={(showError: boolean) => {
                   if (showErrors.length > index) {

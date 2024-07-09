@@ -226,6 +226,18 @@ export const exportSnippetsAsync = createAsyncThunk(
   }
 );
 
+export const loadDatasetConfigurationAsync = createAsyncThunk(
+  'datasets/loadDatasetConfigurationAsync',
+  async (datasetId: number) => {
+    try {
+      const result = await api.getDatasetConfiguration(datasetId);
+      return result;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+);
+
 export const datasetsSlice = createSlice({
   name: 'datasets',
   initialState,
@@ -392,6 +404,17 @@ export const datasetsSlice = createSlice({
         state.status = 'idle';
       })
       .addCase(exportSnippetsAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(loadDatasetConfigurationAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(loadDatasetConfigurationAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.configuration = action.payload;
+      })
+      .addCase(loadDatasetConfigurationAsync.rejected, (state) => {
         state.status = 'failed';
       })
       ;

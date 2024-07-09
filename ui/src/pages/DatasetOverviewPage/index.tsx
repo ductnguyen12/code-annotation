@@ -57,6 +57,7 @@ export function DatasetOverviewPage() {
         Snippets
       </Button>
       <RaterDetailsDialog
+        datasetConfiguration={dataset?.configuration}
         rater={rater}
         open={!!raterId}
         onClose={() => setRaterId(undefined)}
