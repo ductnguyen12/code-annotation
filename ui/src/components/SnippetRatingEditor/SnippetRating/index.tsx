@@ -7,19 +7,14 @@ import { styled } from '@mui/material';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
-import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import { PredictedRating } from '../../../interfaces/model.interface';
-import { QuestionPriority, Solution } from '../../../interfaces/question.interface';
-import { SnippetQuestion as SQuestion, SnippetRate } from '../../../interfaces/snippet.interface';
+import { SnippetRate } from '../../../interfaces/snippet.interface';
 import ProtectedElement from '../../ProtectedElement';
-import AddQuestionButton from './AddQuestionButton';
 import MetricsDialog from './MetricsDialog';
-import ReorderQuestionButton from './ReorderQuestionButton';
-import SnippetQuestion from './SnippetQuestion';
 
 interface Labels {
   [key: number]: string;
@@ -57,11 +52,8 @@ const PRating = styled(Rating)({
 
 export default function SnippetRating({
   rating,
-  questions,
-  rater,
   invalid,
   editable,
-  shouldHideQuestions,
   disableComment,
   allowNoRating,
   correctRating,
@@ -71,17 +63,10 @@ export default function SnippetRating({
   onFocus,
   onBlur,
   onValueChange,
-  onSolutionChange,
-  onCreateQuestion,
-  onDeleteQuestion,
-  onQuestionPriorityChange,
 }: {
   rating?: SnippetRate;
-  questions?: Array<SQuestion>;
-  rater?: string;                 // For filtering soluton
   invalid?: boolean;
   editable?: boolean;
-  shouldHideQuestions?: boolean;
   disableComment?: boolean;
   allowNoRating?: boolean;
   correctRating?: number;
@@ -93,10 +78,6 @@ export default function SnippetRating({
   onFocus?: () => void,
   onBlur?: () => void,
   onValueChange?: (key: string, value: any) => void;
-  onSolutionChange?: (questionIndex: number, solution: Solution) => void;
-  onCreateQuestion?: (question: SQuestion) => void;
-  onDeleteQuestion?: (question: SQuestion) => void;
-  onQuestionPriorityChange?: (priorities: QuestionPriority) => void;
 }) {
   const [hover, setHover] = React.useState(-1);
   const [openMetricsDialog, setOpenMetricsDialog] = React.useState(false);
@@ -107,22 +88,6 @@ export default function SnippetRating({
     value: 0,
     comment: "",
   }
-
-  const questionIndexMap = React.useMemo(() => {
-    if (!questions)
-      return {};
-    const map = Object.fromEntries(questions.map((q, index) => [q.id as number, index]));
-    return map;
-  }, [questions]);
-
-  const sortedQuestions = React.useMemo(() => {
-    return questions?.slice().sort((q1, q2) => {
-      if ((!q1.priority && q1.priority !== 0) || (!q2.priority && q2.priority !== 0)) {
-        return (q1.id as number) - (q2.id as number);
-      }
-      return (q1.priority as number) - (q2.priority as number);
-    }) || [];
-  }, [questions]);
 
   const pRatingValue = React.useMemo(
     () => {
@@ -141,18 +106,6 @@ export default function SnippetRating({
     if (onValueChange)
       onValueChange(key, value);
   }, [editable, onValueChange]);
-
-  const handleSolutionChange = React.useCallback((questionId: number, solution: Solution) => {
-    if (!onSolutionChange)
-      return;
-    onSolutionChange(questionIndexMap[questionId], solution);
-  }, [onSolutionChange, questionIndexMap]);
-
-  const handleDeleteQuestion = React.useCallback((questionIndex: number) => {
-    if (questions && questionIndex < questions.length) {
-      onDeleteQuestion && onDeleteQuestion(questions[questionIndex]);
-    }
-  }, [onDeleteQuestion, questions]);
 
   return (
     <Box
@@ -272,45 +225,6 @@ export default function SnippetRating({
           />
         </>
       </ProtectedElement>
-      <Grid
-        className="justify-center mb-4"
-        sx={{ minWidth: 600, mt: -2 }}
-        rowSpacing={5}
-        columnSpacing={3}
-        container
-      >
-        {sortedQuestions
-          .filter(q => !q.hidden || !shouldHideQuestions)
-          .map((q, index) => (
-            <SnippetQuestion
-              key={q.id}
-              index={index}
-              question={q}
-              rater={rater}
-              invalid={invalid}
-              editable={editable}
-              onFocus={onFocus}
-              onBlur={onBlur}
-              onSolutionChange={(_, solution) => handleSolutionChange(q.id as number, solution)}
-              onDelete={handleDeleteQuestion}
-            />
-          ))}
-        <ProtectedElement hidden>
-          <Grid
-            className="flex gap-x-2"
-            xs={12}
-            item
-          >
-            <AddQuestionButton
-              onCreate={onCreateQuestion}
-            />
-            <ReorderQuestionButton
-              questions={sortedQuestions}
-              onChange={onQuestionPriorityChange}
-            />
-          </Grid>
-        </ProtectedElement>
-      </Grid>
     </Box>
   );
 }

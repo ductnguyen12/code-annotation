@@ -14,6 +14,7 @@ import { Snippet, SnippetQuestion, SnippetRate } from "../../interfaces/snippet.
 import { pushNotification } from '../../slices/notificationSlice';
 import SnippetViewer from '../SnippetViewer';
 import NavigationButton from './NavigationButton';
+import SnippetQuestionList from './SnippetQuestionList';
 import SnippetRating from "./SnippetRating";
 
 export default function SnippetRatingEditor({
@@ -198,11 +199,8 @@ export default function SnippetRatingEditor({
               ? snippets[selected].rate
               : snippets[selected].rates?.find(r => selectedRater === r.rater?.id)
           }
-          questions={snippets[selected].questions}
-          rater={selectedRater}
           invalid={invalid}
           editable={editable}
-          shouldHideQuestions={!showQuestions}
           disableComment={disableComment}
           allowNoRating={allowNoRating}
           correctRating={snippets[selected].correctRating}
@@ -215,6 +213,15 @@ export default function SnippetRatingEditor({
           onFocus={onFocus}
           onBlur={onBlur}
           onValueChange={onRatingUpdate}
+        />
+        <SnippetQuestionList
+          questions={snippets[selected].questions}
+          rater={selectedRater}
+          invalid={invalid}
+          editable={editable}
+          shouldHideQuestions={!showQuestions}
+          onFocus={onFocus}
+          onBlur={onBlur}
           onSolutionChange={onSolutionChange}
           onCreateQuestion={handleCreateQuestion}
           onDeleteQuestion={onDeleteQuestion}
