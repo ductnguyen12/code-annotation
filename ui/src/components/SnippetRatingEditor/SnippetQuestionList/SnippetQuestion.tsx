@@ -1,13 +1,12 @@
 import * as React from 'react';
 
-import CancelIcon from '@mui/icons-material/Cancel';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { QuestionType, Solution } from '../../../interfaces/question.interface';
+import { Solution } from '../../../interfaces/question.interface';
 import { SnippetQuestion as SQuestion } from '../../../interfaces/snippet.interface';
 import { formatMilliseconds } from '../../../util/time-util';
 import ConfirmationDialog from '../../ConfirmationDialog';
@@ -59,25 +58,13 @@ export default function SnippetQuestion({
     return undefined;
   }, [question.solutions?.length]);
 
-  const gridItemSize = React.useMemo(() => {
-    switch (question.type) {
-      case QuestionType.RATING:
-        return 10;
-      default:
-        return 6;
-    }
-  }, [question.type]);
-
   return (
-    <Grid
-      key={question?.id}
-      xs={gridItemSize}
+    <Box
       className="relative"
-      item
     >
       {question?.hidden && (<ProtectedElement hidden>
         <Tooltip
-          className="right-6 top-4 p-2"
+          className="right-6 bottom-0 z-10 p-2"
           sx={{ position: 'absolute' }}
           title="Hidden at first"
           placement="bottom"
@@ -91,9 +78,9 @@ export default function SnippetQuestion({
       {onDelete && (<ProtectedElement hidden>
         <>
           <Tooltip
-            className="right-0 top-4"
+            className="right-0 bottom-0 z-10"
             sx={{ position: 'absolute' }}
-            title="Delete"
+            title={`Delete question ${index + 1}`}
             placement="bottom"
             hidden={!onDelete}
             arrow
@@ -103,7 +90,7 @@ export default function SnippetQuestion({
               hidden={!onDelete}
               onClick={() => setOpen(true)}
             >
-              <CancelIcon />
+              <DeleteOutlineIcon color="error" />
             </IconButton>
           </Tooltip>
           <ConfirmationDialog
@@ -131,6 +118,6 @@ export default function SnippetQuestion({
           Time taken: {formatMilliseconds(solution.timeTaken)}
         </Typography>
       </ProtectedElement>)}
-    </Grid>
+    </Box>
   );
 }

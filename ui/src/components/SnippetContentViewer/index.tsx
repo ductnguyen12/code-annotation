@@ -2,7 +2,7 @@ import { Snippet } from "../../interfaces/snippet.interface";
 import SnippetBlocks from "./SnippetBlocks";
 import SnippetCode from "./SnippetCode";
 
-export default function SnippetViewer({
+export default function SnippetContentViewer({
   snippet,
   defaultPLanguage,
   ...otherProps
@@ -20,14 +20,14 @@ export default function SnippetViewer({
   }
 
   const {
-    showSnippetPath,
     disableLanguageSelector,
+    highlighterMaxHeight,
   } = otherProps;
 
   return <SnippetCode
     snippet={snippet}
     defaultPLanguage={defaultPLanguage}
-    showSnippetPath={showSnippetPath}
     disableLanguageSelector={disableLanguageSelector}
+    highlighterMaxHeight={highlighterMaxHeight}
   />
 }

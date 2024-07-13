@@ -35,7 +35,7 @@ export default function Pages() {
 
   return (
     <Container
-      maxWidth="lg"
+      maxWidth="xl"
       sx={{
         padding: 3,
       }}

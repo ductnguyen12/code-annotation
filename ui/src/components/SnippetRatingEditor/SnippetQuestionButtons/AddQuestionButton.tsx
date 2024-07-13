@@ -44,7 +44,7 @@ export default function AddQuestionButton({
   return (
     <>
       <Button
-        sx={{ flex: "1 1 0" }}
+        fullWidth
         variant="outlined"
         onClick={() => setOpen(true)}
       >
