@@ -3,6 +3,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import SendIcon from '@mui/icons-material/Send';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from "@mui/material/Box";
+import FormControlLabel from '@mui/material/FormControlLabel';
 import Pagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -12,10 +13,9 @@ import { Model, PredictedRating } from '../../interfaces/model.interface';
 import { QuestionPriority, Solution } from '../../interfaces/question.interface';
 import { Snippet, SnippetQuestion, SnippetRate } from "../../interfaces/snippet.interface";
 import { pushNotification } from '../../slices/notificationSlice';
-import SnippetViewer from '../SnippetViewer';
+import LayoutSwitch from '../LayoutSwitch';
 import NavigationButton from './NavigationButton';
-import SnippetQuestionList from './SnippetQuestionList';
-import SnippetRating from "./SnippetRating";
+import SnippetViewer from './SnippetViewer';
 
 export default function SnippetRatingEditor({
   snippets,
@@ -75,6 +75,7 @@ export default function SnippetRatingEditor({
   const dispatch = useAppDispatch();
 
   const [hiddenQuestion, setHiddenQuestion] = useState(false);
+  const [layout, setLayout] = useState<'vertical' | 'horizontal'>('vertical');
 
   const showQuestions = useMemo(
     () => !shouldHideQuestions
@@ -186,42 +187,34 @@ export default function SnippetRatingEditor({
             />
           )}
         </Box>
+        <Typography align="center" variant="body2" marginBottom={2}>
+          {showSnippetPath ? snippets[selected].path : ''}
+        </Typography>
+        <Box className="self-start ml-6 mb-2">
+          <FormControlLabel
+            control={<LayoutSwitch sx={{ m: 1 }} />}
+            label={layout === 'vertical' ? 'Vertical layout' : 'Horizontal layout'}
+            onChange={(_, checked) => setLayout(checked ? 'horizontal' : 'vertical')}
+          />
+        </Box>
         <SnippetViewer
+          layout={layout}
           snippet={snippets[selected]}
+          selectedRater={selectedRater}
           defaultPLanguage={defaultPLanguage}
+          statistics={statistics}
+          pRatings={pRatings}
+          invalid={invalid}
+          models={models}
+          editable={editable}
           showSnippetPath={showSnippetPath}
           disableLanguageSelector={disableLanguageSelector}
-        />
-        <SnippetRating
-          rating={
-            // Edit my rating or view other's rating
-            editable
-              ? snippets[selected].rate
-              : snippets[selected].rates?.find(r => selectedRater === r.rater?.id)
-          }
-          invalid={invalid}
-          editable={editable}
-          disableComment={disableComment}
-          allowNoRating={allowNoRating}
-          correctRating={snippets[selected].correctRating}
-          statistics={statistics?.snippets[snippets[selected].id]}
-          pRating={pRatings?.find(rating => rating.snippetId === snippets[selected].id)}
-          pRatingScale={models?.find(model => {
-            const pRating = pRatings?.find(rating => rating.snippetId === snippets[selected].id);
-            return pRating && model.id === pRating.modelId;
-          })?.ratingScale}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          onValueChange={onRatingUpdate}
-        />
-        <SnippetQuestionList
-          questions={snippets[selected].questions}
-          rater={selectedRater}
-          invalid={invalid}
-          editable={editable}
           shouldHideQuestions={!showQuestions}
+          disableComment={disableLanguageSelector}
+          allowNoRating={disableLanguageSelector}
           onFocus={onFocus}
           onBlur={onBlur}
+          onRatingUpdate={onRatingUpdate}
           onSolutionChange={onSolutionChange}
           onCreateQuestion={handleCreateQuestion}
           onDeleteQuestion={onDeleteQuestion}

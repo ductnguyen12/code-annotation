@@ -25,13 +25,13 @@ const SUPPORTED_HIGHLIGHTERS = {
 const SnippetCode = ({
   snippet,
   defaultPLanguage,
-  showSnippetPath,
   disableLanguageSelector,
+  highlighterMaxHeight,
 }: {
   snippet?: Snippet;
   defaultPLanguage?: string;
-  showSnippetPath?: boolean;
   disableLanguageSelector?: boolean;
+  highlighterMaxHeight?: string;
 }) => {
 
   const [language, setLanguage] = useState<string>('');
@@ -81,10 +81,7 @@ const SnippetCode = ({
   }, [defaultPLanguage, handleChangeLanguage]);
 
   return snippet?.code ? (
-    <Container maxWidth="lg">
-      <Typography align="center" variant="body2" marginBottom={2}>
-        {showSnippetPath ? snippet.path : ''}
-      </Typography>
+    <Container maxWidth="xl">
       <Box>
         {!disableLanguageSelector && (<Tooltip
           title="Choose another programming language code editor"
@@ -136,6 +133,7 @@ const SnippetCode = ({
         </Typography>
       )}
       <SyntaxHighlighter
+        customStyle={{ maxHeight: highlighterMaxHeight }}
         startingLineNumber={snippet.fromLine}
         showLineNumbers={true}
         language={language}
