@@ -29,20 +29,7 @@ export default function SnippetQuestionList({
   onSolutionChange?: (questionIndex: number, solution: Solution) => void;
   onDeleteQuestion?: (question: SQuestion) => void;
 }) {
-  const questionIndexMap = React.useMemo(() => {
-    if (!questions)
-      return {};
-    const map = Object.fromEntries(questions.map((q, index) => [q.id as number, index]));
-    return map;
-  }, [questions]);
-
   const numberOfColumns = React.useMemo(() => columns || 1, [columns]);
-
-  const handleSolutionChange = React.useCallback((questionId: number, solution: Solution) => {
-    if (!onSolutionChange)
-      return;
-    onSolutionChange(questionIndexMap[questionId], solution);
-  }, [onSolutionChange, questionIndexMap]);
 
   const handleDeleteQuestion = React.useCallback((questionIndex: number) => {
     if (questions && questionIndex < questions.length) {
@@ -72,7 +59,7 @@ export default function SnippetQuestionList({
               editable={editable}
               onFocus={onFocus}
               onBlur={onBlur}
-              onSolutionChange={(_: number, solution: Solution) => handleSolutionChange(q.id as number, solution)}
+              onSolutionChange={onSolutionChange}
               onDelete={handleDeleteQuestion}
             />
           </Grid>

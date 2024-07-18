@@ -39,7 +39,7 @@ const SignInPage = () => {
       <Paper
         elevation={3}
         sx={{
-          width: '35%',
+          width: '25%',
           height: '85%',
           margin: 'auto',
         }}
