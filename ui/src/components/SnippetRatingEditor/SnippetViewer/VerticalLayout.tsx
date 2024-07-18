@@ -59,7 +59,7 @@ export default function VerticalLayout({
       />
       <Box className="w-4/5 mt-2">
         <SnippetQuestionList
-          questions={snippet?.questions}
+          questions={questions}
           rater={selectedRater}
           invalid={invalid}
           editable={editable}
