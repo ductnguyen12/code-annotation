@@ -210,8 +210,8 @@ export default function SnippetRatingEditor({
           showSnippetPath={showSnippetPath}
           disableLanguageSelector={disableLanguageSelector}
           shouldHideQuestions={!showQuestions}
-          disableComment={disableLanguageSelector}
-          allowNoRating={disableLanguageSelector}
+          disableComment={disableComment}
+          allowNoRating={allowNoRating}
           onFocus={onFocus}
           onBlur={onBlur}
           onRatingUpdate={onRatingUpdate}
