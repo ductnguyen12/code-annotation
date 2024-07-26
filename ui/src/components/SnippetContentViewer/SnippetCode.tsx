@@ -127,7 +127,7 @@ const SnippetCode = ({
         </Tooltip>
       </Box>
       {snippet?.attentionCheck && (
-        <Typography className="pt-4" variant="body1">
+        <Typography className="pt-4" variant="h5">
           This snippet is just for attention check.
           Please give this snippet <b>{snippet?.correctRating} stars</b> to pass.
         </Typography>
