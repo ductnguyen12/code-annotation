@@ -90,7 +90,7 @@ export default function SubmissionsTable({
               <TableCell align="center">
                 {submission.failedAttentionCheck
                   ? (
-                    <Box className="flex items-center">
+                    <Box className="flex items-center justify-center">
                       <CancelOutlinedIcon color="error" />
                       <span>{submission.failedAttentionCheck}/{submission.totalAttentionCheck}</span>
                     </Box>
