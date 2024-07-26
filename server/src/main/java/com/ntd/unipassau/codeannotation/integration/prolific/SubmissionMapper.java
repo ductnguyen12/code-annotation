@@ -8,6 +8,8 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface SubmissionMapper {
+    @Mapping(target = "totalAttentionCheck", ignore = true)
+    @Mapping(target = "failedAttentionCheck", ignore = true)
     @Mapping(target = "id", source = "dto.id")
     @Mapping(target = "rater.externalId", source = "dto.participantId")
     @Mapping(target = "rater.id", source = "rater.id")

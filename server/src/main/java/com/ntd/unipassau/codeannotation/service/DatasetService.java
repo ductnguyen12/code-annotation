@@ -234,11 +234,16 @@ public class DatasetService {
         RaterMgmtService raterMgmtService = raterMgmtServiceFactory.create(dataset);
         Collection<SubmissionVM> submissions = raterMgmtService.listSubmissions(dataset);
 
+        long numberOfAttentionCheck = dataset.getSnippets().stream()
+                .filter(s -> s.getCorrectRating() != null)
+                .count();
+
         // Enrich attention check results
-        Set<UUID> failedRaterIds = snippetRateRepository.findIncorrectRatingsByDatasetId(datasetId).stream()
-                .map(SnippetRate::getRaterId)
-                .collect(Collectors.toSet());
-        submissions.forEach(s -> s.setFailedAttentionCheck(failedRaterIds.contains(s.getRater().getId())));
+        Map<UUID, Long> raterIncorrectCountMap = snippetRateRepository.countIncorrectRatingsByDatasetId(datasetId);
+        submissions.forEach(s -> {
+            s.setTotalAttentionCheck((int) numberOfAttentionCheck);
+            s.setFailedAttentionCheck(raterIncorrectCountMap.getOrDefault(s.getRater().getId(), 0L).intValue());
+        });
 
         return submissions;
     }
