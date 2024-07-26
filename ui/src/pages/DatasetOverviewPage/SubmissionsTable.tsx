@@ -1,5 +1,6 @@
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
+import Box from '@mui/material/Box';
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -88,7 +89,12 @@ export default function SubmissionsTable({
               <TableCell align="center">{submission.status}</TableCell>
               <TableCell align="center">
                 {submission.failedAttentionCheck
-                  ? (<CancelOutlinedIcon color="error" />)
+                  ? (
+                    <Box className="flex items-center">
+                      <CancelOutlinedIcon color="error" />
+                      <span>{submission.failedAttentionCheck}/{submission.totalAttentionCheck}</span>
+                    </Box>
+                  )
                   : (<CheckCircleOutlinedIcon color="success" />)}
               </TableCell>
               <TableCell align="center">{submission.startedAt}</TableCell>
