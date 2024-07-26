@@ -88,14 +88,12 @@ export default function SubmissionsTable({
               </TableCell>
               <TableCell align="center">{submission.status}</TableCell>
               <TableCell align="center">
-                {submission.failedAttentionCheck
-                  ? (
-                    <Box className="flex items-center justify-center">
-                      <CancelOutlinedIcon color="error" />
-                      <span>{submission.failedAttentionCheck}/{submission.totalAttentionCheck}</span>
-                    </Box>
-                  )
-                  : (<CheckCircleOutlinedIcon color="success" />)}
+                <Box className="flex items-center justify-center">
+                  {submission.failedAttentionCheck
+                    ? (<CancelOutlinedIcon color="error" />)
+                    : (<CheckCircleOutlinedIcon color="success" />)}
+                  <span>{submission.totalAttentionCheck - submission.failedAttentionCheck}/{submission.totalAttentionCheck}</span>
+                </Box>
               </TableCell>
               <TableCell align="center">{submission.startedAt}</TableCell>
               <TableCell align="center">{submission.startedAt}</TableCell>
