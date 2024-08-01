@@ -73,7 +73,9 @@ export default function SubmissionsTable({
               <TableCell align="left">{submission.id}</TableCell>
               <TableCell align="left">
                 <Button
-                  className="normal-case"
+                  sx={{
+                    textTransform: "none",
+                  }}
                   variant="text"
                   onClick={() => onClickRater && onClickRater(submission.rater.id as string)}
                 >
@@ -82,7 +84,9 @@ export default function SubmissionsTable({
               </TableCell>
               <TableCell align="left">
                 <Button
-                  className="normal-case"
+                  sx={{
+                    textTransform: "none",
+                  }}
                   variant="text"
                   onClick={() => onClickRater && onClickRater(submission.rater.id as string)}
                 >
