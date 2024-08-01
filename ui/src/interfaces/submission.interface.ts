@@ -7,6 +7,8 @@ export interface Submission {
   completedAt?: string;
   startedAt?: string;
   studyCode?: string;
+  numberOfRatings: number;
+  numberOfSnippets: number;
   passedAttentionCheck: number;
   totalAttentionCheck: number;
 }

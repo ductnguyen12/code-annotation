@@ -234,17 +234,19 @@ public class DatasetService {
         RaterMgmtService raterMgmtService = raterMgmtServiceFactory.create(dataset);
         Collection<SubmissionVM> submissions = raterMgmtService.listSubmissions(dataset);
 
+        int numberOfSnippets = dataset.getSnippets().size();
         long numberOfAttentionCheck = dataset.getSnippets().stream()
                 .filter(s -> s.getCorrectRating() != null)
                 .count();
 
         // Enrich attention check results
-        Map<UUID, Long> raterCorrectRatingsCountMap = snippetRateRepository.countCorrectRatingsByDatasetId(datasetId);
+        Map<UUID, List<Long>> raterRatingsCountMap = snippetRateRepository.countCorrectRatingsByDatasetId(datasetId);
         submissions.forEach(s -> {
+            List<Long> counts = raterRatingsCountMap.getOrDefault(s.getRater().getId(), List.of(0L, 0L));
+            s.setNumberOfSnippets(numberOfSnippets);
+            s.setNumberOfRatings(counts.get(0).intValue());
             s.setTotalAttentionCheck((int) numberOfAttentionCheck);
-            s.setPassedAttentionCheck(
-                    raterCorrectRatingsCountMap.getOrDefault(s.getRater().getId(), 0L)
-                            .intValue());
+            s.setPassedAttentionCheck(counts.get(1).intValue());
         });
 
         return submissions;
