@@ -20,6 +20,7 @@ const headers = [
   "External ID",
   "Status",
   "Attention check",
+  "Number of ratings",
   "Started time",
   "Completed time",
 ];
@@ -72,6 +73,7 @@ export default function SubmissionsTable({
               <TableCell align="left">{submission.id}</TableCell>
               <TableCell align="left">
                 <Button
+                  className="normal-case"
                   variant="text"
                   onClick={() => onClickRater && onClickRater(submission.rater.id as string)}
                 >
@@ -80,6 +82,7 @@ export default function SubmissionsTable({
               </TableCell>
               <TableCell align="left">
                 <Button
+                  className="normal-case"
                   variant="text"
                   onClick={() => onClickRater && onClickRater(submission.rater.id as string)}
                 >
@@ -93,6 +96,14 @@ export default function SubmissionsTable({
                     ? (<CancelOutlinedIcon color="error" />)
                     : (<CheckCircleOutlinedIcon color="success" />)}
                   <span>{submission.passedAttentionCheck}/{submission.totalAttentionCheck}</span>
+                </Box>
+              </TableCell>
+              <TableCell align="center">
+                <Box className="flex items-center justify-center">
+                  {submission.numberOfRatings < submission.numberOfSnippets
+                    ? (<CancelOutlinedIcon color="error" />)
+                    : (<CheckCircleOutlinedIcon color="success" />)}
+                  <span>{submission.numberOfRatings}/{submission.numberOfSnippets}</span>
                 </Box>
               </TableCell>
               <TableCell align="center">{submission.startedAt}</TableCell>
