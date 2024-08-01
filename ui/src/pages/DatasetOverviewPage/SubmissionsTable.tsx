@@ -89,10 +89,10 @@ export default function SubmissionsTable({
               <TableCell align="center">{submission.status}</TableCell>
               <TableCell align="center">
                 <Box className="flex items-center justify-center">
-                  {submission.failedAttentionCheck
+                  {submission.passedAttentionCheck < submission.totalAttentionCheck
                     ? (<CancelOutlinedIcon color="error" />)
                     : (<CheckCircleOutlinedIcon color="success" />)}
-                  <span>{submission.totalAttentionCheck - submission.failedAttentionCheck}/{submission.totalAttentionCheck}</span>
+                  <span>{submission.passedAttentionCheck}/{submission.totalAttentionCheck}</span>
                 </Box>
               </TableCell>
               <TableCell align="center">{submission.startedAt}</TableCell>
