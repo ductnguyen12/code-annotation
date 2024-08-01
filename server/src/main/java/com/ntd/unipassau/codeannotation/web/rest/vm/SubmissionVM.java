@@ -12,6 +12,6 @@ public class SubmissionVM {
     private Date startedAt;
     private String status;
     private String studyCode;
-    private int failedAttentionCheck;
+    private int passedAttentionCheck;
     private int totalAttentionCheck;
 }

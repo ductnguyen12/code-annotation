@@ -20,12 +20,19 @@ public interface SnippetRateRepository extends JpaRepository<SnippetRate, Long> 
             "FROM SnippetRate sr INNER JOIN sr.snippet s " +
             "WHERE s.datasetId = :datasetId " +
             "AND s.correctRating IS NOT NULL " +
-            "AND sr.value != s.correctRating " +
+            "AND sr.value = s.correctRating " +
             "GROUP BY sr.raterId")
-    List<List<Object>> internalCountIncorrectRatingsByDatasetId(Long datasetId);
+    List<List<Object>> internalCountCorrectRatingsByDatasetId(Long datasetId);
 
-    default Map<UUID, Long> countIncorrectRatingsByDatasetId(Long datasetId) {
-        List<List<Object>> results = internalCountIncorrectRatingsByDatasetId(datasetId);
+    /**
+     * Count the number of correct ratings of each rater for a given dataset.
+     * Snippets do not have correct rating (e.g. not attention check snippet) will be ignored
+     *
+     * @param datasetId Dataset ID
+     * @return a map between rater id and number of correct ratings
+     */
+    default Map<UUID, Long> countCorrectRatingsByDatasetId(Long datasetId) {
+        List<List<Object>> results = internalCountCorrectRatingsByDatasetId(datasetId);
         return results.stream()
                 .collect(Collectors.toMap(res -> (UUID) res.get(0), res -> (Long) res.get(1)));
     }
