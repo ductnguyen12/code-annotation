@@ -25,7 +25,7 @@ export default function SnippetViewer(props: SnippetViewerProps) {
     if (!snippet?.questions)
       return {};
     const map = Object.fromEntries(snippet?.questions.map((q, index) => [q.id as number, index]));
-    console.log(map);
+
     return map;
   }, [snippet?.questions]);
 
