@@ -88,8 +88,8 @@ const SnippetList = () => {
       dispatch(updateCurrentRateByKey({ key, value }));
       if ('rate' === key) {
         if (value < 1) {
-          createRaterAction(RaterActionType.SET_IGNORE_RATING, {
-            ignore: -1 === value,
+          createRaterAction(RaterActionType.SET_NO_RATING, {
+            value: -1 === value,
             snippetId: snippets[selected].id,
           });
         } else {
