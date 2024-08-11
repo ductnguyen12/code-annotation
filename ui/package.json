@@ -33,8 +33,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "ncp node_modules/scratch-blocks/media public/media && react-scripts start",
-    "build": "ncp node_modules/scratch-blocks/media public/media && react-scripts build",
+    "copy-scratch-media": "ncp node_modules/scratch-blocks/media public/media",
+    "start": "npm run copy-scratch-media && react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

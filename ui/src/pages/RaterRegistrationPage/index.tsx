@@ -4,6 +4,7 @@ import { useCookies } from 'react-cookie';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import LoadingBackdrop from "../../components/LoadingBackdrop";
+import config from '../../config';
 import { useNextQueryParam } from '../../hooks/common';
 import { selectAuthState } from '../../slices/authSlice';
 import { selectDemographicQuestionGroupState } from '../../slices/demographicQuestionGroupSlice';
@@ -72,8 +73,7 @@ const RaterRegistrationPage = () => {
       return;
     }
     if (!cookies.token && rater?.id && datasetId === rater?.currentDatasetId) {
-      // TODO: set secure to cookies after having https domain
-      setCookie('token', rater.id, { path: '/', maxAge: 2 << 24 });   // maxAge ~ 388 days
+      setCookie('token', rater.id, { path: '/', maxAge: 2 << 24, secure: config.https });   // maxAge ~ 388 days
     } else if (cookies.token && !rater?.id) {
       dispatch(getCurrentRaterAsync(datasetId as number));
       return;
