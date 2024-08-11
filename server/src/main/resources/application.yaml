@@ -49,6 +49,7 @@ app:
       - /actuator/prometheus
       - /v1/auth/token
       - /v1/auth/refresh-token
+      - /v1/rater-actions
       - /v1/raters/registration
       - /v1/raters/me
       - /v1/raters/{externalSystem}/{externalId}

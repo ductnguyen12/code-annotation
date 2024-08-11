@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import api from '../api';
 import { RootState } from '../app/store';
-import { Rater } from '../interfaces/rater.interface';
+import { Rater, RaterAction } from '../interfaces/rater.interface';
 import { defaultAPIErrorHandle } from '../util/error-util';
 
 export interface RaterState {
@@ -22,6 +22,17 @@ export const getRaterAsync = createAsyncThunk(
       return result;
     } catch (error: any) {
       defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
+export const createRaterActionAsync = createAsyncThunk(
+  'rater/getRaterAsync',
+  async (action: RaterAction) => {
+    try {
+      return await api.createRaterAction(action);
+    } catch (error: any) {
       throw error;
     }
   }
