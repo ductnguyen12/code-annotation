@@ -2,6 +2,7 @@ package com.ntd.unipassau.codeannotation.export;
 
 import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
+import com.ntd.unipassau.codeannotation.domain.rater.RaterAction;
 import com.ntd.unipassau.codeannotation.domain.rater.Solution;
 
 import java.io.IOException;
@@ -27,6 +28,15 @@ public interface DatasetExporter {
      * @throws IOException when there is any error occurs during saving.
      */
     void exportDemographicSolutions(Path path, Collection<Solution> solutions) throws IOException;
+
+    /**
+     * Export raters actions to specified directory.
+     *
+     * @param path    Output path.
+     * @param actions Raters' actions that are need to be exported.
+     * @throws IOException when there is any error occurs during saving.
+     */
+    void exportRaterActions(Path path, Collection<RaterAction> actions) throws IOException;
 
     /**
      * Parse the content of file to extract snippets and annotation

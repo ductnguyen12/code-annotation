@@ -1,11 +1,13 @@
 package com.ntd.unipassau.codeannotation.export;
 
 import com.ntd.unipassau.codeannotation.export.model.DemographicQuestionDoc;
+import com.ntd.unipassau.codeannotation.export.model.RaterActionDoc;
 import com.ntd.unipassau.codeannotation.export.model.SnippetDoc;
 import com.ntd.unipassau.codeannotation.export.model.SolutionDoc;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Set;
 
 public interface MetadataExporter {
@@ -31,6 +33,15 @@ public interface MetadataExporter {
             Set<DemographicQuestionDoc> questionDocs,
             Set<SolutionDoc> solutionDocs
     ) throws IOException;
+
+    /**
+     * Export raters actions to specified directory.
+     *
+     * @param path    Destination directory that contains result.
+     * @param actions Raters' actions that are need to be exported.
+     * @throws IOException if there is any error occurs during saving.
+     */
+    void exportRaterActions(Path path, Collection<RaterActionDoc> actions) throws IOException;
 
     /**
      * Read snippet metadata from file path.

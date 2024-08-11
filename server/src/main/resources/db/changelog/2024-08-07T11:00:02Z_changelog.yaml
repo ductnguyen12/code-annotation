@@ -1,0 +1,65 @@
+databaseChangeLog:
+- changeSet:
+    id: 1723028412276-6
+    author: ducnt (generated)
+    changes:
+    - createSequence:
+        incrementBy: 50
+        sequenceName: rater_action_seq
+        startValue: 1
+- changeSet:
+    id: 1723028412276-7
+    author: ducnt (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: rater_actionPK
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: created_by
+            type: VARCHAR(50)
+        - column:
+            name: created_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: last_modified_by
+            type: VARCHAR(50)
+        - column:
+            name: last_modified_date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: action
+            type: VARCHAR(255)
+        - column:
+            name: data
+            type: JSONB
+        - column:
+            name: dataset_id
+            type: BIGINT
+        - column:
+            name: rater_id
+            type: UUID
+        tableName: rater_action
+- changeSet:
+    id: 1723028412276-8
+    author: ducnt (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: dataset_id,rater_id
+        baseTableName: rater_action
+        constraintName: rater_action_datasetFK
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: dataset_id,rater_id
+        referencedTableName: rater_dataset
+        validate: true

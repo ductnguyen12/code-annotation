@@ -4,6 +4,7 @@ import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
 import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestion;
 import com.ntd.unipassau.codeannotation.domain.rater.Rater;
+import com.ntd.unipassau.codeannotation.domain.rater.RaterAction;
 import com.ntd.unipassau.codeannotation.domain.rater.Solution;
 import com.ntd.unipassau.codeannotation.export.model.DemographicQuestionDoc;
 import com.ntd.unipassau.codeannotation.export.model.RateDoc;
@@ -44,6 +45,9 @@ public class DefaultDatasetExporter implements DatasetExporter {
         this.metadataExporter = metadataExporter;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void exportSnippets(Path dir, Collection<Snippet> snippets) throws IOException {
         for (Snippet snippet : snippets) {
@@ -63,6 +67,9 @@ public class DefaultDatasetExporter implements DatasetExporter {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void exportDemographicSolutions(Path path, Collection<Solution> solutions) throws IOException {
         Set<DemographicQuestionDoc> questionDocs = solutions.stream()
@@ -79,6 +86,17 @@ public class DefaultDatasetExporter implements DatasetExporter {
         metadataExporter.exportDemographicSolutions(path, questionDocs, solutionDocs);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void exportRaterActions(Path path, Collection<RaterAction> actions) throws IOException {
+        metadataExporter.exportRaterActions(path, exportModelMapper.toRaterActionDocs(actions));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Dataset importSnippets(Dataset dataset, Path dir) throws IOException {
         Collection<File> sourceFiles = new ArrayList<>();

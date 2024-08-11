@@ -2,12 +2,10 @@ package com.ntd.unipassau.codeannotation.export;
 
 import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
 import com.ntd.unipassau.codeannotation.domain.rater.DemographicQuestion;
+import com.ntd.unipassau.codeannotation.domain.rater.RaterAction;
 import com.ntd.unipassau.codeannotation.domain.rater.SnippetRate;
 import com.ntd.unipassau.codeannotation.domain.rater.Solution;
-import com.ntd.unipassau.codeannotation.export.model.DemographicQuestionDoc;
-import com.ntd.unipassau.codeannotation.export.model.RateDoc;
-import com.ntd.unipassau.codeannotation.export.model.SnippetDoc;
-import com.ntd.unipassau.codeannotation.export.model.SolutionDoc;
+import com.ntd.unipassau.codeannotation.export.model.*;
 import org.mapstruct.*;
 
 import java.util.Collection;
@@ -39,6 +37,12 @@ public interface ExportModelMapper {
     SolutionDoc toSolutionDoc(Solution solution);
 
     DemographicQuestionDoc toDQuestionDoc(DemographicQuestion question);
+
+    @Mapping(target = "rater", source = "raterId")
+    @Mapping(target = "raterExternalId", source = "raterDataset.rater.externalId")
+    RaterActionDoc toRaterActionDoc(RaterAction action);
+
+    Collection<RaterActionDoc> toRaterActionDocs(Collection<RaterAction> actions);
 
     @Mapping(target = "predictedRatings", ignore = true)
     @Mapping(target = "datasetId", ignore = true)

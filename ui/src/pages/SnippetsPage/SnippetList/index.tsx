@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import api from "../../../api";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
@@ -15,8 +15,11 @@ import { useModels } from '../../../hooks/model';
 import { useDatasetSnippets } from "../../../hooks/snippet";
 import { PredictionTarget } from '../../../interfaces/model.interface';
 import { QuestionPriority, Solution } from "../../../interfaces/question.interface";
+import { RaterActionType } from "../../../interfaces/rater.interface";
 import { SnippetQuestion, SnippetRate } from "../../../interfaces/snippet.interface";
 import { selectAuthState } from '../../../slices/authSlice';
+import { selectRaterRegState } from "../../../slices/raterRegSlice";
+import { createRaterActionAsync } from "../../../slices/raterSlice";
 import {
   chooseSnippet,
   createQuestionAsync,
@@ -42,6 +45,10 @@ const SnippetList = () => {
   } = useDatasetSnippets(datasetId);
 
   const {
+    rater,
+  } = useAppSelector(selectRaterRegState);
+
+  const {
     models,
   } = useModels();
 
@@ -59,8 +66,18 @@ const SnippetList = () => {
     [authenticated, dataset]
   )
 
+  const isRater = useMemo(() => !authenticated && rater?.id, [authenticated, rater?.id]);
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const createRaterAction = useCallback((action: RaterActionType, data?: any) => {
+    dispatch(createRaterActionAsync({
+      action,
+      datasetId: datasetId as number,
+      data,
+    }));
+  }, [datasetId, dispatch]);
 
   const handleSelectSnippet = useCallback((index: number) => {
     dispatch(chooseSnippet(index));
@@ -69,8 +86,21 @@ const SnippetList = () => {
   const handleRatingValueUpdate = useCallback(
     (key: string, value: any) => {
       dispatch(updateCurrentRateByKey({ key, value }));
+      if ('rate' === key) {
+        if (value < 1) {
+          createRaterAction(RaterActionType.SET_IGNORE_RATING, {
+            ignore: -1 === value,
+            snippetId: snippets[selected].id,
+          });
+        } else {
+          createRaterAction(RaterActionType.SET_RATING, {
+            value,
+            snippetId: snippets[selected].id,
+          });
+        }
+      }
     },
-    [dispatch]
+    [createRaterAction, dispatch, selected, snippets]
   );
 
   const handleRatingChange = useCallback((
@@ -84,18 +114,29 @@ const SnippetList = () => {
       nextSnippet,
       successfulMsg,
       onSuccess: () => {
-        if (nextSnippet !== undefined)
+        if (nextSnippet !== undefined) {
+          createRaterAction(RaterActionType.CHANGE_SNIPPET, {
+            index: nextSnippet,
+            snippetId: snippets[nextSnippet].id,
+          });
           return;
+        }
+
+        createRaterAction(RaterActionType.SUBMIT);
         if (dataset?.configuration?.prolific)
           api.completeRatingInProlific(dataset?.id as number);
         else
           navigate(`/datasets/${dataset?.id as number}/survey-complete`);
       },
     }));
-  }, [dispatch, snippets, selected, dataset, navigate]);
+  }, [dispatch, snippets, selected, createRaterAction, dataset?.configuration?.prolific, dataset?.id, navigate]);
 
   const handleSolutionChange = (questionIndex: number, solution: Solution) => {
     dispatch(updateQuestionSolution({ questionIndex, solution }));
+    createRaterAction(RaterActionType.SET_QUESTION_SOLUTION, {
+      questionId: solution.questionId,
+      value: solution.value,
+    });
   }
 
   const handleCreateQuestion = useCallback((question: SnippetQuestion) => {
@@ -112,6 +153,12 @@ const SnippetList = () => {
       onSuccess: () => dispatch(loadDatasetSnippetsAsync(datasetId as number)),
     }));
   }, [datasetId, dispatch]);
+
+  useEffect(() => {
+    if (!isRater)
+      return;
+    createRaterAction(RaterActionType.ENTER_RATING_PAGE);
+  }, [createRaterAction, isRater]);
 
   return (
     <Box>

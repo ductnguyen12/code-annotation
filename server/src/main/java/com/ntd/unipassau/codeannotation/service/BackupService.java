@@ -3,10 +3,12 @@ package com.ntd.unipassau.codeannotation.service;
 import com.ntd.unipassau.codeannotation.domain.dataset.Dataset;
 import com.ntd.unipassau.codeannotation.domain.dataset.Snippet;
 import com.ntd.unipassau.codeannotation.domain.question.Question;
+import com.ntd.unipassau.codeannotation.domain.rater.RaterAction;
 import com.ntd.unipassau.codeannotation.domain.rater.Solution;
 import com.ntd.unipassau.codeannotation.export.DatasetExporter;
 import com.ntd.unipassau.codeannotation.export.ZipUtil;
 import com.ntd.unipassau.codeannotation.repository.DatasetRepository;
+import com.ntd.unipassau.codeannotation.repository.RaterActionRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRepository;
 import com.ntd.unipassau.codeannotation.repository.SolutionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +31,11 @@ public class BackupService {
     private final static String DIR_DATASET_SNIPPETS = "dataset-{0}-snippets";
     private final static String DEMOGRAPHIC_SOLUTIONS_FILENAME = "demographics.json";
     private final static String UNKNOWN_RATERS_FILENAME = "unknown-raters.json";
+    private final static String RATERS_ACTIONS_FILENAME = "raters-actions.json";
     private final DatasetExporter datasetExporter;
     private final DatasetRepository datasetRepository;
     private final SolutionRepository solutionRepository;
+    private final RaterActionRepository raterActionRepository;
     private final SnippetRepository snippetRepository;
     private final SnippetService snippetService;
     private final RaterMgmtServiceFactory raterMgmtServiceFactory;
@@ -41,12 +45,14 @@ public class BackupService {
             DatasetExporter datasetExporter,
             DatasetRepository datasetRepository,
             SolutionRepository solutionRepository,
+            RaterActionRepository raterActionRepository,
             SnippetRepository snippetRepository,
             SnippetService snippetService,
             RaterMgmtServiceFactory raterMgmtServiceFactory) {
         this.datasetExporter = datasetExporter;
         this.datasetRepository = datasetRepository;
         this.solutionRepository = solutionRepository;
+        this.raterActionRepository = raterActionRepository;
         this.snippetRepository = snippetRepository;
         this.snippetService = snippetService;
         this.raterMgmtServiceFactory = raterMgmtServiceFactory;
@@ -79,6 +85,9 @@ public class BackupService {
                 tmpDir.resolve(UNKNOWN_RATERS_FILENAME),
                 dSolutions.stream().filter(s -> !verifiedIDs.contains(s.getId()))
                         .collect(Collectors.toSet()));
+
+        Collection<RaterAction> raterActions = raterActionRepository.findAllFetchRaterByDatasetId(datasetId);
+        datasetExporter.exportRaterActions(tmpDir.resolve(RATERS_ACTIONS_FILENAME), raterActions);
 
         Path outPath = Files.createTempFile(MessageFormat.format(DIR_DATASET_SNIPPETS, dataset.getId()), ".zip");
         ZipUtil.zipDirectory(tmpDir, outPath);
