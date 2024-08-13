@@ -14,6 +14,7 @@ import com.ntd.unipassau.codeannotation.repository.RaterDatasetRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRateRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRepository;
 import com.ntd.unipassau.codeannotation.security.SecurityUtils;
+import com.ntd.unipassau.codeannotation.util.CodeUtil;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetRateVM;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetVM;
 import lombok.SneakyThrows;
@@ -203,7 +204,9 @@ public class SnippetService {
                 .map(snippet -> {
                     Snippet clone = new Snippet();
                     clone.setPath(snippet.getPath());
-                    clone.setCode(snippet.getCode());
+                    clone.setCode(addAttentionCheckDescription(
+                            snippet.getDataset().getPLanguage(),
+                            snippet.getCode()));
                     clone.setFromLine(snippet.getFromLine());
                     clone.setToLine(snippet.getToLine());
                     clone.setDataset(snippet.getDataset());
@@ -257,5 +260,13 @@ public class SnippetService {
         RemoteFileReader remoteFileReader = new HttpFileReader();
         Collection<String> lines = remoteFileReader.readFileLines(fileUri, snippet.getFromLine(), snippet.getToLine());
         return String.join("\n", lines);
+    }
+
+    private String addAttentionCheckDescription(String language, String sourceCode) {
+        if (CodeUtil.SCRATCH_FILE_EXT.equalsIgnoreCase(language))
+            return sourceCode;
+        return CodeUtil.getLineCommentToken(language) +
+                " This is just an attention check. Please check the instruction above.\n" +
+                sourceCode;
     }
 }
