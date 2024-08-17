@@ -107,7 +107,9 @@ public class DefaultDatasetExporter implements DatasetExporter {
             pathStream.map(Path::toFile)
                     .filter(File::isFile)
                     .forEach(file -> {
-                        if (file.getName().endsWith(metadataExporter.getFilenameExtension())) {
+                        if (metadataExporter.isMetadataFile(file)) {
+                            if (!metadataExporter.hasRelatedSnippetFile(file))
+                                return;
                             metadataFiles.add(file);
                             metadataBaseFilenames.add(ExportFileUtil.getBaseFilename(file.getName()));
                         } else {
