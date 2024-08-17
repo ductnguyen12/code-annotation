@@ -5,6 +5,7 @@ import com.ntd.unipassau.codeannotation.export.model.RaterActionDoc;
 import com.ntd.unipassau.codeannotation.export.model.SnippetDoc;
 import com.ntd.unipassau.codeannotation.export.model.SolutionDoc;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -58,4 +59,40 @@ public interface MetadataExporter {
      * @return String might be (xml, json, ...)
      */
     String getFilenameExtension();
+
+    /**
+     * Determine if a file is a metadata file.
+     *
+     * @param file metadata file.
+     * @return true if the file ends with a certain file extension that depends on current exporter.
+     */
+    default boolean isMetadataFile(File file) {
+        return file.getName().endsWith(getFilenameExtension());
+    }
+
+    /**
+     * Test whether related snippet file exists.
+     *
+     * @param metadataFile metadata file.
+     * @return true if the related snippet file already existed.
+     */
+    default boolean hasRelatedSnippetFile(File metadataFile) {
+        String snippetFilename = getRelatedSnippetFilename(metadataFile);
+        File snippetFile = metadataFile.getParentFile().toPath()
+                .resolve(snippetFilename)
+                .toFile();
+        return snippetFile.isFile();
+    }
+
+    /**
+     * Get the snippet filename by removing filename extension part from the metadata filename
+     * (e.g. abc.txt.json => abc.txt)
+     *
+     * @param metadataFile metadata file.
+     * @return Filename of related snippet.
+     */
+    default String getRelatedSnippetFilename(File metadataFile) {
+        String metadataFilename = metadataFile.getName();
+        return metadataFilename.substring(0, metadataFilename.length() - getFilenameExtension().length() - 1);
+    }
 }
