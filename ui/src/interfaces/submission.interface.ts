@@ -6,6 +6,7 @@ export interface Submission {
   status: string;
   completedAt?: string;
   startedAt?: string;
+  duration?: number;
   studyCode?: string;
   numberOfRatings: number;
   numberOfSnippets: number;

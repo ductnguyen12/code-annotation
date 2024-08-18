@@ -13,6 +13,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import React from "react";
 import { Submission } from '../../interfaces/submission.interface';
+import { formatMilliseconds } from '../../util/time-util';
 
 const headers = [
   "ID",
@@ -22,7 +23,7 @@ const headers = [
   "Attention check",
   "Number of ratings",
   "Started time",
-  "Completed time",
+  "Duration",
 ];
 
 export default function SubmissionsTable({
@@ -111,7 +112,11 @@ export default function SubmissionsTable({
                 </Box>
               </TableCell>
               <TableCell align="center">{submission.startedAt}</TableCell>
-              <TableCell align="center">{submission.startedAt}</TableCell>
+              <TableCell align="center">
+                {submission.duration
+                  ? formatMilliseconds(submission.duration)
+                  : ''}
+              </TableCell>
             </TableRow>
           ))}
           {emptyRows > 0 && (
