@@ -1,5 +1,6 @@
 package com.ntd.unipassau.codeannotation.web.rest.vm;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -16,4 +17,12 @@ public class SubmissionVM {
     private int numberOfSnippets;
     private int passedAttentionCheck;
     private int totalAttentionCheck;
+
+    @JsonProperty
+    public Long getDuration() {
+        if (startedAt != null && completedAt != null) {
+            return completedAt.getTime() - startedAt.getTime();
+        }
+        return null;
+    }
 }
