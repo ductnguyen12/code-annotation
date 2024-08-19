@@ -55,8 +55,9 @@ export const importDatasetSnippets = async (datasetId: number, files: File[]): P
   await axios.post(`/api/v1/datasets/${datasetId}/import-snippets`, formData);
 }
 
-export const exportDatasetSnippets = async (datasetId: number): Promise<void> => {
-  await downloadFile(`/api/v1/datasets/${datasetId}/export-snippets`, `dataset-${datasetId}-snippets.zip`);
+export const exportDatasetSnippets = async (datasetId: number, raterIds?: string[]): Promise<void> => {
+  const paramsStr = '?' + (raterIds?.map(id => `raterIds=${id}`).join('&') || '');
+  await downloadFile(`/api/v1/datasets/${datasetId}/export-snippets${paramsStr}`, `dataset-${datasetId}-snippets.zip`);
 }
 
 export const getDatasetStatistics = async (datasetId: number): Promise<DatasetStatistics> => {
