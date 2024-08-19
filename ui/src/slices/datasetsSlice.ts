@@ -210,13 +210,15 @@ export const exportSnippetsAsync = createAsyncThunk(
   'datasets/exportSnippetsAsync',
   async ({
     datasetId,
+    raterIds,
     onSuccess,
   }: {
     datasetId: number,
+    raterIds?: string[],
     onSuccess?: () => void,
   }, { dispatch }) => {
     try {
-      await api.exportDatasetSnippets(datasetId);
+      await api.exportDatasetSnippets(datasetId, raterIds);
       defaultAPISuccessHandle(`Exported snippets of dataset '${datasetId}' successfully`, dispatch);
       onSuccess && onSuccess();
     } catch (error: any) {

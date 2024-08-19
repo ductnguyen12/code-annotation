@@ -24,6 +24,7 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,16 +60,25 @@ public class BackupService {
     }
 
     @Transactional(readOnly = true)
-    public Resource exportSnippets(Long datasetId) throws IOException {
+    public Resource exportSnippets(Long datasetId, Collection<UUID> raterIds) throws IOException {
         Dataset dataset = datasetRepository.findFetchAllById(datasetId)
                 .orElseThrow(() -> new RuntimeException("Could not find dataset by id to export snippets: " + datasetId));
 
         Path tmpDir = Files.createTempDirectory(MessageFormat.format(DIR_DATASET_SNIPPETS, dataset.getId()));
         tmpDir.toFile().deleteOnExit();
 
+        // Remove ratings from other raters
+        dataset.getSnippets().forEach(s -> {
+            s.getRates().removeIf(rating -> raterIds != null && !raterIds.contains(rating.getRaterId()));
+        });
+
         // Export snippet
         datasetExporter.exportSnippets(tmpDir, dataset.getSnippets());
-        Collection<Solution> dSolutions = getDatasetSolutions(datasetId);
+
+        // Get all solutions of specified raters
+        Collection<Solution> dSolutions = getDatasetSolutions(datasetId).stream()
+                .filter(s -> raterIds == null || raterIds.contains(s.getRaterId()))
+                .toList();
 
         // Export raters
         RaterMgmtService raterMgmtService = raterMgmtServiceFactory.create(dataset);

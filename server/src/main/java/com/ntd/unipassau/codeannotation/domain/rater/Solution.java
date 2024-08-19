@@ -49,4 +49,10 @@ public class Solution extends AbstractAuditingEntity<Solution.SolutionId> {
         private Long questionId;
         private UUID raterId;
     }
+
+    public UUID getRaterId() {
+        if (id == null)
+            return null;
+        return id.raterId;
+    }
 }

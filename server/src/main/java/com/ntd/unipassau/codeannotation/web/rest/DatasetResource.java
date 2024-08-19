@@ -24,9 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Tag(name = "Dataset Resource")
 @RestController
@@ -108,11 +106,16 @@ public class DatasetResource {
     @Operation(summary = "Export dataset's snippets and annotation")
     @GetMapping(value = "/v1/datasets/{datasetId}/export-snippets", produces = "application/zip")
     @Secured({AuthoritiesConstants.USER})
-    public ResponseEntity<Resource> exportSnippets(@PathVariable Long datasetId) throws IOException {
+    public ResponseEntity<Resource> exportSnippets(
+            @PathVariable Long datasetId,
+            @RequestParam(required = false) Collection<UUID> raterIds
+    ) throws IOException {
         datasetService.getById(datasetId)
                 .orElseThrow(() -> new NotFoundException(
                         "Could not find dataset by id: " + datasetId, "pathVars", "datasetId"));
-        Resource resource = backupService.exportSnippets(datasetId);
+
+        Resource resource = backupService.exportSnippets(datasetId, raterIds);
+
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType("application/zip"))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
