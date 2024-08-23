@@ -8,6 +8,7 @@ import com.ntd.unipassau.codeannotation.mapper.SnippetMapper;
 import com.ntd.unipassau.codeannotation.repository.SnippetQuestionRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRepository;
 import com.ntd.unipassau.codeannotation.repository.SolutionRepository;
+import com.ntd.unipassau.codeannotation.web.rest.vm.PatchRequest;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetQuestionPriority;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetQuestionVM;
 import org.springframework.stereotype.Service;
@@ -56,8 +57,16 @@ public class SnippetQuestionService {
     }
 
     @Transactional
-    public Optional<SnippetQuestionVM> deleteSnippetQuestion(Long snippetId) {
-        return snippetQuestionRepository.findById(snippetId)
+    public Optional<SnippetQuestionVM> patchSnippetQuestion(Long questionId, PatchRequest patchRequest) {
+        snippetQuestionRepository.updateSnippetQuestionFieldById(
+                questionId, patchRequest.getField(), patchRequest.getValue());
+        return snippetQuestionRepository.findById(questionId)
+                .map(snippetMapper::toSnippetQuestionVM);
+    }
+
+    @Transactional
+    public Optional<SnippetQuestionVM> deleteSnippetQuestion(Long questionId) {
+        return snippetQuestionRepository.findById(questionId)
                 .map(question -> {
                     deleteAllInBatch(Collections.singleton(question));
                     return question;

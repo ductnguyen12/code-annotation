@@ -25,6 +25,7 @@ import {
   createQuestionAsync,
   deleteQuestionAsync,
   loadDatasetSnippetsAsync,
+  patchQuestionAsync,
   rateSnippetAsync,
   reorderQuestionsAsync,
   updateCurrentRateByKey,
@@ -147,6 +148,13 @@ const SnippetList = () => {
     dispatch(deleteQuestionAsync({ questionId: question.id as number, datasetId }));
   }, [datasetId, dispatch]);
 
+  const handleQuestionHiddenChange = useCallback((question: SnippetQuestion) => {
+    dispatch(patchQuestionAsync({
+      questionId: question.id as number,
+      request: { op: 'replace', field: 'hidden', value: !question.hidden }
+    }));
+  }, [dispatch])
+
   const handleQuestionPriorityChange = useCallback((priority: QuestionPriority) => {
     dispatch(reorderQuestionsAsync({
       priority,
@@ -212,6 +220,7 @@ const SnippetList = () => {
         onSolutionChange={handleSolutionChange}
         onCreateQuestion={handleCreateQuestion}
         onDeleteQuestion={handleDeleteQuestion}
+        onQuestionHiddenChange={handleQuestionHiddenChange}
         onQuestionPriorityChange={handleQuestionPriorityChange}
       />
     </Box>

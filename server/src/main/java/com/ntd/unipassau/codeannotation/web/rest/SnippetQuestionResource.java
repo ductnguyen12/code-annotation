@@ -5,6 +5,7 @@ import com.ntd.unipassau.codeannotation.security.AuthoritiesConstants;
 import com.ntd.unipassau.codeannotation.service.SnippetQuestionService;
 import com.ntd.unipassau.codeannotation.web.rest.constraint.QuestionConstraint;
 import com.ntd.unipassau.codeannotation.web.rest.errors.BadRequestException;
+import com.ntd.unipassau.codeannotation.web.rest.vm.PatchRequest;
 import com.ntd.unipassau.codeannotation.web.rest.vm.SnippetQuestionVM;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,6 +42,17 @@ public class SnippetQuestionResource {
                 .orElseThrow(() -> new BadRequestException(
                         "Could not find snippet ID: " + questionVM.getSnippetId(), "SnippetQuestionVM", "snippetId"));
         return snippetQuestionService.createSnippetQuestion(questionVM);
+    }
+
+    @Operation(summary = "Patch a snippet question")
+    @PatchMapping("/v1/snippet-questions/{questionId}")
+    @Secured({AuthoritiesConstants.USER})
+    public SnippetQuestionVM patchQuestion(
+            @PathVariable Long questionId,
+            @RequestBody @Valid PatchRequest patchRequest) {
+        return snippetQuestionService.patchSnippetQuestion(questionId, patchRequest)
+                .orElseThrow(() -> new BadRequestException(
+                        "Could not find snippet question ID: " + questionId, "pathVars", "questionId"));
     }
 
     @Operation(summary = "Delete a snippet question")

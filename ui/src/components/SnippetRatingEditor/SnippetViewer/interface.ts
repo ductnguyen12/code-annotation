@@ -25,5 +25,6 @@ export interface SnippetViewerProps {
   onSolutionChange: (questionIndex: number, solution: Solution) => void;
   onCreateQuestion?: (question: SnippetQuestion) => void;
   onDeleteQuestion?: (question: SnippetQuestion) => void;
+  onQuestionHiddenChange?: (question: SnippetQuestion) => void;
   onQuestionPriorityChange?: (priorities: QuestionPriority) => void;
 }
