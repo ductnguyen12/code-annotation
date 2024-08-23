@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -31,6 +32,10 @@ public class RaterDataset extends AbstractAuditingEntity<RaterDataset.RaterDatas
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     private Dataset dataset;
+
+    @OneToMany(mappedBy = "raterDataset", fetch = FetchType.LAZY, orphanRemoval = true)
+    @ToString.Exclude
+    private List<RaterAction> raterActions;
 
     public RaterDataset(Rater rater, Dataset dataset) {
         id = new RaterDatasetId();
