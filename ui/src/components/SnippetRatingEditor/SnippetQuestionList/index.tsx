@@ -17,6 +17,7 @@ export default function SnippetQuestionList({
   onBlur,
   onSolutionChange,
   onDeleteQuestion,
+  onHiddenChange,
 }: {
   questions?: Array<SQuestion>;
   rater?: string;                 // For filtering soluton
@@ -28,6 +29,7 @@ export default function SnippetQuestionList({
   onBlur?: () => void,
   onSolutionChange?: (questionIndex: number, solution: Solution) => void;
   onDeleteQuestion?: (question: SQuestion) => void;
+  onHiddenChange?: (question: SQuestion) => void;
 }) {
   const numberOfColumns = React.useMemo(() => columns || 1, [columns]);
 
@@ -38,11 +40,22 @@ export default function SnippetQuestionList({
     }
   }, [onSolutionChange, questions]);
 
-  const handleDeleteQuestion = React.useCallback((questionIndex: number) => {
+  const handleQuestionEvent = React.useCallback((
+    questionIndex: number,
+    handle?: (question: SQuestion) => void
+  ) => {
     if (questions && questionIndex < questions.length) {
-      onDeleteQuestion && onDeleteQuestion(questions[questionIndex]);
+      handle && handle(questions[questionIndex]);
     }
-  }, [onDeleteQuestion, questions]);
+  }, [questions]);
+
+  const handleDeleteQuestion = React.useCallback((questionIndex: number) => {
+    handleQuestionEvent(questionIndex, onDeleteQuestion);
+  }, [handleQuestionEvent, onDeleteQuestion]);
+
+  const handleHiddenChange = React.useCallback((questionIndex: number) => {
+    handleQuestionEvent(questionIndex, onHiddenChange);
+  }, [handleQuestionEvent, onHiddenChange]);
 
   return (
     <Grid
@@ -68,6 +81,7 @@ export default function SnippetQuestionList({
               onBlur={onBlur}
               onSolutionChange={(_, s) => handleSolutionChange(q.id as number, s)}
               onDelete={handleDeleteQuestion}
+              onHiddenChange={handleHiddenChange}
             />
           </Grid>
         ))}

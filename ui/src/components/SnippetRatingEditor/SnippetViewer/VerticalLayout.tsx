@@ -26,6 +26,7 @@ export default function VerticalLayout({
   onSolutionChange,
   onCreateQuestion,
   onDeleteQuestion,
+  onQuestionHiddenChange,
   onQuestionPriorityChange,
 }: SnippetViewerProps) {
   return (
@@ -69,6 +70,7 @@ export default function VerticalLayout({
           onBlur={onBlur}
           onSolutionChange={onSolutionChange}
           onDeleteQuestion={onDeleteQuestion}
+          onHiddenChange={onQuestionHiddenChange}
         />
       </Box>
       <Box className="w-full pt-4 px-96">

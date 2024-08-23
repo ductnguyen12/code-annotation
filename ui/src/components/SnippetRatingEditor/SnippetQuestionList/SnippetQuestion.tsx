@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -23,6 +24,7 @@ export default function SnippetQuestion({
   onBlur,
   onSolutionChange,
   onDelete,
+  onHiddenChange,
 }: {
   index: number;
   question: SQuestion;
@@ -33,6 +35,7 @@ export default function SnippetQuestion({
   onBlur?: () => void;
   onSolutionChange?: (questionIndex: number, solution: Solution) => void;
   onDelete?: (questionIndex: number) => void;
+  onHiddenChange?: (questionIndex: number) => void;
 }) {
   const [open, setOpen] = React.useState<boolean>(false);
 
@@ -62,19 +65,23 @@ export default function SnippetQuestion({
     <Box
       className="relative"
     >
-      {question?.hidden && (<ProtectedElement hidden>
+      <ProtectedElement hidden>
         <Tooltip
           className="right-6 bottom-0 z-10 p-2"
           sx={{ position: 'absolute' }}
-          title="Hidden at first"
+          title={question?.hidden ? "Hidden at first" : "Always show"}
           placement="bottom"
           arrow
         >
-          <Box>
-            <VisibilityOffIcon className="p-1" />
-          </Box>
+          <IconButton
+            aria-label="hidden"
+            hidden={!onHiddenChange}
+            onClick={() => onHiddenChange && onHiddenChange(index)}
+          >
+            {question?.hidden ? (<VisibilityOffIcon className="p-1" />) : (<VisibilityIcon className="p-1" />)}
+          </IconButton>
         </Tooltip>
-      </ProtectedElement>)}
+      </ProtectedElement>
       {onDelete && (<ProtectedElement hidden>
         <>
           <Tooltip

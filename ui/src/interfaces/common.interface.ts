@@ -11,3 +11,9 @@ export interface PageParams {
   page: number,
   sort?: string,
 }
+
+export interface PatchRequest {
+  op: string,
+  field?: string,
+  value?: any,
+}

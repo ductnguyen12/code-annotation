@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import api from '../api';
 import { RootState } from '../app/store';
+import { PatchRequest } from '../interfaces/common.interface';
 import { QuestionPriority, Solution } from '../interfaces/question.interface';
 import { Rater } from '../interfaces/rater.interface';
 import { Snippet, SnippetQuestion, SnippetRate } from '../interfaces/snippet.interface';
@@ -105,6 +106,29 @@ export const reorderQuestionsAsync = createAsyncThunk(
       defaultAPISuccessHandle('Reorder snippet questions successfully', dispatch);
       if (onSuccess)
         onSuccess();
+    } catch (error: any) {
+      defaultAPIErrorHandle(error, dispatch);
+      throw error;
+    }
+  }
+);
+
+export const patchQuestionAsync = createAsyncThunk(
+  'snippets/patchQuestionAsync',
+  async ({
+    questionId,
+    request,
+    onSuccess,
+  }: {
+    questionId: number,
+    request: PatchRequest,
+    onSuccess?: () => void,
+  }, { dispatch }) => {
+    try {
+      const result = await api.patchSnippetQuestion(questionId, request);
+      defaultAPISuccessHandle(`Update snippet question ID '${questionId}' successfully`, dispatch);
+      onSuccess && onSuccess();
+      return result;
     } catch (error: any) {
       defaultAPIErrorHandle(error, dispatch);
       throw error;
@@ -232,6 +256,36 @@ export const snippetsSlice = createSlice({
         state.status = 'idle';
       })
       .addCase(createAttentionCheckSnippetAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+      .addCase(patchQuestionAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(patchQuestionAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        const snippetIndex = state.snippets.findIndex(s => action.payload.snippetId === s.id);
+        if (snippetIndex === -1)
+          return;
+        const questionIndex = state.snippets[snippetIndex].questions?.findIndex(q => action.payload.id === q.id);
+        if (questionIndex === undefined || questionIndex === -1)
+          return;
+        const newQuestions = [
+          ...state.snippets[snippetIndex].questions?.slice(0, questionIndex) || [],
+          action.payload,
+          ...state.snippets[snippetIndex].questions?.slice(questionIndex + 1) || [],
+        ]
+        const newSnippet = {
+          ...state.snippets[snippetIndex],
+          questions: newQuestions,
+        }
+        state.snippets = [
+          ...state.snippets.slice(0, snippetIndex),
+          newSnippet,
+          ...state.snippets.slice(snippetIndex + 1),
+        ]
+      })
+      .addCase(patchQuestionAsync.rejected, (state) => {
         state.status = 'failed';
       })
 

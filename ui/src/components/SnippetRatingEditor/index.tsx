@@ -43,6 +43,7 @@ export default function SnippetRatingEditor({
   onSolutionChange,
   onCreateQuestion,
   onDeleteQuestion,
+  onQuestionHiddenChange,
   onQuestionPriorityChange,
 }: {
   snippets: Snippet[];
@@ -70,6 +71,7 @@ export default function SnippetRatingEditor({
   onSolutionChange: (questionIndex: number, solution: Solution) => void;
   onCreateQuestion?: (question: SnippetQuestion) => void;
   onDeleteQuestion?: (question: SnippetQuestion) => void;
+  onQuestionHiddenChange?: (question: SnippetQuestion) => void;
   onQuestionPriorityChange?: (priorities: QuestionPriority) => void;
 }) {
   const dispatch = useAppDispatch();
@@ -218,6 +220,7 @@ export default function SnippetRatingEditor({
           onSolutionChange={onSolutionChange}
           onCreateQuestion={handleCreateQuestion}
           onDeleteQuestion={onDeleteQuestion}
+          onQuestionHiddenChange={onQuestionHiddenChange}
           onQuestionPriorityChange={onQuestionPriorityChange}
         />
         <Box

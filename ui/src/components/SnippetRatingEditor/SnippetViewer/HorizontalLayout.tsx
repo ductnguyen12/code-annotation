@@ -28,6 +28,7 @@ export default function HorizontalLayout({
   onSolutionChange,
   onCreateQuestion,
   onDeleteQuestion,
+  onQuestionHiddenChange,
   onQuestionPriorityChange,
 }: SnippetViewerProps) {
   return (
@@ -80,6 +81,7 @@ export default function HorizontalLayout({
               onBlur={onBlur}
               onSolutionChange={onSolutionChange}
               onDeleteQuestion={onDeleteQuestion}
+              onHiddenChange={onQuestionHiddenChange}
             />
           </Box>
         </Grid>
