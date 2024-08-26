@@ -54,23 +54,44 @@ export default function HorizontalLayout({
           md={3}
           item
         >
-          <Typography variant="h6" gutterBottom>
-            Questions
-          </Typography>
-          {!snippet?.questions?.length ? (
-            <Typography
-              className="pt-4"
-              variant="body1"
-              align="center"
-              gutterBottom
-            >
-              There is no question
-            </Typography>
-          ) : (<></>)}
           <Box
-            className="mt-10 pr-1 overflow-auto overscroll-contain"
-            sx={{ maxHeight: '690px' }}
+            className={`mt-10 ${snippet?.attentionCheck ? 'mt-28' : 'mt-16'} pr-1 overflow-auto overscroll-contain`}
+            sx={{ maxHeight: '690px', minHeight: '440px' }}
           >
+            <SnippetRating
+              rating={
+                // Edit my rating or view other's rating
+                editable
+                  ? snippet?.rate
+                  : snippet?.rates?.find(r => selectedRater === r.rater?.id)
+              }
+              invalid={invalid}
+              editable={editable}
+              disableComment={disableComment}
+              allowNoRating={allowNoRating}
+              correctRating={snippet?.correctRating}
+              statistics={statistics?.snippets[snippet?.id || -1]}
+              pRating={pRatings?.find(rating => rating.snippetId === snippet?.id)}
+              pRatingScale={models?.find(model => {
+                const pRating = pRatings?.find(rating => rating.snippetId === snippet?.id);
+                return pRating && model.id === pRating.modelId;
+              })?.ratingScale}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              onValueChange={onRatingUpdate}
+            />
+            <Typography variant="h6" gutterBottom>
+              Questions
+            </Typography>
+            {!snippet?.questions?.length ? (
+              <Typography
+                variant="body1"
+                align="center"
+                gutterBottom
+              >
+                There is no question
+              </Typography>
+            ) : (<></>)}
             <SnippetQuestionList
               questions={questions}
               rater={selectedRater}
@@ -86,28 +107,6 @@ export default function HorizontalLayout({
           </Box>
         </Grid>
       </Grid>
-      <SnippetRating
-        rating={
-          // Edit my rating or view other's rating
-          editable
-            ? snippet?.rate
-            : snippet?.rates?.find(r => selectedRater === r.rater?.id)
-        }
-        invalid={invalid}
-        editable={editable}
-        disableComment={disableComment}
-        allowNoRating={allowNoRating}
-        correctRating={snippet?.correctRating}
-        statistics={statistics?.snippets[snippet?.id || -1]}
-        pRating={pRatings?.find(rating => rating.snippetId === snippet?.id)}
-        pRatingScale={models?.find(model => {
-          const pRating = pRatings?.find(rating => rating.snippetId === snippet?.id);
-          return pRating && model.id === pRating.modelId;
-        })?.ratingScale}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        onValueChange={onRatingUpdate}
-      />
       <Box className="w-full pt-4 px-96">
         <SnippetQuestionButtons
           questions={questions}
