@@ -6,10 +6,11 @@ import MenuItem from "@mui/material/MenuItem"
 import Select from "@mui/material/Select"
 import TextField from "@mui/material/TextField"
 import { FC, ReactElement, useCallback, useEffect, useState } from "react"
-import { FormProvider, useForm } from "react-hook-form"
+import { Controller, FormProvider, useForm } from "react-hook-form"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import DemographicQuestionGroupSelector from "../../components/DemographicQuestionGroupSelector"
 import FormDialog from "../../components/FormDialog"
+import WYSIWYGEditor from "../../components/WYSIWYGEditor"
 import { useDemographicQuestionGroups } from "../../hooks/demographicQuestion"
 import { Dataset, RaterMgmtSystem } from "../../interfaces/dataset.interface"
 import {
@@ -33,7 +34,7 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
   setOpen,
 }): ReactElement => {
   const methods = useForm<any>();
-  const { register, handleSubmit, setValue, reset } = methods;
+  const { register, handleSubmit, setValue, reset, control } = methods;
   const dispatch = useAppDispatch();
 
   const {
@@ -118,14 +119,17 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
           size="small"
           {...register('name')}
         />
-        <TextField
-          id="description"
-          label="Description"
-          variant="outlined"
-          size="small"
-          multiline
-          rows={3}
-          {...register('description')}
+        <Controller
+          render={({ field: { value, onChange, onBlur } }) => (
+            <WYSIWYGEditor
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+              placeholder="Description"
+            />
+          )}
+          control={control}
+          name="description"
         />
         <FormControlLabel
           control={<Checkbox />}
@@ -169,15 +173,17 @@ const DatasetDialog: FC<DatasetDialogProps> = ({
           questionGroups={questionGroups}
           selectedIds={dataset?.demographicQuestionGroupIds}
         />
-        <TextField
-          id="completeText"
-          label="Complete text"
-          variant="outlined"
-          size="small"
-          multiline
-          rows={3}
-          placeholder="Thank you for participating in our survey!"
-          {...register('completeText')}
+        <Controller
+          render={({ field: { value, onChange, onBlur } }) => (
+            <WYSIWYGEditor
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+              placeholder="Complete text (e.g. Thank you for participating in our survey!)"
+            />
+          )}
+          control={control}
+          name="completeText"
         />
       </FormProvider>
     </FormDialog>

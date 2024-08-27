@@ -1,10 +1,10 @@
-import { TextField } from "@mui/material";
 import { useCallback, useEffect, useMemo } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import FormDialog from "../../components/FormDialog";
 import { Dataset } from '../../interfaces/dataset.interface';
 import { Question, QuestionType } from "../../interfaces/question.interface";
 import { Snippet } from '../../interfaces/snippet.interface';
+import WYSIWYGEditor from "../WYSIWYGEditor";
 import QuestionConstraint from './QuestionConstraint';
 import QuestionOptions from './QuestionOptions';
 import QuestionTypeSelector from './QuestionTypeSelector';
@@ -41,10 +41,9 @@ export default function QuestionDialog<T extends Question>({
 }) {
   const methods = useForm<any>();
 
-  const { register, watch, handleSubmit, reset } = methods;
+  const { watch, handleSubmit, reset, control } = methods;
 
   const questionType = watch<any>('type') as QuestionType;
-  const content = watch<string>('content');
 
   useEffect(() => {
     if (!question) {
@@ -105,14 +104,17 @@ export default function QuestionDialog<T extends Question>({
       handleSubmit={handleSubmit}
     >
       <FormProvider {...methods}>
-        {QuestionType.SNIPPET !== questionType && (<TextField
-          id="content"
-          label="Content"
-          variant="outlined"
-          value={content || ''}
-          {...register('content', {
-            required: 'Question content is required',
-          })}
+        {QuestionType.SNIPPET !== questionType && (<Controller
+          render={({ field: { value, onChange, onBlur } }) => (
+            <WYSIWYGEditor
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+              placeholder="Content"
+            />
+          )}
+          control={control}
+          name="content"
         />)}
 
         {/* ===== Snippet selector ===== */}

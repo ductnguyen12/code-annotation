@@ -1,10 +1,11 @@
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
 import { ReactElement, useEffect } from "react"
-import { FormProvider, useForm } from "react-hook-form"
+import { Controller, FormProvider, useForm } from "react-hook-form"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import FormDialog from "../../components/FormDialog"
 import QuestionPriorityFormControl from "../../components/QuestionPriorityFormControl"
+import WYSIWYGEditor from "../../components/WYSIWYGEditor"
 import { DemographicQuestionGroup } from "../../interfaces/question.interface"
 import { createDemographicQuestionGroupAsync, selectDemographicQuestionGroupState, setOpenDialog, setSelected, updateDemographicQuestionGroupAsync } from "../../slices/demographicQuestionGroupSlice"
 
@@ -19,7 +20,7 @@ const DemographicQuestionGroupDialog = (): ReactElement => {
   } = useAppSelector(selectDemographicQuestionGroupState);
 
   const methods = useForm<DemographicQuestionGroup>();
-  const { register, handleSubmit, setValue, reset } = methods;
+  const { register, handleSubmit, setValue, reset, control } = methods;
 
   const dispatch = useAppDispatch();
 
@@ -63,11 +64,17 @@ const DemographicQuestionGroupDialog = (): ReactElement => {
             required: true,
           })}
         />
-        <TextField
-          id="description"
-          label="Description"
-          variant="outlined"
-          {...register('description')}
+        <Controller
+          render={({ field: { value, onChange, onBlur } }) => (
+            <WYSIWYGEditor
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+              placeholder="Description"
+            />
+          )}
+          control={control}
+          name="description"
         />
         <TextField
           id="priority"

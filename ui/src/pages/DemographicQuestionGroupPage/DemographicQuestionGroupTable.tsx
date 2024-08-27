@@ -9,6 +9,7 @@ import {
   TableRow
 } from "@mui/material";
 
+import DOMPurify from 'dompurify';
 import { useCallback, useState } from 'react';
 import { useAppDispatch } from '../../app/hooks';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
@@ -59,6 +60,10 @@ const DemographicQuestionGroupTable = () => {
     "priority",
   ];
 
+  const richTextFields = [
+    "description",
+  ]
+
   return (
     <Table sx={{ minWidth: 650 }} aria-label="simple table">
       <TableHead>
@@ -73,7 +78,16 @@ const DemographicQuestionGroupTable = () => {
             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
           >
             {fields.map((field) => (
-              <TableCell key={field}>{group[field] as string}</TableCell>
+              <TableCell key={field}>
+                {richTextFields.includes(field)
+                  ? (<div
+                    className="inline-block"
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(group[field] as string)
+                    }}
+                  />)
+                  : group[field] as string}
+              </TableCell>
             ))}
             <TableCell key="actions">
               <IconButton aria-label="Edit question group" onClick={() => handleEdit(group)}>
