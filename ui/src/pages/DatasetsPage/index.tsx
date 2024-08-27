@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 
 import Pagination from '@mui/material/Pagination';
 import Tooltip from '@mui/material/Tooltip';
+import DOMPurify from 'dompurify';
 import React, { useCallback } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
@@ -138,7 +139,14 @@ const DatasetsPage = ({
             <Card>
               <CardHeader
                 title={`${d.id}. ${d.name}`}
-                subheader={d.description}
+                subheader={(
+                  <div
+                    className="inline-block max-h-36 overflow-hidden"
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(d.description || '')
+                    }}
+                  />
+                )}
               />
               <CardActions
                 sx={{

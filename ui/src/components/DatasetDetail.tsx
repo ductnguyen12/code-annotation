@@ -1,4 +1,5 @@
 import Typography from "@mui/material/Typography";
+import DOMPurify from "dompurify";
 import { Dataset } from "../interfaces/dataset.interface";
 
 const DatasetDetail = ({
@@ -11,7 +12,12 @@ const DatasetDetail = ({
     <Typography
       variant="body1"
     >
-      {dataset.description}
+      <div
+        className="inline-block"
+        dangerouslySetInnerHTML={{
+          __html: DOMPurify.sanitize(dataset.description || '')
+        }}
+      />
     </Typography>
   </>
 }

@@ -8,6 +8,7 @@ import Paper from '@mui/material/Paper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
+import DOMPurify from 'dompurify';
 import { ReactElement, useEffect, useMemo, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import QuestionComponent from '../../components/QuestionComponent';
@@ -217,7 +218,12 @@ const DemographicQuestions = ({
                 borderRadius: '12px',
               }}
             >
-              {steps[activeStep].questionGroup?.description}
+              <div
+                className="inline-block"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(steps[activeStep].questionGroup?.description || '')
+                }}
+              />
             </Paper>
           )}
           {steps[activeStep].questions.map((question, index) => (

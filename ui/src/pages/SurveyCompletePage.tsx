@@ -1,6 +1,7 @@
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import DOMPurify from 'dompurify';
 import { useIdFromPath } from '../hooks/common';
 import { useDataset } from '../hooks/dataset';
 
@@ -22,8 +23,14 @@ export default function SurveyCompletePage() {
       <center>
         <Typography
           mt={4}
-          variant="body1">
-          {dataset?.completeText || ''}
+          variant="body1"
+        >
+          <div
+            className="inline-block"
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(dataset?.completeText || '')
+            }}
+          />
         </Typography>
       </center>
     </Box>

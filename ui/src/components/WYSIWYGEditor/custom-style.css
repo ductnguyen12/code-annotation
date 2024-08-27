@@ -1,0 +1,13 @@
+.quill:hover>* {
+  border-color: rgba(0, 0, 0, 0.87);
+}
+
+.ql-container {
+  font: inherit;
+  height: fit-content;
+  border-radius: 0 0 5px 5px;
+}
+
+.ql-toolbar {
+  border-radius: 5px 5px 0 0;
+}

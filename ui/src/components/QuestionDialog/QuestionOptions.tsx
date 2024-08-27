@@ -12,6 +12,7 @@ import TextField from "@mui/material/TextField";
 import { useEffect, useState } from 'react';
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { QuestionType } from '../../interfaces/question.interface';
+import WYSIWYGEditor from '../WYSIWYGEditor';
 
 function SubOptionCheckBox({
   index,
@@ -72,13 +73,13 @@ export default function QuestionOptions({
           mb: 2,
         }}
       >
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder="Please input new option"
-          sx={{ width: '90%' }}
-          onChange={(e) => setNewOption(e.target.value)}
-        />
+        <Box sx={{ width: '90%' }}>
+          <WYSIWYGEditor
+            value={newOption}
+            onChange={newVal => setNewOption(newVal)}
+            placeholder="Please input new option"
+          />
+        </Box>
         <IconButton
           color="primary"
           sx={{ width: '10%' }}
