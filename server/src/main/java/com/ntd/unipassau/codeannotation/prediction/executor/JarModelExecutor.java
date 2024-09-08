@@ -51,10 +51,13 @@ public class JarModelExecutor implements ModelExecutor {
                 config.getOrDefault(KEY_REQUIRE_MODEL_COPY, "false").toString()
         );
         Path modelFilePath = Paths.get(modelPath);
-        if (requireCopyModel && !modelFilePath.toFile().exists()) {
+        Path targetModelFilePath = Paths.get(CURRENT_DIR).resolve(modelFilePath.getFileName());
+        if (requireCopyModel
+                && modelFilePath.toFile().exists()
+                && !targetModelFilePath.toFile().exists()) {
             Files.copy(
                     modelFilePath,
-                    Paths.get(CURRENT_DIR).resolve(modelFilePath.getFileName()),
+                    targetModelFilePath,
                     StandardCopyOption.REPLACE_EXISTING);
         }
 
@@ -89,6 +92,7 @@ public class JarModelExecutor implements ModelExecutor {
 
     private Map<Path, Snippet> saveSnippetFiles(Path dir, Dataset dataset) {
         return dataset.getSnippets().stream()
+                .filter(snippet -> !snippet.isAttentionCheck())
                 .map(snippet -> {
                     String sourceCodeFilename = ExportFileUtil.getFilenameFromPath(snippet.getPath());
                     Path sourceCodePath = dir.resolve(sourceCodeFilename);
