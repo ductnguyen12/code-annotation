@@ -13,5 +13,6 @@ public class RaterActionDoc {
     private Long datasetId;
     private String rater;
     private String raterExternalId;
+    private String status;
     private Instant createdDate;
 }

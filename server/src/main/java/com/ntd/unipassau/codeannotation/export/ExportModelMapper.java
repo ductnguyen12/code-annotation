@@ -40,6 +40,7 @@ public interface ExportModelMapper {
 
     @Mapping(target = "rater", source = "raterId")
     @Mapping(target = "raterExternalId", source = "raterDataset.rater.externalId")
+    @Mapping(target = "status", source = "raterDataset.status")
     RaterActionDoc toRaterActionDoc(RaterAction action);
 
     Collection<RaterActionDoc> toRaterActionDocs(Collection<RaterAction> actions);
