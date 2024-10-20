@@ -11,6 +11,7 @@ import com.ntd.unipassau.codeannotation.repository.DatasetRepository;
 import com.ntd.unipassau.codeannotation.repository.RaterActionRepository;
 import com.ntd.unipassau.codeannotation.repository.SnippetRepository;
 import com.ntd.unipassau.codeannotation.repository.SolutionRepository;
+import com.ntd.unipassau.codeannotation.web.rest.vm.SubmissionVM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -21,10 +22,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -96,7 +94,21 @@ public class BackupService {
                 dSolutions.stream().filter(s -> !verifiedIDs.contains(s.getId()))
                         .collect(Collectors.toSet()));
 
+        Map<UUID, SubmissionVM> raterSubmissionMapping = raterMgmtService.listSubmissions(dataset).stream()
+                .collect(Collectors.toMap(s -> s.getRater().getId(), s -> s, (s1, s2) -> {
+                    if (s1.getDuration() != null && s2.getDuration() != null) {
+                        // Prefer the latest submission.
+                        return s1.getDuration() > s2.getDuration() ? s1 : s2;
+                    }
+                    return s2;
+                }));
         Collection<RaterAction> raterActions = raterActionRepository.findAllFetchRaterByDatasetId(datasetId);
+        raterActions.forEach(ra -> {
+            SubmissionVM submission = raterSubmissionMapping.getOrDefault(ra.getRaterId(), null);
+            if (submission != null) {
+                ra.getRaterDataset().setStatus(submission.getStatus());
+            }
+        });
         datasetExporter.exportRaterActions(tmpDir.resolve(RATERS_ACTIONS_FILENAME), raterActions);
 
         Path outPath = Files.createTempFile(MessageFormat.format(DIR_DATASET_SNIPPETS, dataset.getId()), ".zip");
