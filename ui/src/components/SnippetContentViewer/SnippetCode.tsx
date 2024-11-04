@@ -128,7 +128,7 @@ const SnippetCode = ({
       </Box>
       {snippet?.attentionCheck && (
         <Typography className="pt-4" variant="h5">
-          This snippet is just for attention check.
+          This is an attention check.
           Please give this snippet <b>{snippet?.correctRating} stars</b> to pass.
         </Typography>
       )}
