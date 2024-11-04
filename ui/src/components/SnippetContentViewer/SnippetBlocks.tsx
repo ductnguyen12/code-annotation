@@ -26,7 +26,7 @@ export default function SnippetBlocks({
     >
       {snippet?.attentionCheck && (
         <Typography className="pt-4" variant="body1">
-          This snippet is just for attention check.
+          This snippet is an attention check.
           Please give this snippet <b>{snippet?.correctRating} stars</b> to pass.
         </Typography>
       )}
