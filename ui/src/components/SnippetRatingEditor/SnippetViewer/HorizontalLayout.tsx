@@ -83,15 +83,6 @@ export default function HorizontalLayout({
             <Typography variant="h6" gutterBottom>
               Questions
             </Typography>
-            {!snippet?.questions?.length ? (
-              <Typography
-                variant="body1"
-                align="center"
-                gutterBottom
-              >
-                There is no question
-              </Typography>
-            ) : (<></>)}
             <SnippetQuestionList
               questions={questions}
               rater={selectedRater}
