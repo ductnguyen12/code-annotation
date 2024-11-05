@@ -12,4 +12,5 @@ export interface Submission {
   numberOfSnippets: number;
   passedAttentionCheck: number;
   totalAttentionCheck: number;
+  consistentFailedAttentionCheck: number;
 }
