@@ -17,6 +17,7 @@ public class SubmissionVM {
     private int numberOfSnippets;
     private int passedAttentionCheck;
     private int totalAttentionCheck;
+    private int consistentFailedAttentionCheck;
 
     @JsonProperty
     public Long getDuration() {

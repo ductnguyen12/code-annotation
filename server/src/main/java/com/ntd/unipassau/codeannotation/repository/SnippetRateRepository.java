@@ -41,4 +41,27 @@ public interface SnippetRateRepository extends JpaRepository<SnippetRate, Long> 
                                 .toList()
                 ));
     }
+
+    @Query("SELECT sr.raterId, " +
+            "SUM(CASE WHEN sr.value != s.correctRating AND sr.value = sr2.value THEN 1 ELSE 0 END) " +
+            "FROM SnippetRate sr INNER JOIN sr.snippet s " +
+            "INNER JOIN SnippetRate sr2 ON sr.raterId = sr2.raterId INNER JOIN sr2.snippet s2 " +
+            "WHERE s.datasetId = :datasetId AND s.correctRating IS NOT NULL " +
+            "AND s2.datasetId = :datasetId AND s2.correctRating IS NULL " +
+            "AND s.path = s2.path AND s.id != s2.id " +
+            "GROUP BY sr.raterId")
+    List<List<Object>> internalCountConsistentFailedAttentionCheckDatasetId(Long datasetId);
+
+    /**
+     * Count the number of failed attention check in which raters give the same rating
+     * for both regular and attention check snippet.
+     *
+     * @param datasetId Dataset ID
+     * @return a map between rater id and the number of failed attention check that are consistent.
+     */
+    default Map<UUID, Integer> countConsistentFailedAttentionCheckDatasetId(Long datasetId) {
+        List<List<Object>> results = internalCountConsistentFailedAttentionCheckDatasetId(datasetId);
+        return results.stream()
+                .collect(Collectors.toMap(res -> (UUID) res.get(0), res -> ((Long) res.get(1)).intValue()));
+    }
 }
