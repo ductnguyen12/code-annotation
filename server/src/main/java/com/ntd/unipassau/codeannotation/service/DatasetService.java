@@ -241,12 +241,18 @@ public class DatasetService {
 
         // Enrich attention check results
         Map<UUID, List<Long>> raterRatingsCountMap = snippetRateRepository.countCorrectRatingsByDatasetId(datasetId);
+        // Count number of failed attention check that are consistent.
+        Map<UUID, Integer> raterATConsistencyCountMap =
+                snippetRateRepository.countConsistentFailedAttentionCheckDatasetId(datasetId);
+
         submissions.forEach(s -> {
             List<Long> counts = raterRatingsCountMap.getOrDefault(s.getRater().getId(), List.of(0L, 0L));
+            Integer consistency = raterATConsistencyCountMap.getOrDefault(s.getRater().getId(), 0);
             s.setNumberOfSnippets(numberOfSnippets);
             s.setNumberOfRatings(counts.get(0).intValue());
             s.setTotalAttentionCheck((int) numberOfAttentionCheck);
             s.setPassedAttentionCheck(counts.get(1).intValue());
+            s.setConsistentFailedAttentionCheck(consistency);
         });
 
         return submissions;
