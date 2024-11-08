@@ -6,7 +6,9 @@ import com.ntd.unipassau.codeannotation.domain.rater.SolutionValue;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Optional;
 
 public class SolutionChoiceValidator extends SolutionValueValidator {
     protected SolutionChoiceValidator(ConstraintValidatorContext context) {
@@ -16,7 +18,11 @@ public class SolutionChoiceValidator extends SolutionValueValidator {
     @Override
     boolean validate(int index, Question question, SolutionValue value) {
         checkMalformedSelectingQuestion(question);
-        Collection<Integer> selected = value.getSelected().stream().filter(Objects::nonNull).toList();
+        Collection<Integer> selected = Optional.ofNullable(value.getSelected())
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(Objects::nonNull)
+                .toList();
         return checkEmptyChoice(index, selected)
                 && checkSingleChoiceQuestion(index, question, selected)
                 && checkOutOfBoundChoice(index, selected, question.getAnswer().getOptions());
