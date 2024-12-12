@@ -32,6 +32,7 @@ export default function SnippetBlocks({
       )}
       <Blocks
         projectData={projectData}
+        sprite={projectData.defaultSprite}
         style={{
           margin: 'auto',
           width: '120vh',

@@ -67,7 +67,7 @@ public interface MetadataExporter {
      * @return true if the file ends with a certain file extension that depends on current exporter.
      */
     default boolean isMetadataFile(File file) {
-        return file.getName().endsWith(getFilenameExtension());
+        return file.getName().endsWith("." + getFilenameExtension());
     }
 
     /**

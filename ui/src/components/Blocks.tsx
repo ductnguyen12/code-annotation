@@ -1,7 +1,10 @@
 import Box from '@mui/material/Box';
+import debounce from 'lodash.debounce';
 import { useCallback, useEffect, useMemo } from "react";
 import VM from 'scratch-vm';
+
 import VMScratchBlocks from '../lib/blocks';
+import defineDynamicBlock from '../lib/define-dynamic-block';
 
 const defaultOptions = {
   media: '/media/',
@@ -9,7 +12,7 @@ const defaultOptions = {
   zoom: {
     controls: true,
     wheel: true,
-    startScale: 0.675,
+    startScale: 0.5625,
   },
   grid: {
     spacing: 40,
@@ -25,9 +28,11 @@ const defaultOptions = {
 export default function Blocks({
   projectData,
   style,
+  sprite,
 }: {
   projectData?: any,
   style?: any,
+  sprite?: string,
 }) {
   let ref: any = null;
   const setRef = (el: any) => ref = el;
@@ -46,10 +51,8 @@ export default function Blocks({
     return blocks;
   }, [vm]);
 
-  const onWorkspaceUpdate = useCallback((workspace: any) => (data: any) => {
-    console.log('onWorkspaceUpdate');
-    // Remove and reattach the workspace listener (but allow flyout events)
-    workspace.removeChangeListener(vm.blockListener);
+  const handleWorkspaceUpdate = useCallback((workspace: any) => debounce((data: any) => {
+    console.log('workspaceUpdate', workspace);
     const dom = ScratchBlocks.Xml.textToDom(data.xml);
     try {
       ScratchBlocks.Xml.clearWorkspaceAndLoadFromXml(dom, workspace);
@@ -68,24 +71,68 @@ export default function Blocks({
       }
       console.error(error);
     }
-    workspace.addChangeListener(vm.blockListener);
+  }, 100), [ScratchBlocks.Xml]);
 
-    // Clear the undo state of the workspace since this is a
-    // fresh workspace and we don't want any changes made to another sprites
-    // workspace to be 'undone' here.
-    workspace.clearUndo();
-  }, [ScratchBlocks.Xml, vm.blockListener]);
+  const handleExtensionAdded = useCallback((categoryInfo: any) => {
+    console.log('EXTENSION_ADDED');
+    const defineBlocks = (blockInfoArray: any[]) => {
+      if (blockInfoArray && blockInfoArray.length > 0) {
+        const staticBlocksJson: any[] = [];
+        const dynamicBlocksInfo: any[] = [];
+        blockInfoArray.forEach(blockInfo => {
+          if (blockInfo.info && blockInfo.info.isDynamic) {
+            dynamicBlocksInfo.push(blockInfo);
+          } else if (blockInfo.json) {
+            staticBlocksJson.push(blockInfo.json);
+          }
+          // otherwise it's a non-block entry such as '---'
+        });
+
+        ScratchBlocks.defineBlocksWithJsonArray(staticBlocksJson);
+        dynamicBlocksInfo.forEach(blockInfo => {
+          // This is creating the block factory / constructor -- NOT a specific instance of the block.
+          // The factory should only know static info about the block: the category info and the opcode.
+          // Anything else will be picked up from the XML attached to the block instance.
+          const extendedOpcode = `${categoryInfo.id}_${blockInfo.info.opcode}`;
+          const blockDefinition =
+            defineDynamicBlock(ScratchBlocks, categoryInfo, blockInfo, extendedOpcode);
+          ScratchBlocks.Blocks[extendedOpcode] = blockDefinition;
+        });
+      }
+    };
+
+    // scratch-blocks implements a menu or custom field as a special kind of block ("shadow" block)
+    // these actually define blocks and MUST run regardless of the UI state
+    defineBlocks(
+      Object.getOwnPropertyNames(categoryInfo.customFieldTypes)
+        .map(fieldTypeName => categoryInfo.customFieldTypes[fieldTypeName].scratchBlocksDefinition));
+    defineBlocks(categoryInfo.menus);
+    defineBlocks(categoryInfo.blocks);
+  }, [ScratchBlocks]);
+
+  const handleProjectLoaded = useCallback(debounce(() => {
+    console.log('PROJECT_LOADED');
+    const allTargets = vm.runtime.targets;
+    const target = allTargets.find((t: any) => t.sprite.name === sprite);
+    if (target) {
+      console.log(target);
+      vm.setEditingTarget(target.id);
+    }
+  }, 100), [vm]);
 
   const attachVM = useCallback((workspace: any) => {
-    workspace.addChangeListener(vm.blockListener);
-    vm.addListener('workspaceUpdate', onWorkspaceUpdate(workspace));
+    vm.addListener('workspaceUpdate', handleWorkspaceUpdate(workspace));
+    vm.addListener('EXTENSION_ADDED', handleExtensionAdded);
+    vm.runtime.addListener('PROJECT_LOADED', handleProjectLoaded);
     console.log('attach');
-  }, [onWorkspaceUpdate, vm]);
+  }, [handleExtensionAdded, handleProjectLoaded, handleWorkspaceUpdate, vm]);
 
   const detachVM = useCallback((workspace: any) => {
-    vm.removeListener('workspaceUpdate', onWorkspaceUpdate(workspace));
+    vm.removeListener('workspaceUpdate', handleWorkspaceUpdate(workspace));
+    vm.removeListener('EXTENSION_ADDED', handleExtensionAdded);
+    vm.runtime.removeListener('PROJECT_LOADED', handleProjectLoaded);
     console.log('detach');
-  }, [onWorkspaceUpdate, vm]);
+  }, [handleExtensionAdded, handleProjectLoaded, handleWorkspaceUpdate, vm]);
 
   useEffect(() => {
     if (!projectData)
@@ -109,7 +156,6 @@ export default function Blocks({
       console.log('workspace.dispose()');
       detachVM(workspace);
       workspace.dispose();
-      vm.clearFlyoutBlocks();
     }
   }, [ScratchBlocks, attachVM, detachVM, ref, vm]);
 

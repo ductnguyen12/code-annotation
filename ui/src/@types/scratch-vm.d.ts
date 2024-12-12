@@ -1,10 +1,10 @@
 declare module "scratch-vm" {
   declare class VirtualMachine {
-    blockListener: any;
+    runtime: any;
     async loadProject(projectData: any);
     addListener(event: string, handler: Function);
     removeListener(event: string, handler: Function);
-    clearFlyoutBlocks();
+    setEditingTarget(targetId: string);
   }
   export default VirtualMachine;
 }
