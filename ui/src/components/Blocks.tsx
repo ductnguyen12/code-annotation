@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
 import debounce from 'lodash.debounce';
 import { useCallback, useEffect, useMemo } from "react";
+import AudioEngine from 'scratch-audio';
 import VM from 'scratch-vm';
 
 import VMScratchBlocks from '../lib/blocks';
@@ -19,7 +20,7 @@ const defaultOptions = {
     length: 2,
     colour: '#ddd'
   },
-  comments: false,
+  comments: true,
   collapse: false,
   scrollbars: true,
   sounds: false
@@ -39,8 +40,11 @@ export default function Blocks({
 
   const vm = useMemo(() => {
     console.log('new VM');
-
-    return new VM();
+    const audioEngine = new AudioEngine();
+    const vm = new VM();
+    vm.attachAudioEngine(audioEngine);
+    vm.setCompatibilityMode(true);
+    return vm;
   }, []);
 
   const ScratchBlocks = useMemo(() => {
@@ -52,8 +56,10 @@ export default function Blocks({
   }, [vm]);
 
   const handleWorkspaceUpdate = useCallback((workspace: any) => debounce((data: any) => {
-    console.log('workspaceUpdate', workspace);
+    console.log('workspaceUpdate');
     const dom = ScratchBlocks.Xml.textToDom(data.xml);
+    if (!workspace.getCanvas())
+      return;
     try {
       ScratchBlocks.Xml.clearWorkspaceAndLoadFromXml(dom, workspace);
     } catch (error: any) {
@@ -113,12 +119,12 @@ export default function Blocks({
   const handleProjectLoaded = useCallback(debounce(() => {
     console.log('PROJECT_LOADED');
     const allTargets = vm.runtime.targets;
-    const target = allTargets.find((t: any) => t.sprite.name === sprite);
+    const target = allTargets.find((t: any) => t.sprite.name.trim() === sprite?.trim());
+
     if (target) {
-      console.log(target);
       vm.setEditingTarget(target.id);
     }
-  }, 100), [vm]);
+  }, 100), [vm, sprite]);
 
   const attachVM = useCallback((workspace: any) => {
     vm.addListener('workspaceUpdate', handleWorkspaceUpdate(workspace));

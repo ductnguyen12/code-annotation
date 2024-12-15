@@ -16,8 +16,11 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
     "axios": "^1.4.0",
+    "buffer": "^6.0.3",
     "dompurify": "^3.1.5",
+    "lodash.debounce": "^4.0.8",
     "notistack": "^3.0.1",
+    "process": "^0.11.10",
     "react": "^18.2.0",
     "react-cookie": "^4.1.1",
     "react-dom": "^18.2.0",
@@ -27,18 +30,20 @@
     "react-router-dom": "^6.14.1",
     "react-scripts": "5.0.1",
     "react-syntax-highlighter": "^15.5.0",
+    "scratch-audio": "^2.0.24",
     "scratch-blocks": "^1.1.109",
     "scratch-vm": "^4.5.146",
+    "stream-browserify": "^3.0.0",
     "typescript": "^4.9.5",
     "universal-cookie": "^4.0.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "copy-scratch-media": "ncp node_modules/scratch-blocks/media public/media",
-    "start": "npm run copy-scratch-media && react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "npm run copy-scratch-media && react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject"
   },
   "eslintConfig": {
     "extends": [
@@ -64,6 +69,7 @@
     "@types/dompurify": "^3.0.5",
     "@types/jest": "^27.5.2",
     "@types/js-cookie": "^3.0.3",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^17.0.45",
     "@types/react": "^18.2.14",
     "@types/react-cookies": "^0.1.0",
@@ -72,6 +78,7 @@
     "@types/react-syntax-highlighter": "^15.5.7",
     "@types/universal-cookie": "^3.0.0",
     "ncp": "^2.0.0",
+    "react-app-rewired": "^2.2.1",
     "react-inject-env": "^2.1.0"
   }
 }
