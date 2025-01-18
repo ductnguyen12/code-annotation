@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProlificProps {
     private String completeCode;
+    private String studyId;
     private String apiKey;
 }
