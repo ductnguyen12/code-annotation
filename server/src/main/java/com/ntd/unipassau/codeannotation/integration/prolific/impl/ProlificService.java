@@ -42,7 +42,7 @@ public class ProlificService implements RaterMgmtService {
                 .filter(r -> r.getExternalId() != null)
                 .collect(Collectors.toMap(Rater::getExternalId, r -> r));
         try {
-            Collection<SubmissionDTO> submissions = prolificClient.listSubmissions()
+            Collection<SubmissionDTO> submissions = prolificClient.listSubmissions(prolificProps.getStudyId())
                     .getResults();
 
             return submissions.stream()

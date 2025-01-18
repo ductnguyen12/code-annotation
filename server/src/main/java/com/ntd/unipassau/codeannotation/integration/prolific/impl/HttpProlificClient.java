@@ -6,10 +6,14 @@ import com.ntd.unipassau.codeannotation.integration.prolific.dto.PageDTO;
 import com.ntd.unipassau.codeannotation.integration.prolific.dto.SubmissionDTO;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriBuilder;
 
 import javax.annotation.Nullable;
+import java.net.URI;
 import java.text.MessageFormat;
+import java.util.function.Function;
 
 public class HttpProlificClient implements ProlificClient {
     public final static String PROLIFIC_API_URI = "https://api.prolific.com/api/v1/submissions/";
@@ -23,6 +27,13 @@ public class HttpProlificClient implements ProlificClient {
 
     @Override
     public PageDTO<SubmissionDTO> listSubmissions(@Nullable String study) {
+        Function<UriBuilder, URI> uriBuilderFunc = uriBuilder -> {
+            if (StringUtils.hasText(study)) {
+                uriBuilder = uriBuilder.queryParam("study", study);
+            }
+            return uriBuilder.build();
+        };
+
         return WebClient.builder()
                 .baseUrl(PROLIFIC_API_URI)
                 .defaultHeader(
@@ -30,6 +41,7 @@ public class HttpProlificClient implements ProlificClient {
                         MessageFormat.format(API_TOKEN_TEMPLATE, prolificProps.getApiKey()))
                 .build()
                 .get()
+                .uri(uriBuilderFunc)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<PageDTO<SubmissionDTO>>() {
                 })

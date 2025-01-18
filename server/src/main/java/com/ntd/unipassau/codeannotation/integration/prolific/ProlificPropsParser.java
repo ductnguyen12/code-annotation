@@ -6,6 +6,7 @@ import java.util.Optional;
 public class ProlificPropsParser {
     public final static String PROLIFIC_CONFIG_KEY = "prolific";
     private final static String PROLIFIC_CONFIG_COMPLETE_CODE = "completeCode";
+    private final static String PROLIFIC_CONFIG_STUDY_ID = "studyId";
     private final static String PROLIFIC_CONFIG_API_KEY = "secrets.apiKey";
 
     public Optional<ProlificProps> extractProlificProps(Map<String, Map<String, Object>> configuration) {
@@ -14,6 +15,8 @@ public class ProlificPropsParser {
                 .map(config -> {
                     String completeCode =
                             rawConfig.getOrDefault(PROLIFIC_CONFIG_COMPLETE_CODE, "").toString();
+                    String studyId =
+                            rawConfig.getOrDefault(PROLIFIC_CONFIG_STUDY_ID, "").toString();
                     String apiKey = rawConfig.containsKey(PROLIFIC_CONFIG_API_KEY)
                             ? rawConfig.get(PROLIFIC_CONFIG_API_KEY).toString()
                             : null;
@@ -21,6 +24,7 @@ public class ProlificPropsParser {
                         return null;
                     return ProlificProps.builder()
                             .completeCode(completeCode)
+                            .studyId(studyId)
                             .apiKey(apiKey)
                             .build();
                 });
