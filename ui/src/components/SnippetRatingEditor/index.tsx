@@ -94,7 +94,7 @@ export default function SnippetRatingEditor({
       if (!editable)
         return;
       const ratingValue = snippets[selected].rate?.value;
-      if (ratingValue === undefined || ratingValue === 0) {
+      if (!allowNoRating && (ratingValue === undefined || ratingValue === 0)) {
         dispatch(pushNotification({
           message: 'Rating is required',
           variant: 'error',
@@ -123,7 +123,8 @@ export default function SnippetRatingEditor({
     },
     [
       snippets, selected, editable, showQuestions,
-      setHiddenQuestion, dispatch, onRatingSubmit,
+      , allowNoRating, setHiddenQuestion, dispatch,
+      onRatingSubmit,
     ]
   );
 
